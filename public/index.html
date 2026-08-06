@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalkNaija</title>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+<h2>🎙 TalkNaija</h2>
+</header>
+
+<!-- HOME SCREEN -->
+<div id="homeScreen" class="screen">
+
+    <div class="home-card">
+
+        <h1>Connect with Nigerians</h1>
+
+        <p>Random anonymous voice conversations.</p>
+
+        <div class="online-box">
+
+            🟢 Online:
+            <span id="onlineUsers">0</span>
+
+        </div>
+
+        <button id="startBtn">
+            Start Talking
+        </button>
+
+    </div>
+
+</div>
+
+<!-- SEARCH SCREEN -->
+<div id="searchScreen" class="screen hidden">
+
+    <div class="home-card">
+
+        <h2>🔎 Searching...</h2>
+
+        <div class="loader"></div>
+
+        <p id="status">
+            Finding another Nigerian...
+        </p>
+
+        <button id="cancelBtn">
+            Cancel Search
+        </button>
+
+    </div>
+
+</div>
+
+<!-- CALL SCREEN -->
+<div id="callScreen" class="screen hidden">
+
+    <div class="home-card">
+
+        <h2>🎙 Anonymous User</h2>
+
+        <h1 id="timer">00:00</h1>
+
+        <button id="muteBtn">
+            Mute
+        </button>
+
+        <br><br>
+
+        <button id="endBtn">
+            End Call
+        </button>
+
+        <br><br>
+
+        <button id="reportBtn">
+            Report
+        </button>
+
+    </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
