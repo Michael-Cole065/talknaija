@@ -1,8 +1,13 @@
+let online = 0;
 function registerSocketHandlers(io, activePairs, queue) {
 
     io.on("connection", (socket) => {
 
         console.log("Connected:", socket.id);
+
+	online++;
+
+	io.emit("onlineUsers", online);
 
         socket.on("joinQueue", () => {
 
@@ -68,6 +73,10 @@ function registerSocketHandlers(io, activePairs, queue) {
         });
 
         socket.on("disconnect", () => {
+
+	    online--;
+
+            io.emit("onlineUsers", online);
 
             queue.removeUser(socket.id);
 

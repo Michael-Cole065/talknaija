@@ -1,13 +1,15 @@
+let dots = 0;
+let searchAnimation = null;
+const connectionStatus = document.getElementById("connectionStatus");
 const homeScreen = document.getElementById("homeScreen");
 const searchScreen = document.getElementById("searchScreen");
 const callScreen = document.getElementById("callScreen");
-
 const startBtn = document.getElementById("startBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 const endBtn = document.getElementById("endBtn");
+const nextBtn = document.getElementById("nextBtn");
 const muteBtn = document.getElementById("muteBtn");
 const reportBtn = document.getElementById("reportBtn");
-
 const onlineUsers = document.getElementById("onlineUsers");
 const timer = document.getElementById("timer");
 
@@ -33,7 +35,16 @@ socket.on("onlineUsers", (count) => {
 startBtn.onclick = () => {
 
     showScreen(searchScreen);
+const status = document.getElementById("status");
 
+searchAnimation = setInterval(() => {
+
+    dots = (dots + 1) % 4;
+
+    status.textContent =
+        "Finding another Nigerian" + ".".repeat(dots);
+
+},500);
     socket.emit("joinQueue");
 
 };
@@ -45,6 +56,10 @@ cancelBtn.onclick = () => {
 };
 
 socket.on("matched", () => {
+
+    connectionStatus.textContent = "Connected";
+
+    clearInterval(searchAnimation);
 
     showScreen(callScreen);
 
@@ -78,7 +93,21 @@ endBtn.onclick = () => {
 
 };
 
+nextBtn.onclick = () => {
+
+    socket.emit("endCall");
+
+    clearInterval(timerInterval);
+
+    showScreen(searchScreen);
+
+    socket.emit("joinQueue");
+
+};
+
 socket.on("callEnded", () => {
+
+    connectionStatus.textContent = "Disconnected";
 
     clearInterval(timerInterval);
 

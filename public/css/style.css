@@ -103,3 +103,15 @@ transform:rotate(360deg);
 .hidden{
 display:none;
 }
+
+#connectionStatus{
+
+margin:15px 0;
+
+font-size:18px;
+
+font-weight:bold;
+
+color:#00C853;
+
+}
