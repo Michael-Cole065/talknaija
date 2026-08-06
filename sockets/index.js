@@ -13,10 +13,12 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             queue.addUser(socket.id);
 
+	    io.emit("queueCount", queue.getWaitingCount());
+
             if (queue.hasTwoUsers()) {
 
                 const pair = queue.getNextPair();
-
+		io.emit("queueCount", queue.getWaitingCount());
                 activePairs.set(pair.user1, pair.user2);
                 activePairs.set(pair.user2, pair.user1);
 
@@ -79,7 +81,7 @@ function registerSocketHandlers(io, activePairs, queue) {
             io.emit("onlineUsers", online);
 
             queue.removeUser(socket.id);
-
+	    io.emit("queueCount", queue.getWaitingCount());
             const partner = activePairs.get(socket.id);
 
             if (partner) {

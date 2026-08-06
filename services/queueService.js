@@ -1,35 +1,34 @@
 const waitingQueue = [];
 
-function addUser(socketId) {
-    if (!waitingQueue.includes(socketId)) {
-        waitingQueue.push(socketId);
-    }
-}
-
-function removeUser(socketId) {
-    const index = waitingQueue.indexOf(socketId);
-
-    if (index !== -1) {
-        waitingQueue.splice(index, 1);
-    }
-}
-
-function hasTwoUsers() {
-    return waitingQueue.length >= 2;
-}
-
-function getNextPair() {
-    if (!hasTwoUsers()) return null;
-
-    return {
-        user1: waitingQueue.shift(),
-        user2: waitingQueue.shift()
-    };
-}
-
 module.exports = {
-    addUser,
-    removeUser,
-    hasTwoUsers,
-    getNextPair
+
+    addUser(id) {
+        if (!waitingQueue.includes(id)) {
+            waitingQueue.push(id);
+        }
+    },
+
+    removeUser(id) {
+        const index = waitingQueue.indexOf(id);
+
+        if (index !== -1) {
+            waitingQueue.splice(index, 1);
+        }
+    },
+
+    hasTwoUsers() {
+        return waitingQueue.length >= 2;
+    },
+
+    getNextPair() {
+        return {
+            user1: waitingQueue.shift(),
+            user2: waitingQueue.shift()
+        };
+    },
+
+    getWaitingCount() {
+        return waitingQueue.length;
+    }
+
 };

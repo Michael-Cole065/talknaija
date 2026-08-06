@@ -11,6 +11,7 @@ const nextBtn = document.getElementById("nextBtn");
 const muteBtn = document.getElementById("muteBtn");
 const reportBtn = document.getElementById("reportBtn");
 const onlineUsers = document.getElementById("onlineUsers");
+const queueCount = document.getElementById("queueCount");
 const timer = document.getElementById("timer");
 
 let seconds = 0;
@@ -29,6 +30,12 @@ function showScreen(screen) {
 socket.on("onlineUsers", (count) => {
 
     onlineUsers.textContent = count;
+
+});
+
+socket.on("queueCount", (count) => {
+
+    queueCount.textContent = count;
 
 });
 
