@@ -41,22 +41,32 @@ socket.on("queueCount", (count) => {
 
 startBtn.onclick = () => {
 
+    startBtn.disabled = true;
+
     showScreen(searchScreen);
-const status = document.getElementById("status");
 
-searchAnimation = setInterval(() => {
+    const status = document.getElementById("status");
 
-    dots = (dots + 1) % 4;
+    dots = 0;
 
-    status.textContent =
-        "Finding another Nigerian" + ".".repeat(dots);
+    searchAnimation = setInterval(() => {
 
-},500);
+        dots = (dots + 1) % 4;
+
+        status.textContent =
+            "Finding another Nigerian" + ".".repeat(dots);
+
+    }, 500);
+
     socket.emit("joinQueue");
 
 };
 
 cancelBtn.onclick = () => {
+
+    clearInterval(searchAnimation);
+
+    startBtn.disabled = false;
 
     showScreen(homeScreen);
 
@@ -66,7 +76,9 @@ socket.on("matched", () => {
 
     connectionStatus.textContent = "Connected";
 
-    clearInterval(searchAnimation);
+    clearInterval(searchAnimation)
+
+    document.getElementById("status").textContent = "Connected!";
 
     showScreen(callScreen);
 
@@ -94,7 +106,14 @@ endBtn.onclick = () => {
 
     socket.emit("endCall");
 
+    cleanupVoice();
+
     clearInterval(timerInterval);
+    clearInterval(searchAnimation);
+
+    startBtn.disabled = false;
+
+    connectionStatus.textContent = "Disconnected";
 
     showScreen(homeScreen);
 
@@ -105,6 +124,9 @@ nextBtn.onclick = () => {
     socket.emit("endCall");
 
     clearInterval(timerInterval);
+    clearInterval(searchAnimation);
+
+    startBtn.disabled = true;
 
     showScreen(searchScreen);
 
@@ -119,6 +141,8 @@ socket.on("callEnded", () => {
     clearInterval(timerInterval);
 
     alert("The other user ended the call.");
+
+    startBtn.disabled = false;
 
     showScreen(homeScreen);
 

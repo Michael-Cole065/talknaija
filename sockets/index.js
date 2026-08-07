@@ -22,8 +22,13 @@ function registerSocketHandlers(io, activePairs, queue) {
                 activePairs.set(pair.user1, pair.user2);
                 activePairs.set(pair.user2, pair.user1);
 
-                io.to(pair.user1).emit("matched");
-                io.to(pair.user2).emit("matched");
+		io.to(pair.user1).emit("matched", {
+		    initiator: true
+		});
+
+		io.to(pair.user2).emit("matched", {
+		    initiator: false
+		});
 
             }
 
