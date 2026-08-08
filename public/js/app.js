@@ -161,23 +161,59 @@ endBtn.onclick = () => {
 
 nextBtn.onclick = () => {
 
+    console.log("⏭️ NEXT PERSON");
+
+    // End the current pairing
     socket.emit("endCall");
 
-    resetCallState();
+    // Completely clean up the current WebRTC connection
+    cleanupVoice();
 
+    // Stop the current call timer
+    clearInterval(timerInterval);
+
+    // Stop any search animation
+    clearInterval(searchAnimation);
+
+    // Reset timer
+    seconds = 0;
+
+    if (timer) {
+        timer.textContent = "00:00";
+    }
+
+    // Disable Start Talking while searching
     startBtn.disabled = true;
 
-    connectionStatus.textContent = "Searching...";
-
+    // Show searching screen
     showScreen(searchScreen);
 
-    startSearchAnimation();
+    const status =
+        document.getElementById("status");
 
-    setTimeout(() => {
+    if (status) {
 
-        socket.emit("joinQueue");
+        dots = 0;
 
-    }, 100);
+        status.textContent =
+            "Finding another Nigerian";
+
+        clearInterval(searchAnimation);
+
+        searchAnimation = setInterval(() => {
+
+            dots = (dots + 1) % 4;
+
+            status.textContent =
+                "Finding another Nigerian" +
+                ".".repeat(dots);
+
+        }, 500);
+
+    }
+
+    // Enter the queue for a new person
+    socket.emit("joinQueue");
 
 };
 
