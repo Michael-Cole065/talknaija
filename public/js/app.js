@@ -243,32 +243,63 @@ muteBtn.onclick = () => {
 
 reportBtn.onclick = () => {
 
-    const reason = prompt(
-        "Why are you reporting this user?\n\n" +
-        "1. Harassment\n" +
-        "2. Sexual or inappropriate behavior\n" +
-        "3. Hate or abusive speech\n" +
-        "4. Spam or scam\n" +
+    const choice = prompt(
+        "Why are you reporting this user?\\n\\n" +
+        "1. Harassment\\n" +
+        "2. Sexual or inappropriate behavior\\n" +
+        "3. Hate or abusive speech\\n" +
+        "4. Spam or scam\\n" +
         "5. Other"
     );
 
-    if (reason === null) {
+    if (choice === null) {
         return;
     }
 
-    const trimmedReason = reason.trim();
+    const trimmedChoice = choice.trim();
 
-    if (!trimmedReason) {
+    const reasons = {
+        "1": "Harassment",
+        "2": "Sexual or inappropriate behavior",
+        "3": "Hate or abusive speech",
+        "4": "Spam or scam"
+    };
 
-        alert("Please provide a reason for the report.");
+    let reason;
+
+    if (trimmedChoice === "5") {
+
+        const customReason = prompt(
+            "Please describe the reason for your report:"
+        );
+
+        if (customReason === null) {
+            return;
+        }
+
+        reason = customReason.trim();
+
+        if (!reason) {
+
+            alert("Please provide a reason for the report.");
+
+            return;
+        }
+
+    } else if (reasons[trimmedChoice]) {
+
+        reason = reasons[trimmedChoice];
+
+    } else {
+
+        alert("Please enter a number from 1 to 5.");
 
         return;
-
     }
 
     reportBtn.disabled = true;
 
-    socket.emit("reportUser", trimmedReason);
+    socket.emit("reportUser", reason);
 
 };
 
