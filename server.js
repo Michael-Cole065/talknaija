@@ -11,14 +11,21 @@ const registerSocketHandlers = require("./sockets");
 
 const app = express();
 
-// HTTPS certificate
-const httpsOptions = {
-    key: fs.readFileSync("./cert/server.key"),
-    cert: fs.readFileSync("./cert/server.crt")
-};
+let server;
 
-// HTTPS server
-const server = https.createServer(httpsOptions, app);
+if (process.env.NODE_ENV === "production") {
+
+    server = http.createServer(app);
+
+} else {
+
+    const httpsOptions = {
+        key: fs.readFileSync("./cert/server.key"),
+        cert: fs.readFileSync("./cert/server.crt")
+    };
+
+    server = https.createServer(httpsOptions, app);
+}
 
 const io = new Server(server);
 
@@ -30,6 +37,10 @@ registerSocketHandlers(io, activePairs, queue);
 
 const PORT = process.env.PORT || 4000;
 
-server.listen(PORT, () => {
-    console.log(`🚀 TalkNaija running on https://localhost:${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+
+    console.log(
+        `🚀 TalkNaija running on port ${PORT}`
+    );
+
 });
