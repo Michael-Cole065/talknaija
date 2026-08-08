@@ -8,6 +8,7 @@ require("dotenv").config();
 
 const queue = require("./services/queueService");
 const registerSocketHandlers = require("./sockets");
+const reportService = require("./services/reportService");
 
 const app = express();
 
@@ -25,15 +26,156 @@ if (process.env.NODE_ENV === "production") {
     };
 
     server = https.createServer(httpsOptions, app);
+
 }
 
 const io = new Server(server);
-
 const activePairs = new Map();
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json());
 
-registerSocketHandlers(io, activePairs, queue);
+// ========================================
+// ADMIN AUTHENTICATION
+// ========================================
+
+function adminAuth(req, res, next) {
+
+    const auth = req.headers.authorization;
+
+    if (!auth || !auth.startsWith("Basic ")) {
+
+        res.setHeader(
+            "WWW-Authenticate",
+            'Basic realm="TalkNaija Admin"'
+        );
+
+        return res.status(401).send("Authentication required.");
+    }
+
+    const encoded = auth.split(" ")[1];
+
+    let decoded;
+
+    try {
+
+        decoded = Buffer
+            .from(encoded, "base64")
+            .toString("utf8");
+
+    } catch (error) {
+
+        return res.status(401).send("Invalid authentication.");
+
+    }
+
+    const separator = decoded.indexOf(":");
+
+    if (separator === -1) {
+
+        return res.status(401).send("Invalid authentication.");
+
+    }
+
+    const username = decoded.slice(0, separator);
+    const password = decoded.slice(separator + 1);
+
+    if (
+        username !== process.env.ADMIN_USERNAME ||
+        password !== process.env.ADMIN_PASSWORD
+    ) {
+
+        res.setHeader(
+            "WWW-Authenticate",
+            'Basic realm="TalkNaija Admin"'
+        );
+
+        return res.status(401).send("Invalid credentials.");
+
+    }
+
+    next();
+
+}
+
+// ========================================
+// PROTECT ADMIN PAGE
+// ========================================
+
+app.get("/admin-reports.html", adminAuth, (req, res) => {
+
+    res.sendFile(
+        path.join(__dirname, "public", "admin-reports.html")
+    );
+
+});
+
+// ========================================
+// REPORT API
+// ========================================
+
+app.get("/api/reports", adminAuth, (req, res) => {
+
+    res.json(reportService.getReports());
+
+});
+
+app.put("/api/reports/:id", adminAuth, (req, res) => {
+
+    const { status } = req.body;
+
+    const allowedStatuses = [
+        "pending",
+        "reviewed",
+        "action_taken",
+        "dismissed"
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+
+        return res.status(400).json({
+            error: "Invalid report status."
+        });
+
+    }
+
+    const report = reportService.updateReportStatus(
+        req.params.id,
+        status
+    );
+
+    if (!report) {
+
+        return res.status(404).json({
+            error: "Report not found."
+        });
+
+    }
+
+    res.json(report);
+
+});
+
+// ========================================
+// PUBLIC FILES
+// ========================================
+
+app.use(express.static(
+    path.join(__dirname, "public")
+));
+
+// ========================================
+// SOCKET.IO
+// ========================================
+
+registerSocketHandlers(
+    io,
+    activePairs,
+    queue
+);
+
+// ========================================
+// SERVER
+// ========================================
 
 const PORT = process.env.PORT || 4000;
 

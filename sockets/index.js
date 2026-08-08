@@ -1,12 +1,10 @@
 let online = 0;
 
 const blockedPairs = new Set();
-const reports = [];
+const reportService = require("../services/reportService");
 
 function getPairKey(user1, user2) {
-
     return [user1, user2].sort().join(":");
-
 }
 
 function registerSocketHandlers(io, activePairs, queue) {
@@ -48,7 +46,6 @@ function registerSocketHandlers(io, activePairs, queue) {
                 io.to(pair.user2).emit("matched", {
                     initiator: false
                 });
-
             }
 
             io.emit("queueCount", queue.getWaitingCount());
@@ -116,11 +113,10 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             blockedPairs.add(pairKey);
 
-            reports.push({
+            reportService.addReport({
                 reporter: socket.id,
                 reported: partner,
-                reason: reason || "Unspecified",
-                timestamp: new Date().toISOString()
+                reason: reason || "Unspecified"
             });
 
             console.log(
@@ -150,21 +146,20 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             online--;
 
-            io.emit("onlineUsers", online);
-
             queue.removeUser(socket.id);
 
             const partner = activePairs.get(socket.id);
 
             if (partner) {
 
-                io.to(partner).emit("callEnded");
-
                 activePairs.delete(socket.id);
                 activePairs.delete(partner);
 
+                io.to(partner).emit("callEnded");
+
             }
 
+            io.emit("onlineUsers", online);
             io.emit("queueCount", queue.getWaitingCount());
 
         });
