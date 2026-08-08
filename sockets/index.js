@@ -7,6 +7,19 @@ function getPairKey(user1, user2) {
     return [user1, user2].sort().join(":");
 }
 
+function blockPair(user1, user2) {
+
+    if (!user1 || !user2) {
+        return false;
+    }
+
+    blockedPairs.add(
+        getPairKey(user1, user2)
+    );
+
+    return true;
+}
+
 function registerSocketHandlers(io, activePairs, queue) {
 
     io.on("connection", (socket) => {
@@ -26,18 +39,29 @@ function registerSocketHandlers(io, activePairs, queue) {
             queue.removeUser(socket.id);
             queue.addUser(socket.id);
 
-            io.emit("queueCount", queue.getWaitingCount());
+            io.emit(
+                "queueCount",
+                queue.getWaitingCount()
+            );
 
             while (queue.hasTwoUsers()) {
 
-                const pair = queue.getNextPair(blockedPairs);
+                const pair =
+                    queue.getNextPair(blockedPairs);
 
                 if (!pair) {
                     break;
                 }
 
-                activePairs.set(pair.user1, pair.user2);
-                activePairs.set(pair.user2, pair.user1);
+                activePairs.set(
+                    pair.user1,
+                    pair.user2
+                );
+
+                activePairs.set(
+                    pair.user2,
+                    pair.user1
+                );
 
                 io.to(pair.user1).emit("matched", {
                     initiator: true
@@ -48,13 +72,17 @@ function registerSocketHandlers(io, activePairs, queue) {
                 });
             }
 
-            io.emit("queueCount", queue.getWaitingCount());
+            io.emit(
+                "queueCount",
+                queue.getWaitingCount()
+            );
 
         });
 
         socket.on("offer", (offer) => {
 
-            const partner = activePairs.get(socket.id);
+            const partner =
+                activePairs.get(socket.id);
 
             if (partner) {
                 io.to(partner).emit("offer", offer);
@@ -64,7 +92,8 @@ function registerSocketHandlers(io, activePairs, queue) {
 
         socket.on("answer", (answer) => {
 
-            const partner = activePairs.get(socket.id);
+            const partner =
+                activePairs.get(socket.id);
 
             if (partner) {
                 io.to(partner).emit("answer", answer);
@@ -74,44 +103,47 @@ function registerSocketHandlers(io, activePairs, queue) {
 
         socket.on("iceCandidate", (candidate) => {
 
-            const partner = activePairs.get(socket.id);
+            const partner =
+                activePairs.get(socket.id);
 
             if (partner) {
-                io.to(partner).emit("iceCandidate", candidate);
+                io.to(partner).emit(
+                    "iceCandidate",
+                    candidate
+                );
             }
 
         });
 
         socket.on("endCall", () => {
 
-            const partner = activePairs.get(socket.id);
-
-            queue.removeUser(socket.id);
+            const partner =
+                activePairs.get(socket.id);
 
             if (partner) {
+
+                io.to(partner).emit("callEnded");
 
                 activePairs.delete(socket.id);
                 activePairs.delete(partner);
 
-                io.to(partner).emit("callEnded");
-
             }
-
-            io.emit("queueCount", queue.getWaitingCount());
 
         });
 
         socket.on("reportUser", (reason) => {
 
-            const partner = activePairs.get(socket.id);
+            const partner =
+                activePairs.get(socket.id);
 
             if (!partner) {
                 return;
             }
 
-            const pairKey = getPairKey(socket.id, partner);
-
-            blockedPairs.add(pairKey);
+            blockPair(
+                socket.id,
+                partner
+            );
 
             reportService.addReport({
                 reporter: socket.id,
@@ -138,7 +170,10 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             socket.emit("reportSubmitted");
 
-            io.emit("queueCount", queue.getWaitingCount());
+            io.emit(
+                "queueCount",
+                queue.getWaitingCount()
+            );
 
         });
 
@@ -146,26 +181,36 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             online--;
 
+            io.emit(
+                "onlineUsers",
+                online
+            );
+
             queue.removeUser(socket.id);
 
-            const partner = activePairs.get(socket.id);
+            io.emit(
+                "queueCount",
+                queue.getWaitingCount()
+            );
+
+            const partner =
+                activePairs.get(socket.id);
 
             if (partner) {
+
+                io.to(partner).emit("callEnded");
 
                 activePairs.delete(socket.id);
                 activePairs.delete(partner);
 
-                io.to(partner).emit("callEnded");
-
             }
-
-            io.emit("onlineUsers", online);
-            io.emit("queueCount", queue.getWaitingCount());
 
         });
 
     });
 
 }
+
+registerSocketHandlers.blockPair = blockPair;
 
 module.exports = registerSocketHandlers;

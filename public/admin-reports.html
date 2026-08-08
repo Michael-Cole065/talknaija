@@ -255,6 +255,15 @@ function renderReports(reports) {
                             </button>
 
                             <button
+                                class="block"
+                                onclick="blockPair(
+                                    '${report.id}'
+                                )"
+                            >
+                                🚫 Block Pair
+                            </button>
+
+                            <button
                                 class="dismiss"
                                 onclick="updateReport(
                                     '${report.id}',
@@ -272,6 +281,55 @@ function renderReports(reports) {
 
             })
             .join("");
+
+}
+
+async function blockPair(id) {
+
+    const confirmed = confirm(
+        "Block these two users from being matched with each other again?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(`/api/reports/${id}/block`, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                }
+
+            });
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to block pair."
+            );
+
+        }
+
+        alert(
+            "Pair blocked successfully."
+        );
+
+        await loadReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not block this pair."
+        );
+
+    }
 
 }
 
@@ -334,3 +392,10 @@ loadReports();
 </body>
 
 </html>
+
+<style>
+.block {
+    background: #111;
+    color: white;
+}
+</style>

@@ -119,6 +119,49 @@ app.get("/api/reports", adminAuth, (req, res) => {
 
 });
 
+app.post("/api/reports/:id/block", adminAuth, (req, res) => {
+
+    const reports = reportService.getReports();
+
+    const report = reports.find(
+        (item) => item.id === req.params.id
+    );
+
+    if (!report) {
+
+        return res.status(404).json({
+            error: "Report not found."
+        });
+
+    }
+
+    const blocked =
+        registerSocketHandlers.blockPair(
+            report.reporter,
+            report.reported
+        );
+
+    if (!blocked) {
+
+        return res.status(400).json({
+            error: "Could not block this pair."
+        });
+
+    }
+
+    const updatedReport =
+        reportService.updateReportStatus(
+            req.params.id,
+            "action_taken"
+        );
+
+    res.json({
+        success: true,
+        report: updatedReport
+    });
+
+});
+
 app.put("/api/reports/:id", adminAuth, (req, res) => {
 
     const { status } = req.body;
