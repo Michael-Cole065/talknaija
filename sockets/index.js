@@ -1,34 +1,44 @@
 let online = 0;
+
 function registerSocketHandlers(io, activePairs, queue) {
 
     io.on("connection", (socket) => {
 
         console.log("Connected:", socket.id);
 
-	online++;
+        online++;
 
-	io.emit("onlineUsers", online);
+        io.emit("onlineUsers", online);
 
         socket.on("joinQueue", () => {
 
+            // Don't allow someone already in a call to enter the queue.
+            if (activePairs.has(socket.id)) {
+                return;
+            }
+
+            // Don't add the same user to the queue multiple times.
+            queue.removeUser(socket.id);
             queue.addUser(socket.id);
 
-	    io.emit("queueCount", queue.getWaitingCount());
+            io.emit("queueCount", queue.getWaitingCount());
 
             if (queue.hasTwoUsers()) {
 
                 const pair = queue.getNextPair();
-		io.emit("queueCount", queue.getWaitingCount());
+
+                io.emit("queueCount", queue.getWaitingCount());
+
                 activePairs.set(pair.user1, pair.user2);
                 activePairs.set(pair.user2, pair.user1);
 
-		io.to(pair.user1).emit("matched", {
-		    initiator: true
-		});
+                io.to(pair.user1).emit("matched", {
+                    initiator: true
+                });
 
-		io.to(pair.user2).emit("matched", {
-		    initiator: false
-		});
+                io.to(pair.user2).emit("matched", {
+                    initiator: false
+                });
 
             }
 
@@ -68,25 +78,30 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             const partner = activePairs.get(socket.id);
 
-            if (partner) {
+            // Remove this user from the waiting queue too.
+            queue.removeUser(socket.id);
 
-                io.to(partner).emit("callEnded");
+            if (partner) {
 
                 activePairs.delete(socket.id);
                 activePairs.delete(partner);
 
+                io.to(partner).emit("callEnded");
+
             }
+
+            io.emit("queueCount", queue.getWaitingCount());
 
         });
 
         socket.on("disconnect", () => {
 
-	    online--;
+            online--;
 
             io.emit("onlineUsers", online);
 
             queue.removeUser(socket.id);
-	    io.emit("queueCount", queue.getWaitingCount());
+
             const partner = activePairs.get(socket.id);
 
             if (partner) {
@@ -97,6 +112,8 @@ function registerSocketHandlers(io, activePairs, queue) {
                 activePairs.delete(partner);
 
             }
+
+            io.emit("queueCount", queue.getWaitingCount());
 
         });
 

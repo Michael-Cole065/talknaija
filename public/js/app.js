@@ -31,6 +31,21 @@ function showScreen(screen) {
 
 }
 
+function resetCallState() {
+
+    cleanupVoice();
+
+    clearInterval(timerInterval);
+    clearInterval(searchAnimation);
+
+    seconds = 0;
+    timer.textContent = "00:00";
+
+    isMuted = false;
+    muteBtn.textContent = "Mute";
+
+}
+
 socket.on("onlineUsers", (count) => {
 
     onlineUsers.textContent = count;
@@ -68,6 +83,8 @@ startBtn.onclick = () => {
 
 cancelBtn.onclick = () => {
 
+    socket.emit("endCall");
+
     clearInterval(searchAnimation);
 
     startBtn.disabled = false;
@@ -80,7 +97,7 @@ socket.on("matched", () => {
 
     console.log("🎯 MATCHED");
 
-    connectionStatus.textContent = "Connected";
+    connectionStatus.textContent = "Connecting...";
 
     clearInterval(searchAnimation);
 
@@ -93,10 +110,9 @@ socket.on("matched", () => {
     showScreen(callScreen);
 
     seconds = 0;
+    timer.textContent = "00:00";
 
     clearInterval(timerInterval);
-
-    timer.textContent = "00:00";
 
     isMuted = false;
     muteBtn.textContent = "Mute";
@@ -121,17 +137,11 @@ endBtn.onclick = () => {
 
     socket.emit("endCall");
 
-    cleanupVoice();
-
-    clearInterval(timerInterval);
-    clearInterval(searchAnimation);
+    resetCallState();
 
     startBtn.disabled = false;
 
     connectionStatus.textContent = "Disconnected";
-
-    isMuted = false;
-    muteBtn.textContent = "Mute";
 
     showScreen(homeScreen);
 
@@ -139,24 +149,43 @@ endBtn.onclick = () => {
 
 nextBtn.onclick = () => {
 
+    // Tell the server to destroy the current pairing.
     socket.emit("endCall");
 
-    cleanupVoice();
-
-    clearInterval(timerInterval);
-    clearInterval(searchAnimation);
+    // Completely destroy the old WebRTC connection.
+    resetCallState();
 
     startBtn.disabled = true;
 
+    connectionStatus.textContent = "Searching...";
+
     showScreen(searchScreen);
 
-    seconds = 0;
-    timer.textContent = "00:00";
+    const status = document.getElementById("status");
 
-    isMuted = false;
-    muteBtn.textContent = "Mute";
+    if (status) {
+        status.textContent = "Finding another Nigerian...";
+    }
 
-    socket.emit("joinQueue");
+    dots = 0;
+
+    searchAnimation = setInterval(() => {
+
+        dots = (dots + 1) % 4;
+
+        if (status) {
+            status.textContent =
+                "Finding another Nigerian" + ".".repeat(dots);
+        }
+
+    }, 500);
+
+    // Wait one tick so cleanup finishes before rejoining.
+    setTimeout(() => {
+
+        socket.emit("joinQueue");
+
+    }, 100);
 
 };
 
@@ -164,17 +193,11 @@ socket.on("callEnded", () => {
 
     console.log("📞 callEnded received on this device");
 
-    cleanupVoice();
+    resetCallState();
 
     connectionStatus.textContent = "Disconnected";
 
-    clearInterval(timerInterval);
-    clearInterval(searchAnimation);
-
     startBtn.disabled = false;
-
-    isMuted = false;
-    muteBtn.textContent = "Mute";
 
     alert("The other user ended the call.");
 
@@ -225,7 +248,7 @@ muteBtn.onclick = () => {
     }
 
 };
- 
+
 reportBtn.onclick = () => {
 
     alert("Report feature coming soon.");
