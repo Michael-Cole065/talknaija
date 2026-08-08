@@ -244,11 +244,11 @@ muteBtn.onclick = () => {
 reportBtn.onclick = () => {
 
     const choice = prompt(
-        "Why are you reporting this user?\\n\\n" +
-        "1. Harassment\\n" +
-        "2. Sexual or inappropriate behavior\\n" +
-        "3. Hate or abusive speech\\n" +
-        "4. Spam or scam\\n" +
+        "WHY ARE YOU REPORTING THIS USER?\n\n" +
+        "1. Harassment\n" +
+        "2. Sexual or inappropriate behavior\n" +
+        "3. Hate or abusive speech\n" +
+        "4. Spam or scam\n" +
         "5. Other"
     );
 
@@ -256,7 +256,7 @@ reportBtn.onclick = () => {
         return;
     }
 
-    const trimmedChoice = choice.trim();
+    const selected = choice.trim();
 
     const reasons = {
         "1": "Harassment",
@@ -267,7 +267,7 @@ reportBtn.onclick = () => {
 
     let reason;
 
-    if (trimmedChoice === "5") {
+    if (selected === "5") {
 
         const customReason = prompt(
             "Please describe the reason for your report:"
@@ -281,18 +281,22 @@ reportBtn.onclick = () => {
 
         if (!reason) {
 
-            alert("Please provide a reason for the report.");
+            alert(
+                "Please provide a reason for the report."
+            );
 
             return;
         }
 
-    } else if (reasons[trimmedChoice]) {
+    } else if (reasons[selected]) {
 
-        reason = reasons[trimmedChoice];
+        reason = reasons[selected];
 
     } else {
 
-        alert("Please enter a number from 1 to 5.");
+        alert(
+            "Please enter a number from 1 to 5."
+        );
 
         return;
     }
