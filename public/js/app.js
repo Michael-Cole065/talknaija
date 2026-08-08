@@ -74,11 +74,17 @@ cancelBtn.onclick = () => {
 
 socket.on("matched", () => {
 
+    console.log("🎯 MATCHED");
+
     connectionStatus.textContent = "Connected";
 
-    clearInterval(searchAnimation)
+    clearInterval(searchAnimation);
 
-    document.getElementById("status").textContent = "Connected!";
+    const status = document.getElementById("status");
+
+    if (status) {
+        status.textContent = "Connected!";
+    }
 
     showScreen(callScreen);
 
@@ -135,14 +141,17 @@ nextBtn.onclick = () => {
 };
 
 socket.on("callEnded", () => {
+console.log("📞 callEnded received on this device");
+    cleanupVoice();
 
     connectionStatus.textContent = "Disconnected";
 
     clearInterval(timerInterval);
-
-    alert("The other user ended the call.");
+    clearInterval(searchAnimation);
 
     startBtn.disabled = false;
+
+    alert("The other user ended the call.");
 
     showScreen(homeScreen);
 
