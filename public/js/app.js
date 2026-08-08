@@ -1,21 +1,25 @@
 let dots = 0;
 let searchAnimation = null;
+
 const connectionStatus = document.getElementById("connectionStatus");
 const homeScreen = document.getElementById("homeScreen");
 const searchScreen = document.getElementById("searchScreen");
 const callScreen = document.getElementById("callScreen");
+
 const startBtn = document.getElementById("startBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 const endBtn = document.getElementById("endBtn");
 const nextBtn = document.getElementById("nextBtn");
 const muteBtn = document.getElementById("muteBtn");
 const reportBtn = document.getElementById("reportBtn");
+
 const onlineUsers = document.getElementById("onlineUsers");
 const queueCount = document.getElementById("queueCount");
 const timer = document.getElementById("timer");
 
 let seconds = 0;
 let timerInterval = null;
+let isMuted = false;
 
 function showScreen(screen) {
 
@@ -92,6 +96,11 @@ socket.on("matched", () => {
 
     clearInterval(timerInterval);
 
+    timer.textContent = "00:00";
+
+    isMuted = false;
+    muteBtn.textContent = "Mute";
+
     timerInterval = setInterval(() => {
 
         seconds++;
@@ -121,6 +130,9 @@ endBtn.onclick = () => {
 
     connectionStatus.textContent = "Disconnected";
 
+    isMuted = false;
+    muteBtn.textContent = "Mute";
+
     showScreen(homeScreen);
 
 };
@@ -129,6 +141,8 @@ nextBtn.onclick = () => {
 
     socket.emit("endCall");
 
+    cleanupVoice();
+
     clearInterval(timerInterval);
     clearInterval(searchAnimation);
 
@@ -136,12 +150,20 @@ nextBtn.onclick = () => {
 
     showScreen(searchScreen);
 
+    seconds = 0;
+    timer.textContent = "00:00";
+
+    isMuted = false;
+    muteBtn.textContent = "Mute";
+
     socket.emit("joinQueue");
 
 };
 
 socket.on("callEnded", () => {
-console.log("📞 callEnded received on this device");
+
+    console.log("📞 callEnded received on this device");
+
     cleanupVoice();
 
     connectionStatus.textContent = "Disconnected";
@@ -151,6 +173,9 @@ console.log("📞 callEnded received on this device");
 
     startBtn.disabled = false;
 
+    isMuted = false;
+    muteBtn.textContent = "Mute";
+
     alert("The other user ended the call.");
 
     showScreen(homeScreen);
@@ -159,10 +184,48 @@ console.log("📞 callEnded received on this device");
 
 muteBtn.onclick = () => {
 
-    alert("Mute feature coming next.");
+    if (!localStream) {
+
+        console.log("🎤 No microphone stream available.");
+
+        return;
+
+    }
+
+    const audioTracks = localStream.getAudioTracks();
+
+    if (audioTracks.length === 0) {
+
+        console.log("❌ No audio track found.");
+
+        return;
+
+    }
+
+    isMuted = !isMuted;
+
+    audioTracks.forEach((track) => {
+
+        track.enabled = !isMuted;
+
+    });
+
+    if (isMuted) {
+
+        muteBtn.textContent = "Unmute";
+
+        debugLog("🔇 MICROPHONE MUTED");
+
+    } else {
+
+        muteBtn.textContent = "Mute";
+
+        debugLog("🎤 MICROPHONE UNMUTED");
+
+    }
 
 };
-
+ 
 reportBtn.onclick = () => {
 
     alert("Report feature coming soon.");
