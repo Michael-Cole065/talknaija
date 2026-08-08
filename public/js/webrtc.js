@@ -303,11 +303,18 @@ async function createPeerConnection() {
 
             }
 
-            if (state === "failed") {
+if (state === "failed") {
 
-                handleConnectionFailure();
+    if (connectionStatus) {
 
-            }
+        connectionStatus.textContent =
+            "Connection Unstable";
+
+    }
+
+    startConnectionCountdown();
+
+}
 
             if (state === "closed") {
 
