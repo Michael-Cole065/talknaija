@@ -46,6 +46,29 @@ function resetCallState() {
 
 }
 
+function startSearchAnimation() {
+
+    const status = document.getElementById("status");
+
+    dots = 0;
+
+    clearInterval(searchAnimation);
+
+    searchAnimation = setInterval(() => {
+
+        dots = (dots + 1) % 4;
+
+        if (status) {
+
+            status.textContent =
+                "Finding another Nigerian" + ".".repeat(dots);
+
+        }
+
+    }, 500);
+
+}
+
 socket.on("onlineUsers", (count) => {
 
     onlineUsers.textContent = count;
@@ -64,18 +87,7 @@ startBtn.onclick = () => {
 
     showScreen(searchScreen);
 
-    const status = document.getElementById("status");
-
-    dots = 0;
-
-    searchAnimation = setInterval(() => {
-
-        dots = (dots + 1) % 4;
-
-        status.textContent =
-            "Finding another Nigerian" + ".".repeat(dots);
-
-    }, 500);
+    startSearchAnimation();
 
     socket.emit("joinQueue");
 
@@ -149,10 +161,8 @@ endBtn.onclick = () => {
 
 nextBtn.onclick = () => {
 
-    // Tell the server to destroy the current pairing.
     socket.emit("endCall");
 
-    // Completely destroy the old WebRTC connection.
     resetCallState();
 
     startBtn.disabled = true;
@@ -161,26 +171,8 @@ nextBtn.onclick = () => {
 
     showScreen(searchScreen);
 
-    const status = document.getElementById("status");
+    startSearchAnimation();
 
-    if (status) {
-        status.textContent = "Finding another Nigerian...";
-    }
-
-    dots = 0;
-
-    searchAnimation = setInterval(() => {
-
-        dots = (dots + 1) % 4;
-
-        if (status) {
-            status.textContent =
-                "Finding another Nigerian" + ".".repeat(dots);
-        }
-
-    }, 500);
-
-    // Wait one tick so cleanup finishes before rejoining.
     setTimeout(() => {
 
         socket.emit("joinQueue");
@@ -251,6 +243,49 @@ muteBtn.onclick = () => {
 
 reportBtn.onclick = () => {
 
-    alert("Report feature coming soon.");
+    const reason = prompt(
+        "Why are you reporting this user?\n\n" +
+        "1. Harassment\n" +
+        "2. Sexual or inappropriate behavior\n" +
+        "3. Hate or abusive speech\n" +
+        "4. Spam or scam\n" +
+        "5. Other"
+    );
+
+    if (reason === null) {
+        return;
+    }
+
+    const trimmedReason = reason.trim();
+
+    if (!trimmedReason) {
+
+        alert("Please provide a reason for the report.");
+
+        return;
+
+    }
+
+    reportBtn.disabled = true;
+
+    socket.emit("reportUser", trimmedReason);
 
 };
+
+socket.on("reportSubmitted", () => {
+
+    reportBtn.disabled = false;
+
+    resetCallState();
+
+    connectionStatus.textContent = "Disconnected";
+
+    startBtn.disabled = false;
+
+    alert(
+        "Report submitted. Thank you for helping keep TalkNaija safe."
+    );
+
+    showScreen(homeScreen);
+
+});

@@ -1,5 +1,14 @@
 let online = 0;
 
+const blockedPairs = new Set();
+const reports = [];
+
+function getPairKey(user1, user2) {
+
+    return [user1, user2].sort().join(":");
+
+}
+
 function registerSocketHandlers(io, activePairs, queue) {
 
     io.on("connection", (socket) => {
@@ -12,22 +21,22 @@ function registerSocketHandlers(io, activePairs, queue) {
 
         socket.on("joinQueue", () => {
 
-            // Don't allow someone already in a call to enter the queue.
             if (activePairs.has(socket.id)) {
                 return;
             }
 
-            // Don't add the same user to the queue multiple times.
             queue.removeUser(socket.id);
             queue.addUser(socket.id);
 
             io.emit("queueCount", queue.getWaitingCount());
 
-            if (queue.hasTwoUsers()) {
+            while (queue.hasTwoUsers()) {
 
-                const pair = queue.getNextPair();
+                const pair = queue.getNextPair(blockedPairs);
 
-                io.emit("queueCount", queue.getWaitingCount());
+                if (!pair) {
+                    break;
+                }
 
                 activePairs.set(pair.user1, pair.user2);
                 activePairs.set(pair.user2, pair.user1);
@@ -41,6 +50,8 @@ function registerSocketHandlers(io, activePairs, queue) {
                 });
 
             }
+
+            io.emit("queueCount", queue.getWaitingCount());
 
         });
 
@@ -78,7 +89,6 @@ function registerSocketHandlers(io, activePairs, queue) {
 
             const partner = activePairs.get(socket.id);
 
-            // Remove this user from the waiting queue too.
             queue.removeUser(socket.id);
 
             if (partner) {
@@ -89,6 +99,48 @@ function registerSocketHandlers(io, activePairs, queue) {
                 io.to(partner).emit("callEnded");
 
             }
+
+            io.emit("queueCount", queue.getWaitingCount());
+
+        });
+
+        socket.on("reportUser", (reason) => {
+
+            const partner = activePairs.get(socket.id);
+
+            if (!partner) {
+                return;
+            }
+
+            const pairKey = getPairKey(socket.id, partner);
+
+            blockedPairs.add(pairKey);
+
+            reports.push({
+                reporter: socket.id,
+                reported: partner,
+                reason: reason || "Unspecified",
+                timestamp: new Date().toISOString()
+            });
+
+            console.log(
+                "🚨 REPORT:",
+                socket.id,
+                "reported",
+                partner,
+                "Reason:",
+                reason || "Unspecified"
+            );
+
+            activePairs.delete(socket.id);
+            activePairs.delete(partner);
+
+            queue.removeUser(socket.id);
+            queue.removeUser(partner);
+
+            io.to(partner).emit("callEnded");
+
+            socket.emit("reportSubmitted");
 
             io.emit("queueCount", queue.getWaitingCount());
 
