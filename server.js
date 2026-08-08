@@ -121,11 +121,13 @@ app.get("/api/reports", adminAuth, (req, res) => {
 
 app.post("/api/reports/:id/block", adminAuth, (req, res) => {
 
-    const reports = reportService.getReports();
+    const reports =
+        reportService.getReports();
 
-    const report = reports.find(
-        (item) => item.id === req.params.id
-    );
+    const report =
+        reports.find(
+            (item) => item.id === req.params.id
+        );
 
     if (!report) {
 
@@ -150,9 +152,45 @@ app.post("/api/reports/:id/block", adminAuth, (req, res) => {
     }
 
     const updatedReport =
-        reportService.updateReportStatus(
+        reportService.setReportBlocked(
             req.params.id,
-            "action_taken"
+            true
+        );
+
+    res.json({
+        success: true,
+        report: updatedReport
+    });
+
+});
+
+app.post("/api/reports/:id/unblock", adminAuth, (req, res) => {
+
+    const reports =
+        reportService.getReports();
+
+    const report =
+        reports.find(
+            (item) => item.id === req.params.id
+        );
+
+    if (!report) {
+
+        return res.status(404).json({
+            error: "Report not found."
+        });
+
+    }
+
+    registerSocketHandlers.unblockPair(
+        report.reporter,
+        report.reported
+    );
+
+    const updatedReport =
+        reportService.setReportBlocked(
+            req.params.id,
+            false
         );
 
     res.json({

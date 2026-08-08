@@ -1,18 +1,30 @@
 const fs = require("fs");
 const path = require("path");
 
-const reportsFile = path.join(__dirname, "../data/reports.json");
+const reportsFile =
+    path.join(__dirname, "../data/reports.json");
 
 function ensureFile() {
 
-    const directory = path.dirname(reportsFile);
+    const directory =
+        path.dirname(reportsFile);
 
     if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
+
+        fs.mkdirSync(
+            directory,
+            { recursive: true }
+        );
+
     }
 
     if (!fs.existsSync(reportsFile)) {
-        fs.writeFileSync(reportsFile, "[]");
+
+        fs.writeFileSync(
+            reportsFile,
+            "[]"
+        );
+
     }
 
 }
@@ -24,12 +36,18 @@ function getReports() {
     try {
 
         return JSON.parse(
-            fs.readFileSync(reportsFile, "utf8")
+            fs.readFileSync(
+                reportsFile,
+                "utf8"
+            )
         );
 
     } catch (error) {
 
-        console.error("❌ Could not read reports:", error);
+        console.error(
+            "❌ Could not read reports:",
+            error
+        );
 
         return [];
 
@@ -43,20 +61,33 @@ function saveReports(reports) {
 
     fs.writeFileSync(
         reportsFile,
-        JSON.stringify(reports, null, 2)
+        JSON.stringify(
+            reports,
+            null,
+            2
+        )
     );
 
 }
 
 function addReport(report) {
 
-    const reports = getReports();
+    const reports =
+        getReports();
 
     const newReport = {
+
         id: Date.now().toString(),
+
         ...report,
+
         status: "pending",
-        createdAt: new Date().toISOString()
+
+        blocked: true,
+
+        createdAt:
+            new Date().toISOString()
+
     };
 
     reports.push(newReport);
@@ -67,20 +98,28 @@ function addReport(report) {
 
 }
 
-function updateReportStatus(id, status) {
+function updateReportStatus(
+    id,
+    status
+) {
 
-    const reports = getReports();
+    const reports =
+        getReports();
 
-    const report = reports.find(
-        (item) => item.id === id
-    );
+    const report =
+        reports.find(
+            (item) =>
+                item.id === id
+        );
 
     if (!report) {
         return null;
     }
 
     report.status = status;
-    report.updatedAt = new Date().toISOString();
+
+    report.updatedAt =
+        new Date().toISOString();
 
     saveReports(reports);
 
@@ -88,8 +127,64 @@ function updateReportStatus(id, status) {
 
 }
 
+function setReportBlocked(
+    id,
+    blocked
+) {
+
+    const reports =
+        getReports();
+
+    const report =
+        reports.find(
+            (item) =>
+                item.id === id
+        );
+
+    if (!report) {
+        return null;
+    }
+
+    report.blocked = blocked;
+
+    report.updatedAt =
+        new Date().toISOString();
+
+    saveReports(reports);
+
+    return report;
+
+}
+
+function getBlockedPairs() {
+
+    const reports =
+        getReports();
+
+    return reports
+        .filter(
+            (report) =>
+                report.blocked === true &&
+                report.reporter &&
+                report.reported
+        )
+        .map(
+            (report) => ({
+                user1:
+                    report.reporter,
+                user2:
+                    report.reported
+            })
+        );
+
+}
+
 module.exports = {
+
     getReports,
     addReport,
-    updateReportStatus
+    updateReportStatus,
+    setReportBlocked,
+    getBlockedPairs
+
 };
