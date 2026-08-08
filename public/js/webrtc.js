@@ -390,26 +390,11 @@ function startConnectionCountdown() {
     connectionCountdownInterval =
         setInterval(() => {
 
-            if (!peerConnection) {
+            if (handlingConnectionFailure) {
 
                 clearInterval(
                     connectionCountdownInterval
                 );
-
-                return;
-
-            }
-
-            if (
-                peerConnection.connectionState !==
-                "disconnected"
-            ) {
-
-                clearInterval(
-                    connectionCountdownInterval
-                );
-
-                countdown.remove();
 
                 return;
 
@@ -417,24 +402,25 @@ function startConnectionCountdown() {
 
             connectionFailureSeconds--;
 
-            countdown.textContent =
-                "Reconnecting... " +
-                connectionFailureSeconds +
-                "s";
-
-            if (
-                connectionFailureSeconds <= 0
-            ) {
+            if (connectionFailureSeconds <= 0) {
 
                 clearInterval(
                     connectionCountdownInterval
                 );
 
-                countdown.remove();
+                countdown.textContent =
+                    "Connection Lost";
 
                 handleConnectionFailure();
 
+                return;
+
             }
+
+            countdown.textContent =
+                "Reconnecting... " +
+                connectionFailureSeconds +
+                "s";
 
         }, 1000);
 
