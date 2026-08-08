@@ -3,7 +3,11 @@ let peerConnection = null;
 let pendingCandidates = [];
 let microphoneRequest = null;
 
+const CONNECTION_GRACE_PERIOD = 45;
+
 let connectionFailureTimer = null;
+let connectionCountdownInterval = null;
+let connectionFailureSeconds = 0;
 let handlingConnectionFailure = false;
 
 function debugLog(message) {
@@ -15,8 +19,7 @@ function debugLog(message) {
 
     if (box) {
 
-        box.innerHTML +=
-            message + "<br>";
+        box.innerHTML += message + "<br>";
 
         box.scrollTop =
             box.scrollHeight;
@@ -31,8 +34,7 @@ const rtcConfig = {
 
     iceServers: [
         {
-            urls:
-                "stun:stun.l.google.com:19302"
+            urls: "stun:stun.l.google.com:19302"
         }
     ]
 
@@ -40,9 +42,7 @@ const rtcConfig = {
 
 async function initializeVoice() {
 
-    debugLog(
-        "🎤 initializeVoice() STARTED"
-    );
+    debugLog("🎤 initializeVoice() STARTED");
 
     debugLog(
         "📱 mediaDevices: " +
@@ -62,9 +62,7 @@ async function initializeVoice() {
         return microphoneRequest;
     }
 
-    debugLog(
-        "🎤 Requesting microphone..."
-    );
+    debugLog("🎤 Requesting microphone...");
 
     microphoneRequest =
         navigator.mediaDevices.getUserMedia({
@@ -177,11 +175,9 @@ async function createPeerConnection() {
                 return;
             }
 
-            const state =
-                peerConnection.iceConnectionState;
-
             debugLog(
-                "🧊 ICE STATE: " + state
+                "🧊 ICE STATE: " +
+                peerConnection.iceConnectionState
             );
 
         };
@@ -266,6 +262,25 @@ async function createPeerConnection() {
                     connectionFailureTimer
                 );
 
+                clearInterval(
+                    connectionCountdownInterval
+                );
+
+                connectionFailureTimer =
+                    null;
+
+                connectionCountdownInterval =
+                    null;
+
+                const countdown =
+                    document.getElementById(
+                        "connectionCountdown"
+                    );
+
+                if (countdown) {
+                    countdown.remove();
+                }
+
                 if (connectionStatus) {
 
                     connectionStatus.textContent =
@@ -280,28 +295,11 @@ async function createPeerConnection() {
                 if (connectionStatus) {
 
                     connectionStatus.textContent =
-                        "Connection unstable...";
+                        "Connection Unstable";
 
                 }
 
-                clearTimeout(
-                    connectionFailureTimer
-                );
-
-                connectionFailureTimer =
-                    setTimeout(() => {
-
-                        if (
-                            peerConnection &&
-                            peerConnection.connectionState ===
-                                "disconnected"
-                        ) {
-
-                            handleConnectionFailure();
-
-                        }
-
-                    }, 5000);
+                startConnectionCountdown();
 
             }
 
@@ -317,9 +315,121 @@ async function createPeerConnection() {
                     connectionFailureTimer
                 );
 
+                clearInterval(
+                    connectionCountdownInterval
+                );
+
             }
 
         };
+
+}
+
+function startConnectionCountdown() {
+
+    clearTimeout(
+        connectionFailureTimer
+    );
+
+    clearInterval(
+        connectionCountdownInterval
+    );
+
+    connectionFailureSeconds =
+        CONNECTION_GRACE_PERIOD;
+
+    let countdown =
+        document.getElementById(
+            "connectionCountdown"
+        );
+
+    if (!countdown) {
+
+        countdown =
+            document.createElement("div");
+
+        countdown.id =
+            "connectionCountdown";
+
+        countdown.style.marginTop =
+            "8px";
+
+        countdown.style.fontSize =
+            "14px";
+
+        countdown.style.textAlign =
+            "center";
+
+        countdown.style.opacity =
+            "0.8";
+
+        if (
+            connectionStatus &&
+            connectionStatus.parentNode
+        ) {
+
+            connectionStatus.parentNode
+                .appendChild(countdown);
+
+        }
+
+    }
+
+    countdown.textContent =
+        "Reconnecting... " +
+        connectionFailureSeconds +
+        "s";
+
+    connectionCountdownInterval =
+        setInterval(() => {
+
+            if (!peerConnection) {
+
+                clearInterval(
+                    connectionCountdownInterval
+                );
+
+                return;
+
+            }
+
+            if (
+                peerConnection.connectionState !==
+                "disconnected"
+            ) {
+
+                clearInterval(
+                    connectionCountdownInterval
+                );
+
+                countdown.remove();
+
+                return;
+
+            }
+
+            connectionFailureSeconds--;
+
+            countdown.textContent =
+                "Reconnecting... " +
+                connectionFailureSeconds +
+                "s";
+
+            if (
+                connectionFailureSeconds <= 0
+            ) {
+
+                clearInterval(
+                    connectionCountdownInterval
+                );
+
+                countdown.remove();
+
+                handleConnectionFailure();
+
+            }
+
+        }, 1000);
 
 }
 
@@ -335,6 +445,14 @@ function handleConnectionFailure() {
         "❌ WEBRTC CONNECTION FAILED"
     );
 
+    clearTimeout(
+        connectionFailureTimer
+    );
+
+    clearInterval(
+        connectionCountdownInterval
+    );
+
     if (connectionStatus) {
 
         connectionStatus.textContent =
@@ -348,7 +466,9 @@ function handleConnectionFailure() {
 
     clearInterval(searchAnimation);
 
-    startBtn.disabled = false;
+    if (startBtn) {
+        startBtn.disabled = false;
+    }
 
     showScreen(homeScreen);
 
@@ -493,6 +613,10 @@ socket.on(
                 connectionFailureTimer
             );
 
+            clearInterval(
+                connectionCountdownInterval
+            );
+
             await initializeVoice();
 
             await createPeerConnection();
@@ -531,9 +655,21 @@ function cleanupVoice() {
         connectionFailureTimer
     );
 
-    connectionFailureTimer = null;
+    clearInterval(
+        connectionCountdownInterval
+    );
 
-    handlingConnectionFailure = false;
+    connectionFailureTimer =
+        null;
+
+    connectionCountdownInterval =
+        null;
+
+    connectionFailureSeconds =
+        0;
+
+    handlingConnectionFailure =
+        false;
 
     if (peerConnection) {
 
@@ -566,8 +702,18 @@ function cleanupVoice() {
 
     if (remoteAudio) {
 
-        remoteAudio.srcObject = null;
+        remoteAudio.srcObject =
+            null;
 
+    }
+
+    const countdown =
+        document.getElementById(
+            "connectionCountdown"
+        );
+
+    if (countdown) {
+        countdown.remove();
     }
 
 }
