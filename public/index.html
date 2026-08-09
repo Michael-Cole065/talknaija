@@ -427,13 +427,19 @@
 
         <div class="chat-section">
 
-            <button
-                id="chatToggle"
-                class="chat-toggle"
-                type="button"
-            >
-                💬 Open Chat
-            </button>
+	<button
+	    id="chatToggle"
+	    class="chat-toggle"
+	    type="button"
+	>
+	    💬 Open Chat
+	    <span
+	        id="chatUnreadBadge"
+	        class="chat-unread-badge hidden"
+    	>
+        	0
+	    </span>
+	</button>
 
             <div
                 id="chatBox"
@@ -565,35 +571,6 @@
 
 <script src="js/app.js"></script>
 
-
-<script>
-
-
-
-/* CHAT TOGGLE */
-
-const chatToggle =
-    document.getElementById("chatToggle");
-
-const chatBox =
-    document.getElementById("chatBox");
-
-if (chatToggle && chatBox) {
-
-    chatToggle.onclick = () => {
-
-        chatBox.classList.toggle("hidden");
-
-        chatToggle.textContent =
-            chatBox.classList.contains("hidden")
-                ? "💬 Open Chat"
-                : "💬 Close Chat";
-
-    };
-
-}
-
-</script>
 
 </body>
 

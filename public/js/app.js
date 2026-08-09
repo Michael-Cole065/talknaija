@@ -80,6 +80,11 @@ const chatSendBtn =
 const chatToggle =
     document.getElementById("chatToggle");
 
+const chatUnreadBadge =
+    document.getElementById("chatUnreadBadge");
+
+let unreadMessages = 0;
+
 if (chatToggle && chatBox) {
 
     chatToggle.onclick = () => {
@@ -87,6 +92,25 @@ if (chatToggle && chatBox) {
         chatBox.classList.toggle(
             "hidden"
         );
+
+        if (
+            !chatBox.classList.contains("hidden")
+        ) {
+
+            unreadMessages = 0;
+
+            if (chatUnreadBadge) {
+
+                chatUnreadBadge.textContent =
+                    "0";
+
+                chatUnreadBadge.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
 
         chatToggle.textContent =
             chatBox.classList.contains("hidden")
@@ -343,6 +367,25 @@ socket.on(
             data.message,
             "theirs"
         );
+
+        if (
+            chatBox &&
+            chatBox.classList.contains("hidden")
+        ) {
+
+unreadMessages++;
+
+if (chatUnreadBadge) {
+
+    chatUnreadBadge.textContent =
+        unreadMessages;
+
+    chatUnreadBadge.classList.remove(
+        "hidden"
+    );
+
+}
+        }
 
     }
 );
@@ -940,52 +983,43 @@ socket.on(
             "📞 callEnded received on this device"
         );
 
-
         resetCallState();
-
 
         connectionStatus.textContent =
             "Disconnected";
 
-
-        startBtn.disabled =
-            false;
-
-
         loadCallHistory();
 
+        if (
+            autoCallToggle &&
+            autoCallToggle.checked
+        ) {
 
-if (
-    autoCallToggle &&
-    autoCallToggle.checked
-) {
+            startBtn.disabled =
+                true;
 
-    startBtn.disabled =
-        true;
+            showScreen(
+                searchScreen
+            );
 
-    showScreen(
-        searchScreen
-    );
+            startSearchAnimation();
 
-    startSearchAnimation();
+            socket.emit(
+                "joinQueue"
+            );
 
-    socket.emit(
-        "joinQueue"
-    );
+        } else {
 
-} else {
+            startBtn.disabled =
+                false;
 
-    alert(
-        "The other user ended the call."
-    );
+            showScreen(
+                homeScreen
+            );
 
-    showScreen(
-        homeScreen
-    );
+        }
 
-}
     }
-
 );
 
 
