@@ -12,22 +12,7 @@ const reportService = require("./services/reportService");
 
 const app = express();
 
-let server;
-
-if (process.env.NODE_ENV === "production") {
-
-    server = http.createServer(app);
-
-} else {
-
-    const httpsOptions = {
-        key: fs.readFileSync("./cert/server.key"),
-        cert: fs.readFileSync("./cert/server.crt")
-    };
-
-    server = https.createServer(httpsOptions, app);
-
-}
+let server = http.createServer(app);
 
 const io = new Server(server);
 const activePairs = new Map();
