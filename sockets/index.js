@@ -8,6 +8,7 @@ const reportService =
 const historyService =
     require("../services/historyService");
 
+
 function getPairKey(user1, user2) {
 
     return [user1, user2]
@@ -15,6 +16,7 @@ function getPairKey(user1, user2) {
         .join(":");
 
 }
+
 
 function loadBlockedPairs() {
 
@@ -38,6 +40,7 @@ function loadBlockedPairs() {
 
 }
 
+
 function blockPair(user1, user2) {
 
     if (!user1 || !user2) {
@@ -55,6 +58,7 @@ function blockPair(user1, user2) {
 
 }
 
+
 function unblockPair(user1, user2) {
 
     if (!user1 || !user2) {
@@ -69,6 +73,7 @@ function unblockPair(user1, user2) {
     );
 
 }
+
 
 function registerSocketHandlers(
     io,
@@ -92,11 +97,17 @@ function registerSocketHandlers(
             online
         );
 
-        // Anonymous persistent identity
+
+        /*
+        ================================================
+        ANONYMOUS USER IDENTITY
+        ================================================
+        */
+
         socket.userId = null;
 
-        // Premium status
         socket.isPremium = false;
+
 
         socket.on(
             "registerUser",
@@ -123,105 +134,146 @@ function registerSocketHandlers(
             }
         );
 
-        socket.on("joinQueue", () => {
 
-            if (activePairs.has(socket.id)) {
-                return;
-            }
+        /*
+        ================================================
+        JOIN QUEUE
+        ================================================
+        */
 
-            queue.removeUser(
-                socket.id
-            );
+        socket.on(
+            "joinQueue",
+            () => {
 
-            queue.addUser(
-                socket.id
-            );
+                if (
+                    activePairs.has(
+                        socket.id
+                    )
+                ) {
 
-            io.emit(
-                "queueCount",
-                queue.getWaitingCount()
-            );
+                    return;
 
-            while (queue.hasTwoUsers()) {
-
-                const pair =
-                    queue.getNextPair(
-                        blockedPairs
-                    );
-
-                if (!pair) {
-                    break;
                 }
 
-                activePairs.set(
-                    pair.user1,
-                    pair.user2
+                queue.removeUser(
+                    socket.id
                 );
 
-                activePairs.set(
-                    pair.user2,
-                    pair.user1
+                queue.addUser(
+                    socket.id
                 );
 
-                // Record the call in both users' histories
-                const user1Socket =
-                    io.sockets.sockets.get(
-                        pair.user1
-                    );
+                io.emit(
+                    "queueCount",
+                    queue.getWaitingCount()
+                );
 
-                const user2Socket =
-                    io.sockets.sockets.get(
+
+                while (
+                    queue.hasTwoUsers()
+                ) {
+
+                    const pair =
+                        queue.getNextPair(
+                            blockedPairs
+                        );
+
+                    if (!pair) {
+                        break;
+                    }
+
+
+                    activePairs.set(
+                        pair.user1,
                         pair.user2
                     );
 
-                if (
-                    user1Socket &&
-                    user2Socket
-                ) {
+                    activePairs.set(
+                        pair.user2,
+                        pair.user1
+                    );
+
+
+                    /*
+                    ========================================
+                    RECORD CALL HISTORY
+                    ========================================
+                    */
+
+                    const user1Socket =
+                        io.sockets.sockets.get(
+                            pair.user1
+                        );
+
+                    const user2Socket =
+                        io.sockets.sockets.get(
+                            pair.user2
+                        );
+
 
                     if (
-                        user1Socket.userId &&
-                        user2Socket.userId
+                        user1Socket &&
+                        user2Socket
                     ) {
 
-                        historyService.addCall(
-                            user1Socket.userId,
-                            user2Socket.userId,
-                            user1Socket.isPremium
-                        );
+                        if (
+                            user1Socket.userId &&
+                            user2Socket.userId
+                        ) {
 
-                        historyService.addCall(
-                            user2Socket.userId,
-                            user1Socket.userId,
-                            user2Socket.isPremium
-                        );
+                            historyService.addCall(
+                                user1Socket.userId,
+                                user2Socket.userId,
+                                user1Socket.isPremium
+                            );
+
+                            historyService.addCall(
+                                user2Socket.userId,
+                                user1Socket.userId,
+                                user2Socket.isPremium
+                            );
+
+                        }
 
                     }
+
+
+                    io.to(
+                        pair.user1
+                    ).emit(
+                        "matched",
+                        {
+                            initiator: true
+                        }
+                    );
+
+
+                    io.to(
+                        pair.user2
+                    ).emit(
+                        "matched",
+                        {
+                            initiator: false
+                        }
+                    );
 
                 }
 
-                io.to(pair.user1).emit(
-                    "matched",
-                    {
-                        initiator: true
-                    }
-                );
 
-                io.to(pair.user2).emit(
-                    "matched",
-                    {
-                        initiator: false
-                    }
+                io.emit(
+                    "queueCount",
+                    queue.getWaitingCount()
                 );
 
             }
+        );
 
-            io.emit(
-                "queueCount",
-                queue.getWaitingCount()
-            );
 
-        });
+        /*
+        ================================================
+        CALL HISTORY
+        ================================================
+        */
 
         socket.on(
             "getCallHistory",
@@ -252,6 +304,13 @@ function registerSocketHandlers(
             }
         );
 
+
+        /*
+        ================================================
+        WEBRTC OFFER
+        ================================================
+        */
+
         socket.on(
             "offer",
             (offer) => {
@@ -263,7 +322,9 @@ function registerSocketHandlers(
 
                 if (partner) {
 
-                    io.to(partner).emit(
+                    io.to(
+                        partner
+                    ).emit(
                         "offer",
                         offer
                     );
@@ -272,6 +333,13 @@ function registerSocketHandlers(
 
             }
         );
+
+
+        /*
+        ================================================
+        WEBRTC ANSWER
+        ================================================
+        */
 
         socket.on(
             "answer",
@@ -284,7 +352,9 @@ function registerSocketHandlers(
 
                 if (partner) {
 
-                    io.to(partner).emit(
+                    io.to(
+                        partner
+                    ).emit(
                         "answer",
                         answer
                     );
@@ -293,6 +363,13 @@ function registerSocketHandlers(
 
             }
         );
+
+
+        /*
+        ================================================
+        WEBRTC ICE
+        ================================================
+        */
 
         socket.on(
             "iceCandidate",
@@ -305,7 +382,9 @@ function registerSocketHandlers(
 
                 if (partner) {
 
-                    io.to(partner).emit(
+                    io.to(
+                        partner
+                    ).emit(
                         "iceCandidate",
                         candidate
                     );
@@ -314,6 +393,77 @@ function registerSocketHandlers(
 
             }
         );
+
+
+        /*
+        ================================================
+        PRIVATE CHAT
+        ================================================
+        */
+
+        socket.on(
+            "chatMessage",
+            (message) => {
+
+                const partner =
+                    activePairs.get(
+                        socket.id
+                    );
+
+                if (!partner) {
+
+                    return;
+
+                }
+
+
+                if (
+                    typeof message !==
+                    "string"
+                ) {
+
+                    return;
+
+                }
+
+
+                const cleanMessage =
+                    message.trim();
+
+
+                if (!cleanMessage) {
+
+                    return;
+
+                }
+
+
+                const limitedMessage =
+                    cleanMessage.substring(
+                        0,
+                        500
+                    );
+
+
+                io.to(
+                    partner
+                ).emit(
+                    "chatMessage",
+                    {
+                        message:
+                            limitedMessage
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+        ================================================
+        END CALL
+        ================================================
+        */
 
         socket.on(
             "endCall",
@@ -326,9 +476,12 @@ function registerSocketHandlers(
 
                 if (partner) {
 
-                    io.to(partner).emit(
+                    io.to(
+                        partner
+                    ).emit(
                         "callEnded"
                     );
+
 
                     activePairs.delete(
                         socket.id
@@ -343,6 +496,13 @@ function registerSocketHandlers(
             }
         );
 
+
+        /*
+        ================================================
+        REPORT USER
+        ================================================
+        */
+
         socket.on(
             "reportUser",
             (reason) => {
@@ -352,19 +512,25 @@ function registerSocketHandlers(
                         socket.id
                     );
 
+
                 if (!partner) {
+
                     return;
+
                 }
+
 
                 blockPair(
                     socket.id,
                     partner
                 );
 
+
                 const partnerSocket =
                     io.sockets.sockets.get(
                         partner
                     );
+
 
                 reportService.addReport({
 
@@ -382,6 +548,7 @@ function registerSocketHandlers(
 
                 });
 
+
                 console.log(
                     "🚨 REPORT:",
                     socket.id,
@@ -392,6 +559,7 @@ function registerSocketHandlers(
                     "Unspecified"
                 );
 
+
                 activePairs.delete(
                     socket.id
                 );
@@ -399,6 +567,7 @@ function registerSocketHandlers(
                 activePairs.delete(
                     partner
                 );
+
 
                 queue.removeUser(
                     socket.id
@@ -408,13 +577,18 @@ function registerSocketHandlers(
                     partner
                 );
 
-                io.to(partner).emit(
+
+                io.to(
+                    partner
+                ).emit(
                     "callEnded"
                 );
+
 
                 socket.emit(
                     "reportSubmitted"
                 );
+
 
                 io.emit(
                     "queueCount",
@@ -423,6 +597,13 @@ function registerSocketHandlers(
 
             }
         );
+
+
+        /*
+        ================================================
+        DISCONNECT
+        ================================================
+        */
 
         socket.on(
             "disconnect",
@@ -435,25 +616,32 @@ function registerSocketHandlers(
                     online
                 );
 
+
                 queue.removeUser(
                     socket.id
                 );
+
 
                 io.emit(
                     "queueCount",
                     queue.getWaitingCount()
                 );
 
+
                 const partner =
                     activePairs.get(
                         socket.id
                     );
 
+
                 if (partner) {
 
-                    io.to(partner).emit(
+                    io.to(
+                        partner
+                    ).emit(
                         "callEnded"
                     );
+
 
                     activePairs.delete(
                         socket.id
@@ -472,11 +660,14 @@ function registerSocketHandlers(
 
 }
 
+
 registerSocketHandlers.blockPair =
     blockPair;
 
 registerSocketHandlers.unblockPair =
     unblockPair;
 
+
 module.exports =
     registerSocketHandlers;
+

@@ -50,9 +50,42 @@ const historyLimitText =
         "historyLimitText"
     );
 
+
+/*
+==================================================
+CHAT ELEMENTS
+==================================================
+*/
+
+const chatBox =
+    document.getElementById("chatBox");
+
+const chatMessages =
+    document.getElementById(
+        "chatMessages"
+    );
+
+const chatInput =
+    document.getElementById(
+        "chatInput"
+    );
+
+const chatSendBtn =
+    document.getElementById(
+        "chatSendBtn"
+    );
+
+
+/*
+==================================================
+CALL VARIABLES
+==================================================
+*/
+
 let seconds = 0;
 let timerInterval = null;
 let isMuted = false;
+
 
 /*
 ==================================================
@@ -77,10 +110,12 @@ if (!userId) {
 
 }
 
+
 let isPremium =
     localStorage.getItem(
         "talknaijaPremium"
     ) === "true";
+
 
 /*
 ==================================================
@@ -96,6 +131,7 @@ socket.emit(
     }
 );
 
+
 /*
 ==================================================
 SCREEN CONTROL
@@ -104,13 +140,192 @@ SCREEN CONTROL
 
 function showScreen(screen) {
 
-    homeScreen.classList.add("hidden");
-    searchScreen.classList.add("hidden");
-    callScreen.classList.add("hidden");
+    homeScreen.classList.add(
+        "hidden"
+    );
 
-    screen.classList.remove("hidden");
+    searchScreen.classList.add(
+        "hidden"
+    );
+
+    callScreen.classList.add(
+        "hidden"
+    );
+
+    screen.classList.remove(
+        "hidden"
+    );
 
 }
+
+
+/*
+==================================================
+CHAT RESET
+==================================================
+*/
+
+function clearChat() {
+
+    if (chatMessages) {
+
+        chatMessages.innerHTML = "";
+
+    }
+
+    if (chatInput) {
+
+        chatInput.value = "";
+
+    }
+
+}
+
+
+/*
+==================================================
+ADD CHAT MESSAGE
+==================================================
+*/
+
+function addChatMessage(
+    message,
+    type
+) {
+
+    if (!chatMessages) {
+        return;
+    }
+
+    const messageElement =
+        document.createElement(
+            "div"
+        );
+
+    messageElement.className =
+        "chat-message " +
+        type;
+
+    messageElement.textContent =
+        message;
+
+    chatMessages.appendChild(
+        messageElement
+    );
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+
+/*
+==================================================
+SEND CHAT MESSAGE
+==================================================
+*/
+
+function sendChatMessage() {
+
+    if (!chatInput) {
+        return;
+    }
+
+    const message =
+        chatInput.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    socket.emit(
+        "chatMessage",
+        message
+    );
+
+    addChatMessage(
+        message,
+        "mine"
+    );
+
+    chatInput.value = "";
+
+    chatInput.focus();
+
+}
+
+
+/*
+==================================================
+CHAT SEND BUTTON
+==================================================
+*/
+
+if (chatSendBtn) {
+
+    chatSendBtn.onclick =
+        sendChatMessage;
+
+}
+
+
+/*
+==================================================
+CHAT ENTER KEY
+==================================================
+*/
+
+if (chatInput) {
+
+    chatInput.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                sendChatMessage();
+
+            }
+
+        }
+    );
+
+}
+
+
+/*
+==================================================
+RECEIVE CHAT MESSAGE
+==================================================
+*/
+
+socket.on(
+    "chatMessage",
+    (data) => {
+
+        if (
+            !data ||
+            typeof data.message !==
+            "string"
+        ) {
+
+            return;
+
+        }
+
+        addChatMessage(
+            data.message,
+            "theirs"
+        );
+
+    }
+);
+
 
 /*
 ==================================================
@@ -132,15 +347,26 @@ function resetCallState() {
 
     seconds = 0;
 
-    timer.textContent =
-        "00:00";
+    if (timer) {
+
+        timer.textContent =
+            "00:00";
+
+    }
 
     isMuted = false;
 
-    muteBtn.textContent =
-        "Mute";
+    if (muteBtn) {
+
+        muteBtn.textContent =
+            "Mute";
+
+    }
+
+    clearChat();
 
 }
+
 
 /*
 ==================================================
@@ -162,22 +388,29 @@ function startSearchAnimation() {
     );
 
     searchAnimation =
-        setInterval(() => {
+        setInterval(
+            () => {
 
-            dots =
-                (dots + 1) % 4;
+                dots =
+                    (dots + 1) %
+                    4;
 
-            if (status) {
+                if (status) {
 
-                status.textContent =
-                    "Finding another Nigerian" +
-                    ".".repeat(dots);
+                    status.textContent =
+                        "Finding another Nigerian" +
+                        ".".repeat(
+                            dots
+                        );
 
-            }
+                }
 
-        }, 500);
+            },
+            500
+        );
 
 }
+
 
 /*
 ==================================================
@@ -193,14 +426,20 @@ function loadCallHistory() {
 
 }
 
-function renderCallHistory(history) {
+
+function renderCallHistory(
+    history
+) {
 
     if (!callHistoryList) {
         return;
     }
 
     const limit =
-        isPremium ? 15 : 5;
+        isPremium
+            ? 15
+            : 5;
+
 
     if (historyLimitText) {
 
@@ -210,6 +449,7 @@ function renderCallHistory(history) {
                 : "Your last 5 calls";
 
     }
+
 
     if (
         !history ||
@@ -226,50 +466,56 @@ function renderCallHistory(history) {
 
     }
 
+
     callHistoryList.innerHTML =
         history
-            .slice(0, limit)
-            .map((call) => {
+            .slice(
+                0,
+                limit
+            )
+            .map(
+                (call) => {
 
-                const date =
-                    new Date(
-                        call.timestamp
-                    );
+                    const date =
+                        new Date(
+                            call.timestamp
+                        );
 
-                const formattedDate =
-                    date.toLocaleString();
+                    const formattedDate =
+                        date.toLocaleString();
 
-                return `
 
-                    <div class="history-item">
+                    return `
+                        <div class="history-item">
 
-                        <div class="history-info">
+                            <div class="history-info">
 
-                            <strong>
-                                Anonymous Nigerian
-                            </strong>
+                                <strong>
+                                    Anonymous Nigerian
+                                </strong>
 
-                            <small>
-                                ${formattedDate}
-                            </small>
+                                <small>
+                                    ${formattedDate}
+                                </small>
+
+                            </div>
+
+                            <button
+                                class="callback-btn"
+                                disabled
+                            >
+                                Call Back
+                            </button>
 
                         </div>
+                    `;
 
-                        <button
-                            class="callback-btn"
-                            disabled
-                        >
-                            Call Back
-                        </button>
-
-                    </div>
-
-                `;
-
-            })
+                }
+            )
             .join("");
 
 }
+
 
 socket.on(
     "callHistory",
@@ -282,9 +528,10 @@ socket.on(
     }
 );
 
+
 /*
 ==================================================
-ONLINE / QUEUE
+ONLINE USERS
 ==================================================
 */
 
@@ -292,21 +539,37 @@ socket.on(
     "onlineUsers",
     (count) => {
 
-        onlineUsers.textContent =
-            count;
+        if (onlineUsers) {
+
+            onlineUsers.textContent =
+                count;
+
+        }
 
     }
 );
+
+
+/*
+==================================================
+QUEUE COUNT
+==================================================
+*/
 
 socket.on(
     "queueCount",
     (count) => {
 
-        queueCount.textContent =
-            count;
+        if (queueCount) {
+
+            queueCount.textContent =
+                count;
+
+        }
 
     }
 );
+
 
 /*
 ==================================================
@@ -314,22 +577,24 @@ START TALKING
 ==================================================
 */
 
-startBtn.onclick = () => {
+startBtn.onclick =
+    () => {
 
-    startBtn.disabled =
-        true;
+        startBtn.disabled =
+            true;
 
-    showScreen(
-        searchScreen
-    );
+        showScreen(
+            searchScreen
+        );
 
-    startSearchAnimation();
+        startSearchAnimation();
 
-    socket.emit(
-        "joinQueue"
-    );
+        socket.emit(
+            "joinQueue"
+        );
 
-};
+    };
+
 
 /*
 ==================================================
@@ -337,24 +602,26 @@ CANCEL SEARCH
 ==================================================
 */
 
-cancelBtn.onclick = () => {
+cancelBtn.onclick =
+    () => {
 
-    socket.emit(
-        "endCall"
-    );
+        socket.emit(
+            "endCall"
+        );
 
-    clearInterval(
-        searchAnimation
-    );
+        clearInterval(
+            searchAnimation
+        );
 
-    startBtn.disabled =
-        false;
+        startBtn.disabled =
+            false;
 
-    showScreen(
-        homeScreen
-    );
+        showScreen(
+            homeScreen
+        );
 
-};
+    };
+
 
 /*
 ==================================================
@@ -370,17 +637,21 @@ socket.on(
             "🎯 MATCHED"
         );
 
+
         connectionStatus.textContent =
             "Connecting...";
+
 
         clearInterval(
             searchAnimation
         );
 
+
         const status =
             document.getElementById(
                 "status"
             );
+
 
         if (status) {
 
@@ -389,48 +660,71 @@ socket.on(
 
         }
 
+
         showScreen(
             callScreen
         );
+
+
+        clearChat();
+
 
         seconds = 0;
 
         timer.textContent =
             "00:00";
 
+
         clearInterval(
             timerInterval
         );
+
 
         isMuted = false;
 
         muteBtn.textContent =
             "Mute";
 
+
         timerInterval =
-            setInterval(() => {
+            setInterval(
+                () => {
 
-                seconds++;
+                    seconds++;
 
-                const mins =
-                    Math.floor(
-                        seconds / 60
-                    );
+                    const mins =
+                        Math.floor(
+                            seconds /
+                            60
+                        );
 
-                const secs =
-                    seconds % 60;
+                    const secs =
+                        seconds %
+                        60;
 
-                timer.textContent =
-                    String(mins)
-                        .padStart(2, "0") +
-                    ":" +
-                    String(secs)
-                        .padStart(2, "0");
 
-            }, 1000);
+                    timer.textContent =
+                        String(
+                            mins
+                        ).padStart(
+                            2,
+                            "0"
+                        ) +
+                        ":" +
+                        String(
+                            secs
+                        ).padStart(
+                            2,
+                            "0"
+                        );
+
+                },
+                1000
+            );
 
     }
 );
+
 
 /*
 ==================================================
@@ -438,27 +732,29 @@ END CALL
 ==================================================
 */
 
-endBtn.onclick = () => {
+endBtn.onclick =
+    () => {
 
-    socket.emit(
-        "endCall"
-    );
+        socket.emit(
+            "endCall"
+        );
 
-    resetCallState();
+        resetCallState();
 
-    startBtn.disabled =
-        false;
+        startBtn.disabled =
+            false;
 
-    connectionStatus.textContent =
-        "Disconnected";
+        connectionStatus.textContent =
+            "Disconnected";
 
-    loadCallHistory();
+        loadCallHistory();
 
-    showScreen(
-        homeScreen
-    );
+        showScreen(
+            homeScreen
+        );
 
-};
+    };
+
 
 /*
 ==================================================
@@ -466,77 +762,101 @@ NEXT PERSON
 ==================================================
 */
 
-nextBtn.onclick = () => {
+nextBtn.onclick =
+    () => {
 
-    console.log(
-        "⏭️ NEXT PERSON"
-    );
-
-    socket.emit(
-        "endCall"
-    );
-
-    cleanupVoice();
-
-    clearInterval(
-        timerInterval
-    );
-
-    clearInterval(
-        searchAnimation
-    );
-
-    seconds = 0;
-
-    if (timer) {
-
-        timer.textContent =
-            "00:00";
-
-    }
-
-    startBtn.disabled =
-        true;
-
-    showScreen(
-        searchScreen
-    );
-
-    const status =
-        document.getElementById(
-            "status"
+        console.log(
+            "⏭️ NEXT PERSON"
         );
 
-    if (status) {
 
-        dots = 0;
+        socket.emit(
+            "endCall"
+        );
 
-        status.textContent =
-            "Finding another Nigerian";
+
+        cleanupVoice();
+
+
+        clearInterval(
+            timerInterval
+        );
+
 
         clearInterval(
             searchAnimation
         );
 
-        searchAnimation =
-            setInterval(() => {
 
-                dots =
-                    (dots + 1) % 4;
+        clearChat();
 
-                status.textContent =
-                    "Finding another Nigerian" +
-                    ".".repeat(dots);
 
-            }, 500);
+        seconds = 0;
 
-    }
 
-    socket.emit(
-        "joinQueue"
-    );
+        if (timer) {
 
-};
+            timer.textContent =
+                "00:00";
+
+        }
+
+
+        startBtn.disabled =
+            true;
+
+
+        showScreen(
+            searchScreen
+        );
+
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+
+        if (status) {
+
+            dots = 0;
+
+            status.textContent =
+                "Finding another Nigerian";
+
+
+            clearInterval(
+                searchAnimation
+            );
+
+
+            searchAnimation =
+                setInterval(
+                    () => {
+
+                        dots =
+                            (dots + 1) %
+                            4;
+
+                        status.textContent =
+                            "Finding another Nigerian" +
+                            ".".repeat(
+                                dots
+                            );
+
+                    },
+                    500
+                );
+
+        }
+
+
+        socket.emit(
+            "joinQueue"
+        );
+
+    };
+
 
 /*
 ==================================================
@@ -552,19 +872,25 @@ socket.on(
             "📞 callEnded received on this device"
         );
 
+
         resetCallState();
+
 
         connectionStatus.textContent =
             "Disconnected";
 
+
         startBtn.disabled =
             false;
 
+
         loadCallHistory();
+
 
         alert(
             "The other user ended the call."
         );
+
 
         showScreen(
             homeScreen
@@ -573,72 +899,81 @@ socket.on(
     }
 );
 
+
 /*
 ==================================================
 MUTE
 ==================================================
 */
 
-muteBtn.onclick = () => {
+muteBtn.onclick =
+    () => {
 
-    if (!localStream) {
+        if (!localStream) {
 
-        console.log(
-            "🎤 No microphone stream available."
-        );
+            console.log(
+                "🎤 No microphone stream available."
+            );
 
-        return;
-
-    }
-
-    const audioTracks =
-        localStream.getAudioTracks();
-
-    if (
-        audioTracks.length === 0
-    ) {
-
-        console.log(
-            "❌ No audio track found."
-        );
-
-        return;
-
-    }
-
-    isMuted =
-        !isMuted;
-
-    audioTracks.forEach(
-        (track) => {
-
-            track.enabled =
-                !isMuted;
+            return;
 
         }
-    );
 
-    if (isMuted) {
 
-        muteBtn.textContent =
-            "Unmute";
+        const audioTracks =
+            localStream.getAudioTracks();
 
-        debugLog(
-            "🔇 MICROPHONE MUTED"
+
+        if (
+            audioTracks.length ===
+            0
+        ) {
+
+            console.log(
+                "❌ No audio track found."
+            );
+
+            return;
+
+        }
+
+
+        isMuted =
+            !isMuted;
+
+
+        audioTracks.forEach(
+            (track) => {
+
+                track.enabled =
+                    !isMuted;
+
+            }
         );
 
-    } else {
 
-        muteBtn.textContent =
-            "Mute";
+        if (isMuted) {
 
-        debugLog(
-            "🎤 MICROPHONE UNMUTED"
-        );
+            muteBtn.textContent =
+                "Unmute";
 
-    }
+            debugLog(
+                "🔇 MICROPHONE MUTED"
+            );
 
-};
+        } else {
+
+            muteBtn.textContent =
+                "Mute";
+
+            debugLog(
+                "🎤 MICROPHONE UNMUTED"
+            );
+
+        }
+
+    };
+
 
 /*
 ==================================================
@@ -646,99 +981,113 @@ REPORT
 ==================================================
 */
 
-reportBtn.onclick = () => {
+reportBtn.onclick =
+    () => {
 
-    const choice =
-        prompt(
-            "WHY ARE YOU REPORTING THIS USER?\n\n" +
-            "1. Harassment\n" +
-            "2. Sexual or inappropriate behavior\n" +
-            "3. Hate or abusive speech\n" +
-            "4. Spam or scam\n" +
-            "5. Other"
+        const choice =
+            prompt(
+                "WHY ARE YOU REPORTING THIS USER?\n\n" +
+                "1. Harassment\n" +
+                "2. Sexual or inappropriate behavior\n" +
+                "3. Hate or abusive speech\n" +
+                "4. Spam or scam\n" +
+                "5. Other"
+            );
+
+
+        if (choice === null) {
+            return;
+        }
+
+
+        const selected =
+            choice.trim();
+
+
+        const reasons = {
+
+            "1":
+                "Harassment",
+
+            "2":
+                "Sexual or inappropriate behavior",
+
+            "3":
+                "Hate or abusive speech",
+
+            "4":
+                "Spam or scam"
+
+        };
+
+
+        let reason;
+
+
+        if (
+            selected ===
+            "5"
+        ) {
+
+            const customReason =
+                prompt(
+                    "Please describe the reason for your report:"
+                );
+
+
+            if (
+                customReason ===
+                null
+            ) {
+
+                return;
+
+            }
+
+
+            reason =
+                customReason.trim();
+
+
+            if (!reason) {
+
+                alert(
+                    "Please provide a reason for the report."
+                );
+
+                return;
+
+            }
+
+        } else if (
+            reasons[selected]
+        ) {
+
+            reason =
+                reasons[selected];
+
+        } else {
+
+            alert(
+                "Please enter a number from 1 to 5."
+            );
+
+            return;
+
+        }
+
+
+        reportBtn.disabled =
+            true;
+
+
+        socket.emit(
+            "reportUser",
+            reason
         );
-
-    if (choice === null) {
-        return;
-    }
-
-    const selected =
-        choice.trim();
-
-    const reasons = {
-
-        "1":
-            "Harassment",
-
-        "2":
-            "Sexual or inappropriate behavior",
-
-        "3":
-            "Hate or abusive speech",
-
-        "4":
-            "Spam or scam"
 
     };
 
-    let reason;
-
-    if (
-        selected === "5"
-    ) {
-
-        const customReason =
-            prompt(
-                "Please describe the reason for your report:"
-            );
-
-        if (
-            customReason === null
-        ) {
-
-            return;
-
-        }
-
-        reason =
-            customReason.trim();
-
-        if (!reason) {
-
-            alert(
-                "Please provide a reason for the report."
-            );
-
-            return;
-
-        }
-
-    } else if (
-        reasons[selected]
-    ) {
-
-        reason =
-            reasons[selected];
-
-    } else {
-
-        alert(
-            "Please enter a number from 1 to 5."
-        );
-
-        return;
-
-    }
-
-    reportBtn.disabled =
-        true;
-
-    socket.emit(
-        "reportUser",
-        reason
-    );
-
-};
 
 /*
 ==================================================
@@ -753,19 +1102,25 @@ socket.on(
         reportBtn.disabled =
             false;
 
+
         resetCallState();
+
 
         connectionStatus.textContent =
             "Disconnected";
 
+
         startBtn.disabled =
             false;
 
+
         loadCallHistory();
+
 
         alert(
             "Report submitted. Thank you for helping keep TalkNaija safe."
         );
+
 
         showScreen(
             homeScreen
@@ -774,6 +1129,7 @@ socket.on(
     }
 );
 
+
 /*
 ==================================================
 INITIAL HISTORY LOAD
@@ -781,3 +1137,4 @@ INITIAL HISTORY LOAD
 */
 
 loadCallHistory();
+
