@@ -14,28 +14,57 @@
 <h2>🎙 TalkNaija</h2>
 </header>
 
-<!-- HOME SCREEN -->
 <div id="homeScreen" class="screen">
 
     <div class="home-card">
 
         <h1>Connect with Nigerians</h1>
 
-        <p>Random anonymous voice conversations.</p>
+        <p>
+            Random anonymous voice conversations.
+        </p>
 
         <div class="online-box">
 
             🟢 Online:
             <span id="onlineUsers">0</span>
-	<p>
-	People waiting:
-	<span id="queueCount">0</span>
-	</p>
+
+            <p>
+                People waiting:
+                <span id="queueCount">0</span>
+            </p>
+
         </div>
 
         <button id="startBtn">
             Start Talking
         </button>
+
+        <!-- CALL HISTORY -->
+
+        <div
+            id="callHistorySection"
+            class="call-history"
+        >
+
+            <h2>🕘 Call History</h2>
+
+            <p
+                id="historyLimitText"
+                class="history-limit"
+            >
+                Your last 5 calls
+            </p>
+
+            <div id="callHistoryList">
+
+                <p class="history-empty">
+                    No call history yet.
+                </p>
+
+            </div>
+
+        </div>
 
     </div>
 
