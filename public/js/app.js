@@ -16,6 +16,9 @@ const callScreen =
 const startBtn =
     document.getElementById("startBtn");
 
+const autoCallToggle =
+    document.getElementById("autoCallToggle");
+
 const cancelBtn =
     document.getElementById("cancelBtn");
 
@@ -74,7 +77,25 @@ const chatSendBtn =
     document.getElementById(
         "chatSendBtn"
     );
+const chatToggle =
+    document.getElementById("chatToggle");
 
+if (chatToggle && chatBox) {
+
+    chatToggle.onclick = () => {
+
+        chatBox.classList.toggle(
+            "hidden"
+        );
+
+        chatToggle.textContent =
+            chatBox.classList.contains("hidden")
+                ? "💬 Open Chat"
+                : "💬 Hide Chat";
+
+    };
+
+}
 
 /*
 ==================================================
@@ -887,16 +908,37 @@ socket.on(
         loadCallHistory();
 
 
-        alert(
-            "The other user ended the call."
-        );
+if (
+    autoCallToggle &&
+    autoCallToggle.checked
+) {
 
+    startBtn.disabled =
+        true;
 
-        showScreen(
-            homeScreen
-        );
+    showScreen(
+        searchScreen
+    );
 
+    startSearchAnimation();
+
+    socket.emit(
+        "joinQueue"
+    );
+
+} else {
+
+    alert(
+        "The other user ended the call."
+    );
+
+    showScreen(
+        homeScreen
+    );
+
+}
     }
+
 );
 
 
