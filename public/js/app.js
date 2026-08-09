@@ -85,6 +85,8 @@ const chatUnreadBadge =
 
 let unreadMessages = 0;
 
+let chatIsOpen = false;
+
 if (chatToggle && chatBox) {
 
     chatToggle.onclick = () => {
@@ -92,6 +94,11 @@ if (chatToggle && chatBox) {
         chatBox.classList.toggle(
             "hidden"
         );
+
+	chatIsOpen =
+	    !chatBox.classList.contains(
+	        "hidden"
+	    );
 
         if (
             !chatBox.classList.contains("hidden")
@@ -380,10 +387,7 @@ socket.on(
             "theirs"
         );
 
-if (
-    chatBox &&
-    chatBox.classList.contains("hidden")
-) {
+if (!chatIsOpen) {
 
     unreadMessages += 1;
 
@@ -737,16 +741,30 @@ CANCEL SEARCH
 cancelBtn.onclick =
     () => {
 
+        if (
+            autoCallToggle &&
+            autoCallToggle.checked
+        ) {
+
+            autoCallToggle.checked =
+                false;
+
+        }
+
+
         socket.emit(
             "endCall"
         );
+
 
         clearInterval(
             searchAnimation
         );
 
+
         startBtn.disabled =
             false;
+
 
         showScreen(
             homeScreen
@@ -880,6 +898,10 @@ endBtn.onclick =
             "Disconnected";
 
         loadCallHistory();
+
+	alert(
+	    "The other user ended the call."
+	);
 
         showScreen(
             homeScreen
