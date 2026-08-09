@@ -56,20 +56,23 @@
         </p>
 
 
-        <div class="online-box">
+<div class="online-box">
 
-            <div>
-                🟢 Online:
-                <strong id="onlineUsers">0</strong>
-            </div>
+    <div id="connectionIndicator">
+        🟢 Online
+    </div>
 
-            <div class="waiting">
-                Waiting:
-                <strong id="queueCount">0</strong>
-            </div>
+    <div>
+        👥 :
+        <strong id="onlineUsers">0</strong>
+    </div>
 
-        </div>
+    <div class="waiting">
+        ⏳ Waiting:
+        <strong id="queueCount">0</strong>
+    </div>
 
+</div>
 
         <button
             id="startBtn"
@@ -170,6 +173,10 @@
                 <ul>
 
                     <li>
+			Users need to be 18 years or above.
+		    </li>
+
+		    <li>
                         Treat the person on the other end
                         with basic respect.
                     </li>
@@ -561,43 +568,6 @@
 
 <script>
 
-const historyBtn =
-    document.getElementById("historyBtn");
-
-const historySection =
-    document.getElementById("callHistorySection");
-
-const closeHistoryBtn =
-    document.getElementById("closeHistoryBtn");
-
-if (historyBtn && historySection) {
-
-    historyBtn.onclick = () => {
-
-        historySection.classList.toggle("hidden");
-
-        if (
-            !historySection.classList.contains("hidden") &&
-            typeof loadCallHistory === "function"
-        ) {
-
-            loadCallHistory();
-
-        }
-
-    };
-
-}
-
-if (closeHistoryBtn && historySection) {
-
-    closeHistoryBtn.onclick = () => {
-
-        historySection.classList.add("hidden");
-
-    };
-
-}
 
 
 /* CHAT TOGGLE */

@@ -458,36 +458,6 @@ function registerSocketHandlers(
             }
         );
 
-socket.on(
-    "chatMessage",
-    (message) => {
-
-        if (
-            typeof message !== "string" ||
-            !message.trim()
-        ) {
-            return;
-        }
-
-        const partner =
-            activePairs.get(
-                socket.id
-            );
-
-        if (!partner) {
-            return;
-        }
-
-        io.to(partner).emit(
-            "chatMessage",
-            {
-                message:
-                    message.trim()
-            }
-        );
-
-    }
-);
 
         /*
         ================================================

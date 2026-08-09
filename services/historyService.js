@@ -18,14 +18,18 @@ function ensureFile() {
 
     }
 
-    if (!fs.existsSync(historyFile)) {
+   if (
+    !fs.existsSync(historyFile) ||
+    fs.statSync(historyFile).size === 0
+)
+ {
 
-        fs.writeFileSync(
-            historyFile,
-            "{}"
-        );
+    fs.writeFileSync(
+        historyFile,
+        "{}"
+    );
 
-    }
+}
 
 }
 
@@ -35,12 +39,17 @@ function getHistory() {
 
     try {
 
-        return JSON.parse(
-            fs.readFileSync(
-                historyFile,
-                "utf8"
-            )
-        );
+    const data =
+    fs.readFileSync(
+        historyFile,
+        "utf8"
+    ).trim();
+
+if (!data) {
+    return {};
+}
+
+return JSON.parse(data);
 
     } catch (error) {
 

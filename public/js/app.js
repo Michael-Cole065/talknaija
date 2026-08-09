@@ -439,14 +439,61 @@ CALL HISTORY
 ==================================================
 */
 
-function loadCallHistory() {
+const historyBtn =
+    document.getElementById("historyBtn");
 
-    socket.emit(
-        "getCallHistory"
+const historySection =
+    document.getElementById(
+        "callHistorySection"
     );
+
+const closeHistoryBtn =
+    document.getElementById(
+        "closeHistoryBtn"
+    );
+
+if (
+    historyBtn &&
+    historySection
+) {
+
+    historyBtn.onclick =
+        () => {
+
+            historySection.classList.toggle(
+                "hidden"
+            );
+
+            if (
+                !historySection.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                loadCallHistory();
+
+            }
+
+        };
 
 }
 
+
+if (
+    closeHistoryBtn &&
+    historySection
+) {
+
+    closeHistoryBtn.onclick =
+        () => {
+
+            historySection.classList.add(
+                "hidden"
+            );
+
+        };
+
+}
 
 function renderCallHistory(
     history
