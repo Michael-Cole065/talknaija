@@ -467,7 +467,7 @@ END CALL
 
 socket.on(
     "endCall",
-    () => {
+    (action) => {
 
         const partner =
             activePairs.get(
@@ -484,9 +484,13 @@ socket.on(
             );
 
 
-            socket.emit(
-                "callEnded"
-            );
+            if (action !== "next") {
+
+                socket.emit(
+                    "callEnded"
+                );
+
+            }
 
 
             activePairs.delete(
@@ -497,7 +501,9 @@ socket.on(
                 partner
             );
 
-        } else {
+        } else if (
+            action !== "next"
+        ) {
 
             socket.emit(
                 "callEnded"

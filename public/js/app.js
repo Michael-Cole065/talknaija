@@ -224,8 +224,20 @@ function clearChat() {
 
     }
 
-}
+    unreadMessages = 0;
 
+    if (chatUnreadBadge) {
+
+        chatUnreadBadge.textContent =
+            "0";
+
+        chatUnreadBadge.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
 
 /*
 ==================================================
@@ -368,24 +380,25 @@ socket.on(
             "theirs"
         );
 
-        if (
-            chatBox &&
-            chatBox.classList.contains("hidden")
-        ) {
+if (
+    chatBox &&
+    chatBox.classList.contains("hidden")
+) {
 
-unreadMessages++;
+    unreadMessages += 1;
 
-if (chatUnreadBadge) {
+    if (chatUnreadBadge) {
 
-    chatUnreadBadge.textContent =
-        unreadMessages;
+        chatUnreadBadge.textContent =
+            unreadMessages;
 
-    chatUnreadBadge.classList.remove(
-        "hidden"
-    );
+        chatUnreadBadge.classList.remove(
+            "hidden"
+        );
+
+    }
 
 }
-        }
 
     }
 );
@@ -481,6 +494,14 @@ function startSearchAnimation() {
 CALL HISTORY
 ==================================================
 */
+
+function loadCallHistory() {
+
+    socket.emit(
+        "getCallHistory"
+    );
+
+}
 
 const historyBtn =
     document.getElementById("historyBtn");
@@ -881,10 +902,10 @@ nextBtn.onclick =
         );
 
 
-        socket.emit(
-            "endCall"
-        );
-
+	socket.emit(
+	    "endCall",
+	    "next"
+	);
 
         cleanupVoice();
 
