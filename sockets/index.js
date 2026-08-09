@@ -459,43 +459,54 @@ function registerSocketHandlers(
         );
 
 
-        /*
-        ================================================
-        END CALL
-        ================================================
-        */
+/*
+================================================
+END CALL
+================================================
+*/
 
-        socket.on(
-            "endCall",
-            () => {
+socket.on(
+    "endCall",
+    () => {
 
-                const partner =
-                    activePairs.get(
-                        socket.id
-                    );
-
-                if (partner) {
-
-                    io.to(
-                        partner
-                    ).emit(
-                        "callEnded"
-                    );
+        const partner =
+            activePairs.get(
+                socket.id
+            );
 
 
-                    activePairs.delete(
-                        socket.id
-                    );
+        if (partner) {
 
-                    activePairs.delete(
-                        partner
-                    );
+            io.to(
+                partner
+            ).emit(
+                "callEnded"
+            );
 
-                }
 
-            }
-        );
+            socket.emit(
+                "callEnded"
+            );
 
+
+            activePairs.delete(
+                socket.id
+            );
+
+            activePairs.delete(
+                partner
+            );
+
+        } else {
+
+            socket.emit(
+                "callEnded"
+            );
+
+        }
+
+    }
+);
 
         /*
         ================================================
