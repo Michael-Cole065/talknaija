@@ -1158,6 +1158,12 @@ acceptBtn.style.borderRadius =
 acceptBtn.style.padding =
     "12px 20px";
 
+acceptBtn.style.width =
+    "115px";
+
+acceptBtn.style.boxSizing =
+    "border-box";
+
 acceptBtn.style.minWidth =
     "115px";
 
@@ -1170,6 +1176,8 @@ acceptBtn.style.fontWeight =
 acceptBtn.style.cursor =
     "pointer";
 
+acceptBtn.style.margin =
+    "0 8px";
 
 const declineBtn =
     document.createElement(
@@ -1194,6 +1202,12 @@ declineBtn.style.borderRadius =
 declineBtn.style.padding =
     "12px 20px";
 
+declineBtn.style.width =
+    "115px";
+
+declineBtn.style.boxSizing =
+    "border-box";
+
 declineBtn.style.minWidth =
     "115px";
 
@@ -1206,6 +1220,8 @@ declineBtn.style.fontWeight =
 declineBtn.style.cursor =
     "pointer";
 
+declineBtn.style.margin =
+    "0 8px";
 
 buttonRow.appendChild(
     acceptBtn
