@@ -1130,28 +1130,90 @@ socket.on(
 	    "center";
 
 	buttonRow.style.gap =
-	    "12px";
+	    "18px";
 
 	buttonRow.style.marginTop =
-	    "15px";
+	    "20px";
+
+const acceptBtn =
+    document.createElement(
+        "button"
+    );
+
+acceptBtn.textContent =
+    "Accept";
+
+acceptBtn.style.background =
+    "#22c55e";
+
+acceptBtn.style.color =
+    "#fff";
+
+acceptBtn.style.border =
+    "none";
+
+acceptBtn.style.borderRadius =
+    "10px";
+
+acceptBtn.style.padding =
+    "12px 20px";
+
+acceptBtn.style.minWidth =
+    "115px";
+
+acceptBtn.style.fontSize =
+    "15px";
+
+acceptBtn.style.fontWeight =
+    "600";
+
+acceptBtn.style.cursor =
+    "pointer";
 
 
-	const acceptBtn =
-	    document.createElement(
-	        "button"
-	    );
+const declineBtn =
+    document.createElement(
+        "button"
+    );
 
-	acceptBtn.textContent =
-	    "Accept";
+declineBtn.textContent =
+    "Decline";
+
+declineBtn.style.background =
+    "#ef4444";
+
+declineBtn.style.color =
+    "#fff";
+
+declineBtn.style.border =
+    "none";
+
+declineBtn.style.borderRadius =
+    "10px";
+
+declineBtn.style.padding =
+    "12px 20px";
+
+declineBtn.style.minWidth =
+    "115px";
+
+declineBtn.style.fontSize =
+    "15px";
+
+declineBtn.style.fontWeight =
+    "600";
+
+declineBtn.style.cursor =
+    "pointer";
 
 
-	const declineBtn =
-	    document.createElement(
-	        "button"
-	    );
+buttonRow.appendChild(
+    acceptBtn
+);
 
-	declineBtn.textContent =
-	    "Decline";
+buttonRow.appendChild(
+    declineBtn
+);
 
 	box.appendChild(
 	    buttonRow
