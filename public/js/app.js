@@ -1060,8 +1060,17 @@ socket.on(
                 "div"
             );
 
-        box.style.background =
-            "#fff";
+	box.style.background =
+	    "#111";
+
+	box.style.color =
+	    "#fff";
+
+	box.style.boxSizing =
+	    "border-box";
+
+	box.style.boxShadow =
+	    "0 10px 30px rgba(0,0,0,0.35)";
 
         box.style.padding =
             "25px";
@@ -1109,23 +1118,44 @@ socket.on(
             `${secondsLeft}s`;
 
 
-        const acceptBtn =
-            document.createElement(
-                "button"
-            );
+	const buttonRow =
+	document.createElement(
+	        "div"
+	    );
 
-        acceptBtn.textContent =
-            "Accept";
+	buttonRow.style.display =
+	    "flex";
+
+	buttonRow.style.justifyContent =
+	    "center";
+
+	buttonRow.style.gap =
+	    "12px";
+
+	buttonRow.style.marginTop =
+	    "15px";
 
 
-        const declineBtn =
-            document.createElement(
-                "button"
-            );
+	const acceptBtn =
+	    document.createElement(
+	        "button"
+	    );
 
-        declineBtn.textContent =
-            "Decline";
+	acceptBtn.textContent =
+	    "Accept";
 
+
+	const declineBtn =
+	    document.createElement(
+	        "button"
+	    );
+
+	declineBtn.textContent =
+	    "Decline";
+
+	box.appendChild(
+	    buttonRow
+	);
 
         box.appendChild(
             message
