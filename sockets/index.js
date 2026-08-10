@@ -481,33 +481,15 @@ socket.on(
 
         /*
         ================================================
-        NEXT PERSON
+        END CALL / NEXT PERSON
         ================================================
         */
 
-        if (action === "next") {
-
-            io.to(
-                partner
-            ).emit(
-                "nextPerson"
-            );
-
-        } else {
-
-            /*
-            ============================================
-            NORMAL END CALL
-            ============================================
-            */
-
-            io.to(
-                partner
-            ).emit(
-                "callEnded"
-            );
-
-        }
+        io.to(
+            partner
+        ).emit(
+            "callEnded"
+        );
 
 
         activePairs.delete(
@@ -534,6 +516,29 @@ socket.on(
 
         if (!socket.userId || !partnerId) {
             return;
+        }
+
+        /*
+        ================================================
+        BLOCKED / REPORTED USER CHECK
+        ================================================
+        */
+
+        if (
+            blockedPairs.has(
+                getPairKey(
+                    socket.userId,
+                    partnerId
+                )
+            )
+        ) {
+
+            socket.emit(
+                "callbackUnavailable"
+            );
+
+            return;
+
         }
 
         const targetSocket =
@@ -1051,18 +1056,22 @@ socket.on(
 
                 }
 
+		const partnerSocket =
+		    io.sockets.sockets.get(
+		        partner
+		    );
 
-                blockPair(
-                    socket.id,
-                    partner
-                );
+		blockPair(
 
+		    socket.id,
+		    partner
+		);
 
-                const partnerSocket =
-                    io.sockets.sockets.get(
-                        partner
-                    );
-
+		blockPair(
+		    socket.userId,
+		    partnerSocket?.userId ||
+		    partner
+		);
 
                 reportService.addReport({
 

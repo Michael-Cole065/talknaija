@@ -663,6 +663,11 @@ else if (
 }
 
 
+
+
+
+
+
 else if (
     call.callbackStatus ===
     "declined"
@@ -682,7 +687,7 @@ else if (
     } else {
 
         buttonText =
-            "Declined";
+            "Call Back";
 
         disabled =
             false;
@@ -691,6 +696,19 @@ else if (
 
 }
 
+
+else if (
+    call.callbackStatus ===
+    "unavailable"
+) {
+
+    buttonText =
+        "Unavailable";
+
+    disabled =
+        true;
+
+}
 
 else if (
     call.callbackStatus ===
@@ -829,6 +847,23 @@ socket.on(
     }
 );
 
+let callbackCountdownTimer = null;
+
+function stopCallbackCountdown() {
+
+    if (callbackCountdownTimer) {
+
+        clearInterval(
+            callbackCountdownTimer
+        );
+
+        callbackCountdownTimer =
+            null;
+
+    }
+
+}
+
 /*
 ==================================================
 CALL BACK EVENTS
@@ -837,20 +872,79 @@ CALL BACK EVENTS
 
 socket.on(
     "callbackCalling",
-    () => {
+    (data) => {
 
         console.log(
             "📞 CALLBACK: Calling..."
         );
 
+
+        stopCallbackCountdown();
+
+
+        let secondsLeft =
+            30;
+
+
+        const partnerId =
+            data &&
+            data.partnerId;
+
+
+        const button =
+            partnerId
+                ? document.querySelector(
+                    `.callback-btn[data-partner-id="${partnerId}"]`
+                )
+                : null;
+
+
+        if (button) {
+
+            button.disabled =
+                true;
+
+            button.textContent =
+                `Calling ${secondsLeft}s`;
+
+        }
+
+
+        callbackCountdownTimer =
+            setInterval(
+                () => {
+
+                    secondsLeft--;
+
+
+                    if (button) {
+
+                        button.textContent =
+                            `Calling ${secondsLeft}s`;
+
+                    }
+
+
+                    if (
+                        secondsLeft <=
+                        0
+                    ) {
+
+                        stopCallbackCountdown();
+
+                    }
+
+                },
+                1000
+            );
+
     }
 );
-
 
 socket.on(
     "callbackUnavailable",
     () => {
-
+	stopCallbackCountdown();
         alert(
             "This person is currently unavailable."
         );
@@ -864,7 +958,7 @@ socket.on(
 socket.on(
     "callbackDeclined",
     (data) => {
-
+	stopCallbackCountdown();
         if (
             data &&
             data.declineCount >=
@@ -892,7 +986,7 @@ socket.on(
 socket.on(
     "callbackIgnored",
     () => {
-
+	stopCallbackCountdown();
         alert(
             "They did not answer within 30 seconds."
         );
@@ -906,7 +1000,7 @@ socket.on(
 socket.on(
     "callbackLimitReached",
     () => {
-
+	stopCallbackCountdown();
         alert(
             "Call back is disabled after 3 declines."
         );
@@ -920,7 +1014,7 @@ socket.on(
 socket.on(
     "callbackExpired",
     () => {
-
+	stopCallbackCountdown();
         loadCallHistory();
 
     }
@@ -931,21 +1025,209 @@ socket.on(
     "callbackIncoming",
     (data) => {
 
-        const accepted =
-            confirm(
-                data &&
-                data.message
-                    ? data.message +
-                      "\n\nAccept this call back?"
-                    : "Anonymous Nigerian is calling you back...\n\nAccept this call back?"
+        let secondsLeft =
+            30;
+
+        const overlay =
+            document.createElement(
+                "div"
             );
 
-        socket.emit(
-            "callbackResponse",
-            accepted
-                ? "accept"
-                : "decline"
+        overlay.style.position =
+            "fixed";
+
+        overlay.style.inset =
+            "0";
+
+        overlay.style.background =
+            "rgba(0,0,0,0.65)";
+
+        overlay.style.display =
+            "flex";
+
+        overlay.style.alignItems =
+            "center";
+
+        overlay.style.justifyContent =
+            "center";
+
+        overlay.style.zIndex =
+            "9999";
+
+
+        const box =
+            document.createElement(
+                "div"
+            );
+
+        box.style.background =
+            "#fff";
+
+        box.style.padding =
+            "25px";
+
+        box.style.borderRadius =
+            "15px";
+
+        box.style.textAlign =
+            "center";
+
+        box.style.maxWidth =
+            "320px";
+
+        box.style.width =
+            "85%";
+
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+        message.textContent =
+            data &&
+            data.message
+                ? data.message
+                : "Anonymous Nigerian is calling you back...";
+
+
+        const countdown =
+            document.createElement(
+                "div"
+            );
+
+        countdown.style.fontSize =
+            "22px";
+
+        countdown.style.fontWeight =
+            "bold";
+
+        countdown.style.margin =
+            "15px 0";
+
+        countdown.textContent =
+            `${secondsLeft}s`;
+
+
+        const acceptBtn =
+            document.createElement(
+                "button"
+            );
+
+        acceptBtn.textContent =
+            "Accept";
+
+
+        const declineBtn =
+            document.createElement(
+                "button"
+            );
+
+        declineBtn.textContent =
+            "Decline";
+
+
+        box.appendChild(
+            message
         );
+
+        box.appendChild(
+            countdown
+        );
+
+        box.appendChild(
+            acceptBtn
+        );
+
+        box.appendChild(
+            declineBtn
+        );
+
+        overlay.appendChild(
+            box
+        );
+
+        document.body.appendChild(
+            overlay
+        );
+
+
+        let finished =
+            false;
+
+
+        const timer =
+            setInterval(
+                () => {
+
+                    secondsLeft--;
+
+                    countdown.textContent =
+                        `${secondsLeft}s`;
+
+
+                    if (
+                        secondsLeft <=
+                        0
+                    ) {
+
+                        finish(
+                            "decline"
+                        );
+
+                    }
+
+                },
+                1000
+            );
+
+
+        function finish(
+            response
+        ) {
+
+            if (finished) {
+                return;
+            }
+
+            finished =
+                true;
+
+
+            clearInterval(
+                timer
+            );
+
+
+            overlay.remove();
+
+
+            socket.emit(
+                "callbackResponse",
+                response
+            );
+
+        }
+
+
+        acceptBtn.onclick =
+            () => {
+
+                finish(
+                    "accept"
+                );
+
+            };
+
+
+        declineBtn.onclick =
+            () => {
+
+                finish(
+                    "decline"
+                );
+
+            };
 
     }
 );
