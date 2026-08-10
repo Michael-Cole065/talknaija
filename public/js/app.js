@@ -1130,7 +1130,7 @@ socket.on(
 	    "center";
 
 	buttonRow.style.gap =
-	    "18px";
+	    "28px";
 
 	buttonRow.style.marginTop =
 	    "20px";
