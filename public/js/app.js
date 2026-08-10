@@ -112,10 +112,19 @@ if (chatToggle && chatBox) {
 
         }
 
-        chatToggle.textContent =
-            chatBox.classList.contains("hidden")
-                ? "💬 Open Chat"
-                : "💬 Hide Chat";
+if (
+    chatBox.classList.contains("hidden")
+) {
+
+    chatToggle.childNodes[0].nodeValue =
+        "💬 Open Chat ";
+
+} else {
+
+    chatToggle.childNodes[0].nodeValue =
+        "💬 Hide Chat ";
+
+}
 
     };
 
@@ -1176,16 +1185,11 @@ endBtn.onclick =
 
         loadCallHistory();
 
-	alert(
-	    "The other user ended the call."
-	);
-
         showScreen(
             homeScreen
         );
 
     };
-
 
 /*
 ==================================================
@@ -1309,6 +1313,10 @@ socket.on(
             "Disconnected";
 
         loadCallHistory();
+
+        alert(
+            "The other user ended the call."
+        );
 
         if (
             autoCallToggle &&

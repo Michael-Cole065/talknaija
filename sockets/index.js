@@ -461,7 +461,7 @@ function registerSocketHandlers(
 
 /*
 ================================================
-END CALL
+END CALL / NEXT PERSON
 ================================================
 */
 
@@ -478,11 +478,37 @@ socket.on(
             return;
         }
 
-        io.to(
-            partner
-        ).emit(
-            "callEnded"
-        );
+
+        /*
+        ================================================
+        NEXT PERSON
+        ================================================
+        */
+
+        if (action === "next") {
+
+            io.to(
+                partner
+            ).emit(
+                "nextPerson"
+            );
+
+        } else {
+
+            /*
+            ============================================
+            NORMAL END CALL
+            ============================================
+            */
+
+            io.to(
+                partner
+            ).emit(
+                "callEnded"
+            );
+
+        }
+
 
         activePairs.delete(
             socket.id
