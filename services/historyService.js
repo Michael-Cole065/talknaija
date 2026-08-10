@@ -4,6 +4,7 @@ const path = require("path");
 const historyFile =
     path.join(__dirname, "../data/callHistory.json");
 
+
 function ensureFile() {
 
     const directory =
@@ -18,20 +19,20 @@ function ensureFile() {
 
     }
 
-   if (
-    !fs.existsSync(historyFile) ||
-    fs.statSync(historyFile).size === 0
-)
- {
+    if (
+        !fs.existsSync(historyFile) ||
+        fs.statSync(historyFile).size === 0
+    ) {
 
-    fs.writeFileSync(
-        historyFile,
-        "{}"
-    );
+        fs.writeFileSync(
+            historyFile,
+            "{}"
+        );
+
+    }
 
 }
 
-}
 
 function getHistory() {
 
@@ -39,17 +40,17 @@ function getHistory() {
 
     try {
 
-    const data =
-    fs.readFileSync(
-        historyFile,
-        "utf8"
-    ).trim();
+        const data =
+            fs.readFileSync(
+                historyFile,
+                "utf8"
+            ).trim();
 
-if (!data) {
-    return {};
-}
+        if (!data) {
+            return {};
+        }
 
-return JSON.parse(data);
+        return JSON.parse(data);
 
     } catch (error) {
 
@@ -63,6 +64,7 @@ return JSON.parse(data);
     }
 
 }
+
 
 function saveHistory(history) {
 
@@ -79,7 +81,18 @@ function saveHistory(history) {
 
 }
 
-function addCall(userId, partnerId, isPremium = false) {
+
+/*
+==================================================
+ADD CALL
+==================================================
+*/
+
+function addCall(
+    userId,
+    partnerId,
+    isPremium = false
+) {
 
     if (!userId || !partnerId) {
         return;
@@ -99,12 +112,20 @@ function addCall(userId, partnerId, isPremium = false) {
         partnerId,
 
         timestamp:
-            new Date().toISOString()
+            new Date().toISOString(),
+
+        callbackStatus:
+            "available",
+
+        declineCount:
+            0
 
     });
 
     const limit =
-        isPremium ? 15 : 5;
+        isPremium
+            ? 15
+            : 5;
 
     history[userId] =
         history[userId].slice(
@@ -115,6 +136,13 @@ function addCall(userId, partnerId, isPremium = false) {
     saveHistory(history);
 
 }
+
+
+/*
+==================================================
+GET USER HISTORY
+==================================================
+*/
 
 function getUserHistory(
     userId,
@@ -129,7 +157,9 @@ function getUserHistory(
         getHistory();
 
     const limit =
-        isPremium ? 15 : 5;
+        isPremium
+            ? 15
+            : 5;
 
     return (
         history[userId] || []
@@ -140,7 +170,134 @@ function getUserHistory(
 
 }
 
+
+/*
+==================================================
+FIND SPECIFIC CALL
+==================================================
+*/
+
+function findCall(
+    userId,
+    partnerId
+) {
+
+    if (!userId || !partnerId) {
+        return null;
+    }
+
+    const history =
+        getHistory();
+
+    const calls =
+        history[userId] || [];
+
+    return (
+        calls.find(
+            (call) =>
+                call.partnerId === partnerId
+        ) || null
+    );
+
+}
+
+
+/*
+==================================================
+UPDATE CALLBACK STATUS
+==================================================
+*/
+
+function updateCallbackStatus(
+    userId,
+    partnerId,
+    status
+) {
+
+    const history =
+        getHistory();
+
+    const calls =
+        history[userId] || [];
+
+    const call =
+        calls.find(
+            (item) =>
+                item.partnerId === partnerId
+        );
+
+    if (!call) {
+        return false;
+    }
+
+    call.callbackStatus =
+        status;
+
+    saveHistory(history);
+
+    return true;
+
+}
+
+
+/*
+==================================================
+RECORD CALLBACK DECLINE
+==================================================
+*/
+
+function recordCallbackDecline(
+    userId,
+    partnerId
+) {
+
+    const history =
+        getHistory();
+
+    const calls =
+        history[userId] || [];
+
+    const call =
+        calls.find(
+            (item) =>
+                item.partnerId === partnerId
+        );
+
+    if (!call) {
+        return null;
+    }
+
+    call.declineCount =
+        (call.declineCount || 0) + 1;
+
+    call.callbackStatus =
+        "declined";
+
+    saveHistory(history);
+
+    return {
+
+        declineCount:
+            call.declineCount,
+
+        maxDeclines:
+            3
+
+    };
+
+}
+
+
 module.exports = {
+
     addCall,
-    getUserHistory
+
+    getUserHistory,
+
+    findCall,
+
+    updateCallbackStatus,
+
+    recordCallbackDecline
+
 };

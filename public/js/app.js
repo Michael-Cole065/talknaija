@@ -85,8 +85,6 @@ const chatUnreadBadge =
 
 let unreadMessages = 0;
 
-let chatIsOpen = false;
-
 if (chatToggle && chatBox) {
 
     chatToggle.onclick = () => {
@@ -94,11 +92,6 @@ if (chatToggle && chatBox) {
         chatBox.classList.toggle(
             "hidden"
         );
-
-	chatIsOpen =
-	    !chatBox.classList.contains(
-	        "hidden"
-	    );
 
         if (
             !chatBox.classList.contains("hidden")
@@ -368,6 +361,7 @@ RECEIVE CHAT MESSAGE
 ==================================================
 */
 
+
 socket.on(
     "chatMessage",
     (data) => {
@@ -387,26 +381,30 @@ socket.on(
             "theirs"
         );
 
-if (!chatIsOpen) {
+        if (
+            chatBox &&
+            chatBox.classList.contains(
+                "hidden"
+            )
+        ) {
 
-    unreadMessages += 1;
+            unreadMessages += 1;
 
-    if (chatUnreadBadge) {
+            if (chatUnreadBadge) {
 
-        chatUnreadBadge.textContent =
-            unreadMessages;
+                chatUnreadBadge.textContent =
+                    unreadMessages;
 
-        chatUnreadBadge.classList.remove(
-            "hidden"
-        );
+                chatUnreadBadge.classList.remove(
+                    "hidden"
+                );
 
-    }
+            }
 
-}
+        }
 
     }
 );
-
 
 /*
 ==================================================
@@ -564,94 +562,252 @@ if (
 }
 
 function renderCallHistory(
-    history
+history
 ) {
 
-    if (!callHistoryList) {
-        return;
-    }
+if (!callHistoryList) {
+    return;
+}
 
-    const limit =
+const limit =
+    isPremium
+        ? 15
+        : 5;
+
+
+if (historyLimitText) {
+
+    historyLimitText.textContent =
         isPremium
-            ? 15
-            : 5;
-
-
-    if (historyLimitText) {
-
-        historyLimitText.textContent =
-            isPremium
-                ? "Your last 15 calls"
-                : "Your last 5 calls";
-
-    }
-
-
-    if (
-        !history ||
-        history.length === 0
-    ) {
-
-        callHistoryList.innerHTML = `
-            <p class="history-empty">
-                No call history yet.
-            </p>
-        `;
-
-        return;
-
-    }
-
-
-    callHistoryList.innerHTML =
-        history
-            .slice(
-                0,
-                limit
-            )
-            .map(
-                (call) => {
-
-                    const date =
-                        new Date(
-                            call.timestamp
-                        );
-
-                    const formattedDate =
-                        date.toLocaleString();
-
-
-                    return `
-                        <div class="history-item">
-
-                            <div class="history-info">
-
-                                <strong>
-                                    Anonymous Nigerian
-                                </strong>
-
-                                <small>
-                                    ${formattedDate}
-                                </small>
-
-                            </div>
-
-                            <button
-                                class="callback-btn"
-                                disabled
-                            >
-                                Call Back
-                            </button>
-
-                        </div>
-                    `;
-
-                }
-            )
-            .join("");
+            ? "Your last 15 calls"
+            : "Your last 5 calls";
 
 }
 
+
+if (
+    !history ||
+    history.length === 0
+) {
+
+    callHistoryList.innerHTML = `
+        <p class="history-empty">
+            No call history yet.
+        </p>
+    `;
+
+    return;
+
+}
+
+
+callHistoryList.innerHTML =
+    history
+        .slice(
+            0,
+            limit
+        )
+        .map(
+            (call) => {
+
+                const date =
+                    new Date(
+                        call.timestamp
+                    );
+
+                const formattedDate =
+                    date.toLocaleString();
+
+
+		let buttonText =
+    "Call Back";
+
+let disabled =
+    false;
+
+
+if (
+    call.callbackStatus ===
+    "calling"
+) {
+
+    buttonText =
+        "Calling";
+
+    disabled =
+        true;
+
+}
+
+
+else if (
+    call.callbackStatus ===
+    "ignored"
+) {
+
+    buttonText =
+        "Ignored";
+
+    disabled =
+        true;
+
+}
+
+
+else if (
+    call.callbackStatus ===
+    "declined"
+) {
+
+    if (
+        (call.declineCount || 0) >=
+        3
+    ) {
+
+        buttonText =
+            "Call Back 🔕";
+
+        disabled =
+            true;
+
+    } else {
+
+        buttonText =
+            "Declined";
+
+        disabled =
+            false;
+
+    }
+
+}
+
+
+else if (
+    call.callbackStatus ===
+    "unavailable"
+) {
+
+    buttonText =
+        "Unavailable";
+
+    disabled =
+        false;
+
+}
+
+
+                return `
+                    <div class="history-item">
+
+                        <div class="history-info">
+
+                            <strong>
+                                Anonymous Nigerian
+                            </strong>
+
+                            <small>
+                                ${formattedDate}
+                            </small>
+
+                        </div>
+
+		<button
+    class="callback-btn"
+    data-partner-id="${call.partnerId}"
+    ${disabled ? "disabled" : ""}
+>
+    ${buttonText}
+</button>
+
+                    </div>
+                `;
+
+            }
+        )
+        .join("");
+
+
+const callbackButtons =
+    callHistoryList.querySelectorAll(
+        ".callback-btn"
+    );
+
+
+callbackButtons.forEach(
+    (button) => {
+
+        if (
+            button.disabled
+        ) {
+            return;
+        }
+
+        button.onclick =
+            () => {
+
+                const partnerId =
+                    button.dataset.partnerId;
+
+                if (!partnerId) {
+                    return;
+                }
+
+                button.disabled =
+                    true;
+
+                button.textContent =
+                    "Calling";
+
+                socket.emit(
+                    "callbackRequest",
+                    partnerId
+                );
+
+            };
+
+    }
+);
+
+}
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        const button =
+            event.target.closest(
+                ".callback-btn"
+            );
+
+        if (!button) {
+            return;
+        }
+
+        if (button.disabled) {
+            return;
+        }
+
+        const partnerId =
+            button.dataset.partnerId;
+
+        if (!partnerId) {
+            return;
+        }
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Calling";
+
+        socket.emit(
+            "callbackRequest",
+            partnerId
+        );
+
+    }
+);
 
 socket.on(
     "callHistory",
@@ -659,6 +815,127 @@ socket.on(
 
         renderCallHistory(
             history
+        );
+
+    }
+);
+
+/*
+==================================================
+CALL BACK EVENTS
+==================================================
+*/
+
+socket.on(
+    "callbackCalling",
+    () => {
+
+        console.log(
+            "📞 CALLBACK: Calling..."
+        );
+
+    }
+);
+
+
+socket.on(
+    "callbackUnavailable",
+    () => {
+
+        alert(
+            "This person is currently unavailable."
+        );
+
+        loadCallHistory();
+
+    }
+);
+
+
+socket.on(
+    "callbackDeclined",
+    (data) => {
+
+        if (
+            data &&
+            data.declineCount >=
+            data.maxDeclines
+        ) {
+
+            alert(
+                "Call back stopped after 3 declines."
+            );
+
+        } else {
+
+            alert(
+                "Your call back was declined."
+            );
+
+        }
+
+        loadCallHistory();
+
+    }
+);
+
+
+socket.on(
+    "callbackIgnored",
+    () => {
+
+        alert(
+            "They did not answer within 30 seconds."
+        );
+
+        loadCallHistory();
+
+    }
+);
+
+
+socket.on(
+    "callbackLimitReached",
+    () => {
+
+        alert(
+            "Call back is disabled after 3 declines."
+        );
+
+        loadCallHistory();
+
+    }
+);
+
+
+socket.on(
+    "callbackExpired",
+    () => {
+
+        loadCallHistory();
+
+    }
+);
+
+
+socket.on(
+    "callbackIncoming",
+    (data) => {
+
+        const accepted =
+            confirm(
+                data &&
+                data.message
+                    ? data.message +
+                      "\n\nAccept this call back?"
+                    : "Anonymous Nigerian is calling you back...\n\nAccept this call back?"
+            );
+
+        socket.emit(
+            "callbackResponse",
+            accepted
+                ? "accept"
+                : "decline"
         );
 
     }

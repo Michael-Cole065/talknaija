@@ -182,6 +182,21 @@ async function createPeerConnection() {
 
         };
 
+
+    peerConnection.onicecandidateerror =
+        (event) => {
+
+            debugLog(
+                "❌ ICE CANDIDATE ERROR: " +
+                event.errorCode +
+                " | " +
+                event.errorText +
+                " | " +
+                event.url
+            );
+
+        };
+
     peerConnection.ontrack =
         (event) => {
 

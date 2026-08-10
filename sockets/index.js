@@ -474,45 +474,534 @@ socket.on(
                 socket.id
             );
 
+        if (!partner) {
+            return;
+        }
 
-        if (partner) {
+        io.to(
+            partner
+        ).emit(
+            "callEnded"
+        );
 
-            io.to(
-                partner
-            ).emit(
-                "callEnded"
+        activePairs.delete(
+            socket.id
+        );
+
+        activePairs.delete(
+            partner
+        );
+
+    }
+);
+
+
+/*
+================================================
+CALL BACK
+================================================
+*/
+
+socket.on(
+    "callbackRequest",
+    (partnerId) => {
+
+        if (!socket.userId || !partnerId) {
+            return;
+        }
+
+        const targetSocket =
+            [...io.sockets.sockets.values()]
+                .find(
+                    (client) =>
+                        client.userId === partnerId
+                );
+
+        if (!targetSocket) {
+
+            socket.emit(
+                "callbackUnavailable"
             );
 
+            return;
+        }
 
-            if (action !== "next") {
+        const previousCall =
+            historyService.findCall(
+                socket.userId,
+                partnerId
+            );
 
-                socket.emit(
-                    "callEnded"
+        if (!previousCall) {
+
+            socket.emit(
+                "callbackUnavailable"
+            );
+
+            return;
+        }
+
+        const declineCount =
+            previousCall.declineCount || 0;
+
+        if (declineCount >= 3) {
+
+            socket.emit(
+                "callbackLimitReached"
+            );
+
+            return;
+        }
+
+        /*
+        ================================================
+        PREVENT DUPLICATE CALLBACKS
+        ================================================
+        */
+
+        if (
+            targetSocket.callbackIncoming ||
+            socket.callbackOutgoing
+        ) {
+
+            return;
+        }
+
+        const callerId =
+            socket.userId;
+
+        const targetId =
+            targetSocket.userId;
+
+        historyService.updateCallbackStatus(
+            callerId,
+            targetId,
+            "calling"
+        );
+
+        /*
+        ================================================
+        30 SECOND CALLBACK TIMER
+        ================================================
+        */
+
+        const callbackTimer =
+            setTimeout(
+                () => {
+
+                    historyService.updateCallbackStatus(
+                        callerId,
+                        targetId,
+                        "ignored"
+                    );
+
+                    socket.callbackOutgoing =
+                        null;
+
+                    targetSocket.callbackIncoming =
+                        null;
+
+                    socket.emit(
+                        "callbackIgnored"
+                    );
+
+                    targetSocket.emit(
+                        "callbackExpired"
+                    );
+
+                },
+                30000
+            );
+
+        /*
+        ================================================
+        STORE CALLBACK STATE
+        ================================================
+        */
+
+        targetSocket.callbackIncoming = {
+
+            callerId,
+
+            callerSocketId:
+                socket.id,
+
+            timer:
+                callbackTimer
+
+        };
+
+        socket.callbackOutgoing = {
+
+            targetId,
+
+            targetSocketId:
+                targetSocket.id,
+
+            timer:
+                callbackTimer
+
+        };
+
+        /*
+        ================================================
+        NOTIFY RECEIVER
+        ================================================
+        */
+
+        targetSocket.emit(
+            "callbackIncoming",
+            {
+                message:
+                    "Anonymous Nigerian is calling you back..."
+            }
+        );
+
+        /*
+        ================================================
+        NOTIFY CALLER
+        ================================================
+        */
+
+        socket.emit(
+            "callbackCalling",
+            {
+                partnerId
+            }
+        );
+
+    }
+);
+
+
+/*
+================================================
+CALL BACK RESPONSE
+================================================
+*/
+
+socket.on(
+    "callbackResponse",
+    (response) => {
+
+        const incoming =
+            socket.callbackIncoming;
+
+        if (!incoming) {
+            return;
+        }
+
+        const caller =
+            io.sockets.sockets.get(
+                incoming.callerSocketId
+            );
+
+        clearTimeout(
+            incoming.timer
+        );
+
+        socket.callbackIncoming =
+            null;
+
+        if (!caller) {
+            return;
+        }
+
+        /*
+        ================================================
+        DECLINED
+        ================================================
+        */
+
+        if (response === "decline") {
+
+            const result =
+                historyService.recordCallbackDecline(
+                    incoming.callerId,
+                    socket.userId
+                );
+
+            caller.callbackOutgoing =
+                null;
+
+            const declineCount =
+                result
+                    ? result.declineCount
+                    : 1;
+
+            caller.emit(
+                "callbackDeclined",
+                {
+                    declineCount:
+                        declineCount,
+
+                    maxDeclines:
+                        3
+                }
+            );
+
+            return;
+        }
+
+        /*
+        ================================================
+        ACCEPTED
+        ================================================
+        */
+
+        if (response !== "accept") {
+            return;
+        }
+
+        historyService.updateCallbackStatus(
+            incoming.callerId,
+            socket.userId,
+            "accepted"
+        );
+
+        caller.callbackOutgoing =
+            null;
+
+        /*
+        ================================================
+        RECONNECT THE TWO USERS
+        ================================================
+        */
+
+        activePairs.set(
+            caller.id,
+            socket.id
+        );
+
+        activePairs.set(
+            socket.id,
+            caller.id
+        );
+
+        /*
+        ================================================
+        EXISTING WEBRTC MATCH FLOW
+        ================================================
+        */
+
+        caller.emit(
+            "matched",
+            {
+                initiator: true
+            }
+        );
+
+        socket.emit(
+            "matched",
+            {
+                initiator: false
+            }
+        );
+
+    }
+);
+
+
+/*
+================================================
+CALL BACK DISCONNECT CLEANUP
+================================================
+*/
+
+socket.on(
+    "disconnect",
+    () => {
+
+        if (
+            socket.callbackIncoming &&
+            socket.callbackIncoming.timer
+        ) {
+
+            clearTimeout(
+                socket.callbackIncoming.timer
+            );
+
+            const caller =
+                io.sockets.sockets.get(
+                    socket.callbackIncoming.callerSocketId
+                );
+
+            if (caller) {
+
+                caller.callbackOutgoing =
+                    null;
+
+                historyService.updateCallbackStatus(
+                    socket.callbackIncoming.callerId,
+                    socket.userId,
+                    "unavailable"
+                );
+
+                caller.emit(
+                    "callbackUnavailable"
                 );
 
             }
 
+            socket.callbackIncoming =
+                null;
 
-            activePairs.delete(
-                socket.id
-            );
+        }
 
-            activePairs.delete(
-                partner
-            );
-
-        } else if (
-            action !== "next"
+        if (
+            socket.callbackOutgoing &&
+            socket.callbackOutgoing.timer
         ) {
 
-            socket.emit(
-                "callEnded"
+            clearTimeout(
+                socket.callbackOutgoing.timer
+            );
+
+            socket.callbackOutgoing =
+                null;
+
+        }
+
+    }
+);
+
+
+/*
+================================================
+CALL BACK RESPONSE
+================================================
+*/
+
+socket.on(
+    "callbackResponse",
+    (response) => {
+
+        const incoming =
+            socket.callbackIncoming;
+
+        if (!incoming) {
+            return;
+        }
+
+        const caller =
+            io.sockets.sockets.get(
+                incoming.callerSocketId
+            );
+
+        clearTimeout(
+            incoming.timer
+        );
+
+        socket.callbackIncoming =
+            null;
+
+        if (!caller) {
+            return;
+        }
+
+        if (response === "decline") {
+
+            const result =
+                historyService.recordCallbackDecline(
+                    incoming.callerId,
+                    socket.userId
+                );
+
+            caller.callbackOutgoing =
+                null;
+
+            caller.emit(
+                "callbackDeclined",
+                {
+                    declineCount:
+                        result
+                            ? result.declineCount
+                            : 1,
+
+                    maxDeclines:
+                        3
+                }
+            );
+
+            return;
+        }
+
+        if (response !== "accept") {
+            return;
+        }
+
+        historyService.updateCallbackStatus(
+            incoming.callerId,
+            socket.userId,
+            "accepted"
+        );
+
+        caller.callbackOutgoing =
+            null;
+
+        activePairs.set(
+            caller.id,
+            socket.id
+        );
+
+        activePairs.set(
+            socket.id,
+            caller.id
+        );
+
+        caller.emit(
+            "matched",
+            {
+                initiator: true
+            }
+        );
+
+        socket.emit(
+            "matched",
+            {
+                initiator: false
+            }
+        );
+
+    }
+);
+
+
+/*
+================================================
+CALL BACK DISCONNECT CLEANUP
+================================================
+*/
+
+socket.on(
+    "disconnect",
+    () => {
+
+        if (
+            socket.callbackIncoming &&
+            socket.callbackIncoming.timer
+        ) {
+
+            clearTimeout(
+                socket.callbackIncoming.timer
+            );
+
+        }
+
+        if (
+            socket.callbackOutgoing &&
+            socket.callbackOutgoing.timer
+        ) {
+
+            clearTimeout(
+                socket.callbackOutgoing.timer
             );
 
         }
 
     }
 );
+
 
         /*
         ================================================
