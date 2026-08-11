@@ -150,23 +150,37 @@ async function createPeerConnection() {
         "📡 Setting ICE handlers..."
     );
 
-    peerConnection.onicecandidate =
-        (event) => {
+peerConnection.onicecandidate =
+    (event) => {
 
-            if (event.candidate) {
+        if (event.candidate) {
 
-                debugLog(
-                    "🧊 ICE candidate generated"
+            const candidate =
+                event.candidate.candidate || "";
+
+            const match =
+                candidate.match(
+                    / typ ([a-z]+) /
                 );
 
-                socket.emit(
-                    "iceCandidate",
-                    event.candidate
-                );
+            const candidateType =
+                match
+                    ? match[1]
+                    : "unknown";
 
-            }
+            debugLog(
+                "🧊 ICE candidate: " +
+                candidateType
+            );
 
-        };
+            socket.emit(
+                "iceCandidate",
+                event.candidate
+            );
+
+        }
+
+    };
 
     peerConnection.oniceconnectionstatechange =
         () => {
