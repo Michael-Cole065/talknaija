@@ -30,6 +30,7 @@ function debugLog(message) {
 
 debugLog("🔥 WEBRTC.JS LOADED");
 
+
 const rtcConfig = {
     iceServers: [
         {
@@ -40,23 +41,23 @@ const rtcConfig = {
         },
         {
             urls: "turn:global.relay.metered.ca:80",
-            username: "2756bb4e5995f3bd3d6a710e",
-            credential: "L5AOWxLkWWSL1QML"
+            username: "6a9c6c40a06f87f8f9d13bd1",
+            credential: "5ZYYPzU1hrUIo/0/"
         },
         {
             urls: "turn:global.relay.metered.ca:80?transport=tcp",
-            username: "2756bb4e5995f3bd3d6a710e",
-            credential: "L5AOWxLkWWSL1QML"
+            username: "6a9c6c40a06f87f8f9d13bd1",
+            credential: "5ZYYPzU1hrUIo/0/"
         },
         {
             urls: "turn:global.relay.metered.ca:443",
-            username: "2756bb4e5995f3bd3d6a710e",
-            credential: "L5AOWxLkWWSL1QML"
+            username: "6a9c6c40a06f87f8f9d13bd1",
+            credential: "5ZYYPzU1hrUIo/0/"
         },
         {
             urls: "turns:global.relay.metered.ca:443?transport=tcp",
-            username: "2756bb4e5995f3bd3d6a710e",
-            credential: "L5AOWxLkWWSL1QML"
+            username: "6a9c6c40a06f87f8f9d13bd1",
+            credential: "5ZYYPzU1hrUIo/0/"
         }
     ]
 };
