@@ -418,6 +418,34 @@ padding:8px;
 text-align:left;
 }
 
+/* ========================================
+   CHAT MESSAGE REFINEMENT
+======================================== */
+
+.chat-message {
+    display: block;
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+.chat-sender {
+    display: inline;
+    font-weight: 700;
+}
+
+.chat-text {
+    display: inline;
+    margin-left: 4px;
+}
+
+.chat-message.mine .chat-sender {
+    color: #00c853;
+}
+
+.chat-message.theirs .chat-sender {
+    color: #ff5252;
+}
+
 .chat-empty{
 color:#718099;
 font-size:12px;
