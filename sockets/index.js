@@ -8,6 +8,8 @@ const reportService =
 const historyService =
     require("../services/historyService");
 
+const locationService =
+    require("../services/locationService");
 
 function getPairKey(user1, user2) {
 
@@ -141,9 +143,30 @@ function registerSocketHandlers(
         ================================================
         */
 
-        socket.on(
-            "joinQueue",
-            () => {
+		socket.on(
+		    "joinQueue",
+		    async () => {
+
+		const location =
+		    await locationService.checkNigeria(socket);
+
+		if (!location.allowed) {
+
+		    console.log(
+		        `🚫 Non-Nigerian connection blocked: ${location.countryCode || "UNKNOWN"}`
+		    );
+
+		    socket.emit(
+		        "locationBlocked",
+		        {
+		            message:
+		                "TalkNaija is currently available only in Nigeria."
+		        }
+		    );
+
+		    return;
+
+		}
 
                 if (
                     activePairs.has(
