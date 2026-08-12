@@ -685,3 +685,71 @@ grid-template-columns:1fr;
 }
 
 }
+
+
+/* ========================================
+   SAMPLE ADVERTISEMENT
+   ======================================== */
+
+.ad-slot {
+    width: 100%;
+    margin: 22px auto 24px;
+}
+
+.sample-ad {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 14px 16px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.ad-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.55;
+}
+
+.sample-ad strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.sample-ad p {
+    margin: 0 0 10px;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.sample-ad button {
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+
+/* SEARCH SCREEN AD SPACING */
+
+.search-ad {
+    margin-top: 26px;
+    margin-bottom: 0;
+}
+
+/* SEARCH STATUS → CANCEL SEARCH SPACING */
+
+#searchScreen #status {
+    margin-bottom: 8px;
+}
+
+#searchScreen #cancelBtn {
+    margin-bottom: 0;
+}
