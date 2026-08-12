@@ -2010,3 +2010,521 @@ INITIAL HISTORY LOAD
 
 loadCallHistory();
 
+/*
+==================================================
+TALKNAIJA SIDEBAR
+==================================================
+*/
+
+const menuBtn =
+    document.getElementById("menuBtn");
+
+const closeMenuBtn =
+    document.getElementById("closeMenuBtn");
+
+const sideMenu =
+    document.getElementById("sideMenu");
+
+const sidebarOverlay =
+    document.getElementById("sidebarOverlay");
+
+const coffeeMenuBtn =
+    document.getElementById("coffeeMenuBtn");
+
+
+function openSideMenu() {
+
+    if (!sideMenu) {
+        return;
+    }
+
+    sideMenu.classList.add("open");
+
+    if (sidebarOverlay) {
+
+        sidebarOverlay.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+function closeSideMenu() {
+
+    if (!sideMenu) {
+        return;
+    }
+
+    sideMenu.classList.remove("open");
+
+    if (sidebarOverlay) {
+
+        sidebarOverlay.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+if (menuBtn) {
+
+    menuBtn.onclick =
+        openSideMenu;
+
+}
+
+
+if (closeMenuBtn) {
+
+    closeMenuBtn.onclick =
+        closeSideMenu;
+
+}
+
+
+if (sidebarOverlay) {
+
+    sidebarOverlay.onclick =
+        closeSideMenu;
+
+}
+
+
+/*
+==================================================
+SIDEBAR NAVIGATION
+==================================================
+*/
+
+function performSidebarNavigation(
+    action
+) {
+
+    if (action === "home") {
+
+        showScreen(
+            homeScreen
+        );
+
+        return;
+
+    }
+
+
+    if (action === "faq") {
+
+        alert(
+            "FAQ will be available soon."
+        );
+
+        return;
+
+    }
+
+
+    if (action === "policy") {
+
+        alert(
+            "TalkNaija Policy will be available soon."
+        );
+
+        return;
+
+    }
+
+
+    if (action === "support") {
+
+        alert(
+            "TalkNaija Support will be available soon."
+        );
+
+        return;
+
+    }
+
+
+    if (action === "premium") {
+
+        alert(
+            "TalkNaija Premium is coming soon."
+        );
+
+        return;
+
+    }
+
+
+    if (action === "coffee") {
+
+        alert(
+            "Buy Me a Coffee will be available soon."
+        );
+
+        return;
+
+    }
+
+}
+
+
+/*
+==================================================
+LEAVE CALL CONFIRMATION
+==================================================
+*/
+
+function showLeaveCallConfirmation(
+    action
+) {
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.style.position =
+        "fixed";
+
+    overlay.style.top =
+        "0";
+
+    overlay.style.left =
+        "0";
+
+    overlay.style.right =
+        "0";
+
+    overlay.style.bottom =
+        "0";
+
+    overlay.style.background =
+        "rgba(0,0,0,0.65)";
+
+    overlay.style.display =
+        "flex";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.zIndex =
+        "99999";
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.style.background =
+        "#0d1730";
+
+    box.style.boxSizing =
+        "border-box";
+
+    box.style.boxShadow =
+        "0 10px 30px rgba(0,0,0,0.35)";
+
+    box.style.padding =
+        "25px";
+
+    box.style.borderRadius =
+        "15px";
+
+    box.style.textAlign =
+        "center";
+
+    box.style.maxWidth =
+        "320px";
+
+    box.style.width =
+        "85%";
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+    message.textContent =
+        "Leave this conversation?";
+
+
+    message.style.fontSize =
+        "16px";
+
+    message.style.fontWeight =
+        "600";
+
+
+    const description =
+        document.createElement(
+            "div"
+        );
+
+    description.textContent =
+        "Your current call will end if you continue.";
+
+    description.style.fontSize =
+        "13px";
+
+    description.style.opacity =
+        "0.8";
+
+    description.style.marginTop =
+        "10px";
+
+
+    const buttonRow =
+        document.createElement(
+            "div"
+        );
+
+    buttonRow.style.display =
+        "flex";
+
+    buttonRow.style.justifyContent =
+        "center";
+
+    buttonRow.style.gap =
+        "28px";
+
+    buttonRow.style.marginTop =
+        "20px";
+
+
+    const stayBtn =
+        document.createElement(
+            "button"
+        );
+
+    stayBtn.textContent =
+        "Stay";
+
+    stayBtn.style.background =
+        "#22c55e";
+
+    stayBtn.style.color =
+        "#fff";
+
+    stayBtn.style.border =
+        "none";
+
+    stayBtn.style.borderRadius =
+        "10px";
+
+    stayBtn.style.padding =
+        "12px 20px";
+
+    stayBtn.style.width =
+        "115px";
+
+    stayBtn.style.boxSizing =
+        "border-box";
+
+    stayBtn.style.minWidth =
+        "115px";
+
+    stayBtn.style.fontSize =
+        "15px";
+
+    stayBtn.style.fontWeight =
+        "600";
+
+    stayBtn.style.cursor =
+        "pointer";
+
+    stayBtn.style.margin =
+        "0 8px";
+
+
+    const leaveBtn =
+        document.createElement(
+            "button"
+        );
+
+    leaveBtn.textContent =
+        "Leave Call";
+
+    leaveBtn.style.background =
+        "#ef4444";
+
+    leaveBtn.style.color =
+        "#fff";
+
+    leaveBtn.style.border =
+        "none";
+
+    leaveBtn.style.borderRadius =
+        "10px";
+
+    leaveBtn.style.padding =
+        "12px 20px";
+
+    leaveBtn.style.width =
+        "115px";
+
+    leaveBtn.style.boxSizing =
+        "border-box";
+
+    leaveBtn.style.minWidth =
+        "115px";
+
+    leaveBtn.style.fontSize =
+        "15px";
+
+    leaveBtn.style.fontWeight =
+        "600";
+
+    leaveBtn.style.cursor =
+        "pointer";
+
+    leaveBtn.style.margin =
+        "0 8px";
+
+
+    buttonRow.appendChild(
+        stayBtn
+    );
+
+    buttonRow.appendChild(
+        leaveBtn
+    );
+
+
+    box.appendChild(
+        message
+    );
+
+    box.appendChild(
+        description
+    );
+
+    box.appendChild(
+        buttonRow
+    );
+
+    overlay.appendChild(
+        box
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    stayBtn.onclick =
+        () => {
+
+            overlay.remove();
+
+        };
+
+
+    leaveBtn.onclick =
+        () => {
+
+            overlay.remove();
+
+            socket.emit(
+                "endCall"
+            );
+
+            resetCallState();
+
+            startBtn.disabled =
+                false;
+
+            connectionStatus.textContent =
+                "Disconnected";
+
+            loadCallHistory();
+
+            performSidebarNavigation(
+                action
+            );
+
+        };
+
+}
+
+
+/*
+==================================================
+SIDEBAR BUTTONS
+==================================================
+*/
+
+document
+    .querySelectorAll(
+        ".side-menu-item"
+    )
+    .forEach((item) => {
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                const action =
+                    item.dataset.menuAction;
+
+
+                /*
+                ========================================
+                ACTIVE CALL
+                ========================================
+                */
+
+                if (
+                    callScreen &&
+                    !callScreen.classList.contains(
+                        "hidden"
+                    )
+                ) {
+
+                    showLeaveCallConfirmation(
+                        action
+                    );
+
+                    return;
+
+                }
+
+
+                closeSideMenu();
+
+                performSidebarNavigation(
+                    action
+                );
+
+            }
+        );
+
+    });
+
+
+if (coffeeMenuBtn) {
+
+    coffeeMenuBtn.onclick = () => {
+
+        closeSideMenu();
+
+        /*
+        Existing Buy Me a Coffee
+        functionality will be connected here.
+        */
+
+        alert(
+            "Buy Me a Coffee will be connected soon."
+        );
+
+    };
+
+}

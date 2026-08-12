@@ -18,6 +18,7 @@ flex-direction:column;
 ======================================== */
 
 .topbar{
+position:relative;
 padding:14px 18px;
 text-align:center;
 background:#101c37;
@@ -780,4 +781,235 @@ grid-template-columns:1fr;
 
 #searchScreen #cancelBtn {
     margin-bottom: 0;
+}
+
+/* ========================================
+   TALKNAIJA SIDEBAR
+======================================== */
+
+.menu-btn {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    z-index: 1001;
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #182844;
+    color: white;
+
+    font-size: 22px;
+    cursor: pointer;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.menu-btn:hover {
+    background: #21385f;
+}
+
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    z-index: 1000;
+}
+
+
+.side-menu {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: min(310px, 84vw);
+    height: 100vh;
+
+    background: #0d1730;
+    color: white;
+
+    z-index: 1002;
+
+    padding: 22px 18px;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+
+    box-shadow: 8px 0 25px rgba(0, 0, 0, 0.35);
+}
+
+.side-menu.open {
+    transform: translateX(0);
+}
+
+
+.side-menu-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid #243858;
+}
+
+.side-menu-header strong {
+    display: block;
+
+    font-size: 21px;
+}
+
+.side-menu-header span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8ea0bd;
+
+    font-size: 12px;
+}
+
+
+.close-menu-btn {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #182844;
+    color: white;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+
+.side-menu-nav {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    margin-top: 18px;
+}
+
+
+.side-menu-item {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 13px 12px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 15px;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.side-menu-item:hover {
+    background: #182844;
+}
+
+
+.side-menu-divider {
+    height: 1px;
+
+    margin: 16px 0;
+
+    background: #243858;
+}
+
+
+.coffee-menu-btn {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px 12px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #182844;
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.coffee-menu-btn:hover {
+    background: #21385f;
+}
+
+
+.side-menu-support-note {
+    margin-top: 18px;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    background: #111f3b;
+
+    border: 1px solid #243858;
+}
+
+.side-menu-support-note strong {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+}
+
+.side-menu-support-note p {
+    margin: 8px 0;
+
+    color: #9eacc2;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+.hidden {
+    display: none;
 }
