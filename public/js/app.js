@@ -254,10 +254,11 @@ ADD CHAT MESSAGE
 ==================================================
 */
 
-function addChatMessage(
-    message,
-    type
-) {
+    function addChatMessage(
+	    message,
+	    type,
+	    senderId = null
+	) {
 
     if (!chatMessages) {
         return;
@@ -272,8 +273,37 @@ function addChatMessage(
         "chat-message " +
         type;
 
-    messageElement.textContent =
+    const label =
+        document.createElement(
+            "div"
+        );
+
+    label.className =
+        "chat-sender";
+
+	label.textContent =
+	    type === "mine"
+        ? "Me:"
+        : "Id" + senderId + ":";
+
+    const text =
+        document.createElement(
+            "div"
+        );
+
+    text.className =
+        "chat-text";
+
+    text.textContent =
         message;
+
+    messageElement.appendChild(
+        label
+    );
+
+    messageElement.appendChild(
+        text
+    );
 
     chatMessages.appendChild(
         messageElement
@@ -385,10 +415,11 @@ socket.on(
 
         }
 
-        addChatMessage(
-            data.message,
-            "theirs"
-        );
+	  addChatMessage(
+	    data.message,
+	    "theirs",
+	    data.senderId
+	);
 
         if (
             chatBox &&

@@ -204,19 +204,86 @@ peerConnection.onicecandidate =
 
     };
 
-    peerConnection.oniceconnectionstatechange =
-        () => {
+peerConnection.oniceconnectionstatechange =
+    () => {
 
-            if (!peerConnection) {
+        if (!peerConnection) {
+            return;
+        }
+
+        const iceState =
+            peerConnection.iceConnectionState;
+
+        debugLog(
+            "🧊 ICE STATE: " +
+            iceState
+        );
+
+
+        /*
+        ================================================
+        ICE CONNECTING TIMEOUT
+        ================================================
+        */
+
+        if (
+            iceState === "checking" ||
+            iceState === "connected"
+        ) {
+
+            if (iceState === "checking") {
+
+                clearTimeout(
+                    connectionFailureTimer
+                );
+
+                connectionFailureTimer =
+                    setTimeout(() => {
+
+                        if (
+                            !peerConnection
+                        ) {
+                            return;
+                        }
+
+                        if (
+                            peerConnection.iceConnectionState ===
+                            "checking"
+                        ) {
+
+                            if (
+                                connectionStatus
+                            ) {
+
+                                connectionStatus.textContent =
+                                    "Connection Unstable";
+
+                            }
+
+                            startConnectionCountdown();
+
+                        }
+
+                    }, CONNECTION_GRACE_PERIOD * 1000);
+
                 return;
+
             }
 
-            debugLog(
-                "🧊 ICE STATE: " +
-                peerConnection.iceConnectionState
-            );
+            if (iceState === "connected") {
 
-        };
+                clearTimeout(
+                    connectionFailureTimer
+                );
+
+                connectionFailureTimer =
+                    null;
+
+            }
+
+        }
+
+    };
 
 
     peerConnection.onicecandidateerror =

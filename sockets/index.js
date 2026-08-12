@@ -468,15 +468,20 @@ function registerSocketHandlers(
                     );
 
 
-                io.to(
-                    partner
-                ).emit(
-                    "chatMessage",
-                    {
-                        message:
-                            limitedMessage
-                    }
-                );
+		io.to(
+		    partner
+		).emit(
+		    "chatMessage",
+		    {
+		        message:
+		            limitedMessage,
+
+		        senderId:
+		            socket.userId
+		                ? socket.userId.slice(0, 4)
+		                : "Guest"
+		    }
+		);
 
             }
         );
