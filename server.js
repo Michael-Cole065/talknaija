@@ -5,11 +5,15 @@ const fs = require("fs");
 const { Server } = require("socket.io");
 const path = require("path");
 require("dotenv").config();
-
 const queue = require("./services/queueService");
 const registerSocketHandlers = require("./sockets");
 const reportService = require("./services/reportService");
-
+const {
+    createSupportTicket,
+    getAllSupportTickets
+} = require(
+    "./services/supportService"
+);
 const app = express();
 
 let server = http.createServer(app);
@@ -83,6 +87,178 @@ function adminAuth(req, res, next) {
 }
 
 // ========================================
+// PUBLIC SUPPORT SUBMISSION
+// ========================================
+
+app.post(
+    "/api/support",
+    (req, res) => {
+
+        try {
+
+            const {
+                email,
+                subject,
+                message
+            } = req.body || {};
+
+
+            if (
+                typeof email !== "string" ||
+                typeof subject !== "string" ||
+                typeof message !== "string"
+            ) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        "Please complete all support fields."
+
+                });
+
+            }
+
+
+            const cleanEmail =
+                email.trim();
+
+            const cleanSubject =
+                subject.trim();
+
+            const cleanMessage =
+                message.trim();
+
+
+            if (
+                !cleanEmail ||
+                !cleanSubject ||
+                !cleanMessage
+            ) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        "Please complete all support fields."
+
+                });
+
+            }
+
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !emailPattern.test(
+                    cleanEmail
+                )
+            ) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        "Please enter a valid email address."
+
+                });
+
+            }
+
+
+            const ticket =
+                createSupportTicket(
+                    cleanEmail,
+                    cleanSubject,
+                    cleanMessage
+                );
+
+
+            console.log(
+                "📩 NEW SUPPORT TICKET:",
+                ticket.id,
+                ticket.email
+            );
+
+
+            return res.status(201).json({
+
+                success: true,
+
+                ticketId:
+                    ticket.id,
+
+                message:
+                    "Your support request has been received."
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ SUPPORT SUBMISSION ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                message:
+                    "Unable to submit your support request."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ========================================
+// SUPPORT ADMIN API
+// ========================================
+
+app.get(
+    "/api/support",
+    adminAuth,
+    (req, res) => {
+
+        try {
+
+            const tickets =
+                getAllSupportTickets();
+
+            res.json({
+                success: true,
+                tickets
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Support inbox error:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                error:
+                    "Unable to load support tickets."
+            });
+
+        }
+
+    }
+);
+
+
+// ========================================
 // PROTECT ADMIN PAGE
 // ========================================
 
@@ -93,6 +269,26 @@ app.get("/admin-reports.html", adminAuth, (req, res) => {
     );
 
 });
+
+// ========================================
+// PROTECT SUPPORT ADMIN PAGE
+// ========================================
+
+app.get(
+    "/admin-support.html",
+    adminAuth,
+    (req, res) => {
+
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "admin-support.html"
+            )
+        );
+
+    }
+);
 
 // ========================================
 // REPORT API

@@ -725,6 +725,12 @@ grid-template-columns:1fr;
     margin: 22px auto 24px;
 }
 
+.adsense-slot {
+    width: 100%;
+    margin: 22px auto 24px;
+    text-align: center;
+}
+
 .sample-ad {
     width: 100%;
     max-width: 420px;
@@ -847,6 +853,10 @@ grid-template-columns:1fr;
     transition: transform 0.25s ease;
 
     box-shadow: 8px 0 25px rgba(0, 0, 0, 0.35);
+}
+
+body.menu-open {
+    overflow: hidden;
 }
 
 .side-menu.open {
@@ -1012,4 +1022,480 @@ grid-template-columns:1fr;
 
 .hidden {
     display: none;
+}
+
+/* ========================================
+   SUPPORT PAGE
+======================================== */
+
+#supportScreen .page-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+
+/* BACK BUTTON */
+
+#supportScreen .page-back-btn {
+    display: inline-block;
+    width: auto;
+    min-width: 90px;
+
+    padding: 10px 18px;
+
+    margin-bottom: 18px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #e5e7eb;
+    color: #111827;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+
+/* SUPPORT CONTENT */
+
+#supportScreen .page-content {
+    text-align: left;
+}
+
+#supportScreen .page-content > p {
+    text-align: center;
+}
+
+#supportScreen .page-content > p:first-child {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 18px;
+}
+
+/* SUPPORT FORM */
+
+#supportScreen .support-form {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    margin-top: 25px;
+
+    box-sizing: border-box;
+}
+
+
+/* FORM LABELS */
+
+#supportScreen .support-form label {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 14px;
+    margin-bottom: 7px;
+
+    text-align: left;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    box-sizing: border-box;
+}
+
+
+/* FIRST LABEL */
+
+#supportScreen .support-form label:first-child {
+    margin-top: 0;
+}
+
+
+/* INPUTS */
+
+#supportScreen .support-form input,
+#supportScreen .support-form textarea {
+
+    display: block;
+
+    width: 100%;
+
+    padding: 13px 14px;
+
+    margin: 0;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #111827;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    box-sizing: border-box;
+
+    outline: none;
+}
+
+
+/* TEXTAREA */
+
+#supportScreen .support-form textarea {
+    min-height: 150px;
+
+    resize: vertical;
+}
+
+
+/* FOCUS */
+
+#supportScreen .support-form input:focus,
+#supportScreen .support-form textarea:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(37, 99, 235, 0.15);
+}
+
+
+/* SEND BUTTON */
+
+#supportScreen #supportSubmitBtn {
+    width: 100%;
+
+    margin-top: 20px;
+
+    box-sizing: border-box;
+}
+
+
+/* SUPPORT STATUS */
+
+#supportScreen .support-status {
+    margin-top: 15px;
+
+    text-align: center;
+
+    font-weight: 600;
+}
+
+
+/* WHY EMAIL IS REQUIRED */
+
+#supportScreen .support-form + .support-status + .support-note {
+    margin-top: 28px;
+}
+
+
+/* SUPPORT NOTES */
+
+#supportScreen .support-note {
+    margin-top: 20px;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    box-sizing: border-box;
+
+    text-align: left;
+}
+
+#supportScreen .support-note strong {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 16px;
+}
+
+#supportScreen .support-note p {
+    margin: 0;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+
+/* ========================================
+   SUPPORT MOBILE SPACING
+======================================== */
+
+@media (max-width: 600px) {
+
+    #supportScreen .page-header {
+        margin-bottom: 20px;
+    }
+
+    #supportScreen .page-back-btn {
+        margin-bottom: 14px;
+    }
+
+    #supportScreen .support-form {
+        margin-top: 22px;
+    }
+
+    #supportScreen .support-note {
+        margin-top: 24px;
+    }
+
+}
+
+/* ========================================
+   FAQ / POLICY / SUPPORT PAGES
+======================================== */
+
+#faqScreen .page-header,
+#policyScreen .page-header,
+#supportScreen .page-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+
+#faqScreen .page-back-btn,
+#policyScreen .page-back-btn,
+#supportScreen .page-back-btn {
+    display: inline-block;
+
+    width: auto;
+    min-width: 90px;
+
+    padding: 10px 18px;
+
+    margin-bottom: 18px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #e5e7eb;
+    color: #111827;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+
+/* PAGE CONTENT */
+
+#faqScreen .page-content,
+#policyScreen .page-content,
+#supportScreen .page-content {
+    text-align: left;
+}
+
+
+/* PAGE INTRO */
+
+#faqScreen .page-header h1,
+#policyScreen .page-header h1,
+#supportScreen .page-header h1 {
+    margin-bottom: 10px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    #faqScreen .page-header,
+    #policyScreen .page-header,
+    #supportScreen .page-header {
+        margin-bottom: 20px;
+    }
+
+    #faqScreen .page-back-btn,
+    #policyScreen .page-back-btn,
+    #supportScreen .page-back-btn {
+        margin-bottom: 14px;
+    }
+
+}
+
+/* ========================================
+   FAQ PAGE
+======================================== */
+
+#faqScreen .page-content {
+    text-align: left;
+}
+
+#faqScreen details {
+    margin: 0 0 28px;
+    padding: 0 0 24px;
+
+    border-bottom: 1px solid
+        rgba(128, 128, 128, 0.25);
+}
+
+#faqScreen details:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+
+/* FAQ QUESTIONS */
+
+#faqScreen summary {
+    display: block;
+
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    line-height: 1.5;
+
+    cursor: pointer;
+
+    list-style: none;
+}
+
+
+/* Remove default triangle */
+
+#faqScreen summary::-webkit-details-marker {
+    display: none;
+}
+
+
+/* Custom arrow */
+
+#faqScreen summary::after {
+    content: "＋";
+
+    float: right;
+
+    font-size: 18px;
+    font-weight: 400;
+}
+
+#faqScreen details[open] summary::after {
+    content: "−";
+}
+
+
+/* FAQ ANSWERS */
+
+#faqScreen details p {
+    margin: 12px 0 0;
+
+    font-size: 14px;
+    line-height: 1.7;
+
+    text-align: left;
+}
+
+
+/* ========================================
+   POLICY PAGE
+======================================== */
+
+#policyScreen .page-content {
+    text-align: left;
+}
+
+#policyScreen .page-content h2 {
+    margin: 32px 0 10px;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    line-height: 1.4;
+
+    text-align: left;
+}
+
+#policyScreen .page-content h2:first-child {
+    margin-top: 0;
+}
+
+#policyScreen .page-content p {
+    margin: 0 0 32px;
+
+    font-size: 14px;
+    line-height: 1.75;
+
+    text-align: left;
+}
+
+#policyScreen .page-content h2:last-of-type {
+    margin-top: 32px;
+}
+
+
+/* ========================================
+   MOBILE FAQ / POLICY
+======================================== */
+
+@media (max-width: 600px) {
+
+    #faqScreen details {
+        margin-bottom: 25px;
+        padding-bottom: 21px;
+    }
+
+    #faqScreen summary {
+        font-size: 15px;
+    }
+
+    #faqScreen details p {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+
+    #policyScreen .page-content h2 {
+        margin-top: 28px;
+
+        font-size: 16px;
+    }
+
+    #policyScreen .page-content p {
+        margin-bottom: 28px;
+
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+}
+
+/* ========================================
+   FAQ ADSENSE
+======================================== */
+
+#faqScreen .faq-ad {
+    width: 100%;
+    margin-top: 35px;
+    padding-top: 25px;
+
+    border-top: 1px solid
+        rgba(128, 128, 128, 0.2);
+
+    text-align: center;
+}
+
+/* HOME ADSENSE — MATCH OLD AD POSITION */
+
+.home-ad {
+    width: 100%;
+    margin: 22px auto 24px;
+    text-align: center;
 }

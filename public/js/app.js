@@ -206,9 +206,91 @@ function showScreen(screen) {
         "hidden"
     );
 
-    screen.classList.remove(
-        "hidden"
-    );
+
+    const faqScreen =
+        document.getElementById(
+            "faqScreen"
+        );
+
+    const policyScreen =
+        document.getElementById(
+            "policyScreen"
+        );
+
+    const supportScreen =
+        document.getElementById(
+            "supportScreen"
+        );
+
+
+    if (faqScreen) {
+
+        faqScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (policyScreen) {
+
+        policyScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (supportScreen) {
+
+        supportScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (screen) {
+
+        screen.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    // INITIALIZE ADSENSE FOR VISIBLE SECONDARY SCREENS
+
+    if (
+        screen &&
+        screen.id !== "homeScreen"
+    ) {
+
+        const ad =
+            screen.querySelector(
+                ".adsbygoogle"
+            );
+
+        if (ad) {
+
+            try {
+
+                (
+                    window.adsbygoogle =
+                    window.adsbygoogle || []
+                ).push({});
+
+            } catch (error) {
+
+                console.log(
+                    "AdSense initialization:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
 
 }
 
@@ -2040,6 +2122,10 @@ function openSideMenu() {
 
     sideMenu.classList.add("open");
 
+    document.body.classList.add(
+    "menu-open"
+
+	);
     if (sidebarOverlay) {
 
         sidebarOverlay.classList.remove(
@@ -2058,6 +2144,11 @@ function closeSideMenu() {
     }
 
     sideMenu.classList.remove("open");
+
+    document.body.classList.remove(
+    "menu-open"
+
+	);
 
     if (sidebarOverlay) {
 
@@ -2115,38 +2206,62 @@ function performSidebarNavigation(
     }
 
 
-    if (action === "faq") {
+if (action === "faq") {
 
-        alert(
-            "FAQ will be available soon."
+    const faqScreen =
+        document.getElementById(
+            "faqScreen"
         );
 
-        return;
+    if (faqScreen) {
+
+        showScreen(
+            faqScreen
+        );
 
     }
 
+    return;
 
-    if (action === "policy") {
+}
 
-        alert(
-            "TalkNaija Policy will be available soon."
+if (action === "policy") {
+
+    const policyScreen =
+        document.getElementById(
+            "policyScreen"
         );
 
-        return;
+    if (policyScreen) {
+
+        showScreen(
+            policyScreen
+        );
 
     }
 
+    return;
 
-    if (action === "support") {
+}
 
-        alert(
-            "TalkNaija Support will be available soon."
+if (action === "support") {
+
+    const supportScreen =
+        document.getElementById(
+            "supportScreen"
         );
 
-        return;
+    if (supportScreen) {
+
+        showScreen(
+            supportScreen
+        );
 
     }
 
+    return;
+
+}
 
     if (action === "premium") {
 
@@ -2528,3 +2643,211 @@ if (coffeeMenuBtn) {
     };
 
 }
+
+/*
+==================================================
+TALKNAIJA SUPPORT FORM
+==================================================
+*/
+
+const supportForm =
+    document.getElementById(
+        "supportForm"
+    );
+
+const supportStatus =
+    document.getElementById(
+        "supportStatus"
+    );
+
+const supportSubmitBtn =
+    document.getElementById(
+        "supportSubmitBtn"
+    );
+
+
+if (supportForm) {
+
+    supportForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+
+            const email =
+                document
+                    .getElementById(
+                        "supportEmail"
+                    )
+                    .value
+                    .trim();
+
+            const subject =
+                document
+                    .getElementById(
+                        "supportSubject"
+                    )
+                    .value
+                    .trim();
+
+            const message =
+                document
+                    .getElementById(
+                        "supportMessage"
+                    )
+                    .value
+                    .trim();
+
+
+            if (
+                supportStatus
+            ) {
+
+                supportStatus.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            if (
+                supportSubmitBtn
+            ) {
+
+                supportSubmitBtn.disabled =
+                    true;
+
+                supportSubmitBtn.textContent =
+                    "Sending...";
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/support",
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    email,
+                                    subject,
+                                    message
+                                })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to send support request."
+                    );
+
+                }
+
+
+                supportForm.reset();
+
+
+                if (
+                    supportStatus
+                ) {
+
+                    supportStatus.textContent =
+                        "Message received. Your support request has been sent.";
+
+                    supportStatus.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Support submission error:",
+                    error
+                );
+
+
+                if (
+                    supportStatus
+                ) {
+
+                    supportStatus.textContent =
+                        error.message ||
+                        "Something went wrong. Please try again.";
+
+                    supportStatus.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+            } finally {
+
+                if (
+                    supportSubmitBtn
+                ) {
+
+                    supportSubmitBtn.disabled =
+                        false;
+
+                    supportSubmitBtn.textContent =
+                        "Send Message";
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+/*
+==================================================
+PAGE BACK BUTTONS
+==================================================
+*/
+
+document
+    .querySelectorAll(
+        "[data-back-home]"
+    )
+    .forEach((button) => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                showScreen(
+                    homeScreen
+                );
+
+            }
+        );
+
+    });

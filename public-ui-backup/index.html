@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>TalkNaija</title>
+
+<link
+    rel="stylesheet"
+    href="css/style.css"
+>
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="demo-logo">
+        🎙
+    </div>
+
+    <h2>TalkNaija</h2>
+
+    <p>
+        Connect. Talk. Meet Nigerians.
+    </p>
+
+</header>
+
+
+<!-- ========================================
+     HOME SCREEN
+======================================== -->
+
+<div
+    id="homeScreen"
+    class="screen"
+>
+
+    <div class="home-card">
+
+        <h1>
+            Connect with Nigerians
+        </h1>
+
+        <p class="intro">
+            Random anonymous voice conversations.
+        </p>
+
+
+        <div class="online-box">
+
+            <div>
+                🟢 Online:
+                <strong id="onlineUsers">0</strong>
+            </div>
+
+            <div class="waiting">
+                Waiting:
+                <strong id="queueCount">0</strong>
+            </div>
+
+        </div>
+
+
+        <button
+            id="startBtn"
+            class="main-call-btn"
+        >
+            Start Talking
+        </button>
+
+
+        <!-- QUICK CONTROLS -->
+
+        <div class="quick-controls">
+
+            <label class="toggle-control">
+
+                <input
+                    type="checkbox"
+                    id="autoCallToggle"
+                >
+
+                Auto Call
+
+            </label>
+
+            <button
+                id="historyBtn"
+                class="secondary-btn"
+                type="button"
+            >
+                🕘 Call History
+            </button>
+
+        </div>
+
+
+        <!-- CALL HISTORY -->
+
+        <div
+            id="callHistorySection"
+            class="history-panel hidden"
+        >
+
+            <div class="history-header">
+
+                <div>
+
+                    <h2>
+                        🕘 Call History
+                    </h2>
+
+                    <p
+                        id="historyLimitText"
+                        class="history-limit"
+                    >
+                        Your last 5 calls
+                    </p>
+
+                </div>
+
+                <button
+                    id="closeHistoryBtn"
+                    class="close-btn"
+                    type="button"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <div id="callHistoryList">
+
+                <p class="history-empty">
+                    No call history yet.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- GUIDELINES -->
+
+        <details class="guidelines">
+
+            <summary>
+                📜 TalkNaija Guidelines
+            </summary>
+
+            <div class="guidelines-content">
+
+                <p>
+                    TalkNaija is a place for relaxed,
+                    anonymous conversations with people
+                    around Nigeria.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Treat the person on the other end
+                        with basic respect.
+                    </li>
+
+                    <li>
+                        Do not harass, threaten or bully
+                        other users.
+                    </li>
+
+                    <li>
+                        Do not use TalkNaija to scam,
+                        impersonate or deceive people.
+                    </li>
+
+                    <li>
+                        Avoid sharing passwords, financial
+                        information or other private details.
+                    </li>
+
+                    <li>
+                        Sexual, abusive or hateful behaviour
+                        may result in a report or restriction.
+                    </li>
+
+                    <li>
+                        If a conversation becomes uncomfortable,
+                        simply end the call or use Next Person.
+                    </li>
+
+                </ul>
+
+                <div class="warning-box">
+
+                    <strong>
+                        Stay safe
+                    </strong>
+
+                    <p>
+                        TalkNaija is anonymous, but always
+                        use good judgment when speaking with
+                        strangers online.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </details>
+
+
+        <!-- COMMUNITY DROPDOWN -->
+
+        <details class="community-dropdown">
+
+            <summary>
+                🌍 Community
+            </summary>
+
+            <div class="dropdown-content">
+
+
+                <div class="content-section">
+
+                    <h2>
+                        About TalkNaija
+                    </h2>
+
+                    <p>
+                        TalkNaija gives Nigerians a simple
+                        way to meet and have spontaneous
+                        conversations with strangers.
+                    </p>
+
+                    <p>
+                        No profiles. No pressure.
+                        Just conversation.
+                    </p>
+
+                </div>
+
+
+                <div class="content-section">
+
+                    <h2>
+                        💡 What We Believe
+                    </h2>
+
+                    <p>
+                        Sometimes a random conversation
+                        can brighten someone's day.
+                    </p>
+
+                    <p>
+                        Keep it respectful, keep it real,
+                        and give everyone a fair chance
+                        to enjoy the platform.
+                    </p>
+
+                </div>
+
+
+                <div class="content-section support-section">
+
+                    <div class="support-title">
+
+                        <span class="support-icon">
+                            ☕
+                        </span>
+
+                        <h2>
+                            Support TalkNaija
+                        </h2>
+
+                    </div>
+
+                    <p>
+                        Enjoying TalkNaija? You can support
+                        the project and help us keep improving
+                        the platform.
+                    </p>
+
+                    <button
+                        class="coffee-btn"
+                        type="button"
+                    >
+                        ☕ Buy Me a Coffee
+                    </button>
+
+                    <p class="support-thanks">
+                        Every bit of support means a lot.
+                        ❤️
+                    </p>
+
+                </div>
+
+            </div>
+
+        </details>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     SEARCH SCREEN
+======================================== -->
+
+<div
+    id="searchScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <h2>
+            🔎 Searching...
+        </h2>
+
+        <div class="loader"></div>
+
+        <p id="status">
+            Finding another Nigerian...
+        </p>
+
+        <button
+            id="cancelBtn"
+            class="secondary-btn"
+            type="button"
+        >
+            Cancel Search
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     CALL SCREEN
+======================================== -->
+
+<div
+    id="callScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <div class="call-avatar">
+            🎙
+        </div>
+
+        <h2>
+            Anonymous User
+        </h2>
+
+        <p id="connectionStatus">
+            Connecting...
+        </p>
+
+        <h1 id="timer">
+            00:00
+        </h1>
+
+
+        <!-- CALL CONTROLS -->
+
+        <div class="call-controls">
+
+            <button
+                id="muteBtn"
+                class="control-btn"
+                type="button"
+            >
+                Mute
+            </button>
+
+            <button
+                id="nextBtn"
+                class="control-btn"
+                type="button"
+            >
+                Next
+            </button>
+
+            <button
+                id="reportBtn"
+                class="control-btn report-control"
+                type="button"
+            >
+                Report
+            </button>
+
+        </div>
+
+
+        <button
+            id="endBtn"
+            class="end-btn"
+            type="button"
+        >
+            End Call
+        </button>
+
+
+        <!-- CHAT -->
+
+        <div class="chat-section">
+
+            <button
+                id="chatToggle"
+                class="chat-toggle"
+                type="button"
+            >
+                💬 Open Chat
+            </button>
+
+            <div
+                id="chatBox"
+                class="chat-box hidden"
+            >
+
+                <div
+                    id="chatMessages"
+                    class="chat-messages"
+                >
+
+                    <div class="chat-empty">
+                        Messages will appear here.
+                    </div>
+
+                </div>
+
+                <div class="chat-input-row">
+
+                    <input
+                        id="chatInput"
+                        type="text"
+                        maxlength="500"
+                        placeholder="Type a message..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="chatSendBtn"
+                        type="button"
+                    >
+                        Send
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REMOTE AUDIO -->
+
+        <audio
+            id="remoteAudio"
+            autoplay
+            playsinline
+        ></audio>
+
+
+        <!-- DEBUG -->
+
+        <div
+            id="debugBox"
+            class="debug-box"
+        >
+            WebRTC Debug:<br>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     PERMANENT FOOTER
+======================================== -->
+
+<footer class="site-footer">
+
+    <div class="footer-column">
+
+        <h3>
+            TalkNaija
+        </h3>
+
+        <p>
+            Anonymous conversations.
+        </p>
+
+        <p>
+            Built for Nigerians.
+        </p>
+
+    </div>
+
+
+    <div class="footer-column">
+
+        <h3>
+            Follow Us
+        </h3>
+
+        <p>
+            Stay connected with TalkNaija.
+        </p>
+
+        <div class="social-icons">
+
+            <span>𝕏</span>
+
+            <span>f</span>
+
+            <span>◎</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 TalkNaija. All rights reserved.
+
+    </div>
+
+</footer>
+
+
+<!-- ========================================
+     SCRIPTS
+======================================== -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="js/socket.js"></script>
+
+<script src="js/webrtc.js?v=2"></script>
+
+<script src="js/app.js"></script>
+
+
+<script>
+
+const historyBtn =
+    document.getElementById("historyBtn");
+
+const historySection =
+    document.getElementById("callHistorySection");
+
+const closeHistoryBtn =
+    document.getElementById("closeHistoryBtn");
+
+if (historyBtn && historySection) {
+
+    historyBtn.onclick = () => {
+
+        historySection.classList.toggle("hidden");
+
+        if (
+            !historySection.classList.contains("hidden") &&
+            typeof loadCallHistory === "function"
+        ) {
+
+            loadCallHistory();
+
+        }
+
+    };
+
+}
+
+if (closeHistoryBtn && historySection) {
+
+    closeHistoryBtn.onclick = () => {
+
+        historySection.classList.add("hidden");
+
+    };
+
+}
+
+
+/* CHAT TOGGLE */
+
+const chatToggle =
+    document.getElementById("chatToggle");
+
+const chatBox =
+    document.getElementById("chatBox");
+
+if (chatToggle && chatBox) {
+
+    chatToggle.onclick = () => {
+
+        chatBox.classList.toggle("hidden");
+
+        chatToggle.textContent =
+            chatBox.classList.contains("hidden")
+                ? "💬 Open Chat"
+                : "💬 Close Chat";
+
+    };
+
+}
+
+</script>
+
+</body>
+
+</html>

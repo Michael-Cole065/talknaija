@@ -3,5 +3,3 @@ node_modules/
 cert/
 cloudflared-linux-arm64
 server.backup.js
-Bramrichard@065
-.env
