@@ -14,8 +14,13 @@ const {
 } = require(
     "./services/supportService"
 );
+const {
+    initializeTransaction,
+    verifyTransaction
+} = require(
+    "./services/paystackService"
+);
 const app = express();
-
 let server = http.createServer(app);
 
 const io = new Server(server);
@@ -219,6 +224,62 @@ app.post(
     }
 );
 
+
+app.get(
+    "/api/payment/verify/:reference",
+    async (req, res) => {
+
+        try {
+
+            const reference =
+                req.params.reference;
+
+            if (!reference) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        "Payment reference is required."
+
+                });
+
+            }
+
+            const result =
+                await verifyTransaction(
+                    reference
+                );
+
+            return res.json({
+
+                success: true,
+
+                payment: result
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ PAYSTACK VERIFICATION ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                message:
+                    "Unable to verify payment."
+
+            });
+
+        }
+
+    }
+);
 
 // ========================================
 // SUPPORT ADMIN API
@@ -433,6 +494,180 @@ registerSocketHandlers(
     io,
     activePairs,
     queue
+);
+
+// ========================================
+// PAYSTACK SUPPORT PAYMENT
+// ========================================
+
+app.post(
+    "/api/payment/initialize",
+    async (req, res) => {
+
+        try {
+
+            const {
+                email,
+                amount
+            } = req.body || {};
+
+            if (
+                typeof email !== "string" ||
+                typeof amount !== "number"
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Valid email and amount are required."
+                });
+
+            }
+
+            const cleanEmail =
+                email.trim();
+
+            if (!cleanEmail) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Email is required."
+                });
+
+            }
+
+            if (
+                !Number.isInteger(amount) ||
+                amount < 2000
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Minimum support amount is ₦2000."
+                });
+
+            }
+
+            const reference =
+                "TN-" +
+                Date.now() +
+                "-" +
+                Math.random()
+                    .toString(36)
+                    .slice(2, 10);
+
+            const transaction =
+                await initializeTransaction({
+
+                    email:
+                        cleanEmail,
+
+                    amount:
+                        amount * 100,
+
+                    reference,
+
+                    callbackUrl:
+                        process.env.PAYSTACK_CALLBACK_URL || ""
+
+                });
+
+            return res.json({
+
+                success: true,
+
+                authorizationUrl:
+                    transaction.authorization_url,
+
+                accessCode:
+                    transaction.access_code,
+
+                reference:
+                    transaction.reference
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ PAYSTACK INITIALIZATION ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                message:
+                    "Unable to initialize payment."
+
+            });
+
+        }
+
+    }
+);
+
+// ========================================
+// PAYSTACK PAYMENT VERIFICATION
+// ========================================
+
+app.get(
+    "/api/payment/verify/:reference",
+    async (req, res) => {
+
+        try {
+
+            const reference =
+                req.params.reference;
+
+            if (!reference) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    message:
+                        "Payment reference is required."
+
+                });
+
+            }
+
+            const result =
+                await verifyTransaction(
+                    reference
+                );
+
+            return res.json({
+
+                success: true,
+
+                payment: result
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ PAYSTACK VERIFICATION ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                message:
+                    "Unable to verify payment."
+
+            });
+
+        }
+
+    }
 );
 
 // ========================================

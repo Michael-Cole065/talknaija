@@ -129,7 +129,6 @@
         <span>Buy Me a Coffee</span>
     </button>
 
-
     <div class="side-menu-support-note">
 
         <strong>Help Keep TalkNaija Running</strong>
@@ -492,6 +491,121 @@
 </div>
 
     </div>
+
+<!-- ========================================
+     SUPPORT PAYMENT MODAL
+======================================== -->
+
+<div
+    id="coffeeModal"
+    class="coffee-modal hidden"
+>
+
+    <div class="coffee-modal-card">
+
+        <button
+            id="closeCoffeeModal"
+            class="coffee-modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div class="coffee-modal-icon">
+            ☕
+        </div>
+
+        <h2>
+            Support TalkNaija
+        </h2>
+
+        <p>
+            Help keep TalkNaija running,
+            maintained and improving.
+        </p>
+
+
+        <label
+            for="coffeeEmail"
+            class="coffee-label"
+        >
+            Email
+        </label>
+
+        <input
+            id="coffeeEmail"
+            class="coffee-input"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+        >
+
+
+        <label
+            for="coffeeAmount"
+            class="coffee-label"
+        >
+            Support Amount
+        </label>
+
+        <div
+            class="coffee-amount-options"
+        >
+
+            <button
+                type="button"
+                class="coffee-amount-btn"
+                data-amount="2000"
+            >
+                ₦2,000
+            </button>
+
+            <button
+                type="button"
+                class="coffee-amount-btn"
+                data-amount="5000"
+            >
+                ₦5,000
+            </button>
+
+            <button
+                type="button"
+                class="coffee-amount-btn"
+                data-amount="10000"
+            >
+                ₦10,000
+            </button>
+
+        </div>
+
+
+        <input
+            id="coffeeAmount"
+            class="coffee-input"
+            type="number"
+            min="2000"
+            step="100"
+            placeholder="Or enter custom amount"
+        >
+
+
+        <button
+            id="coffeePayBtn"
+            class="coffee-pay-btn"
+            type="button"
+        >
+            ☕ Support TalkNaija
+        </button>
+
+
+        <p
+            id="coffeePaymentStatus"
+            class="coffee-payment-status"
+        ></p>
+
+    </div>
+
+</div>
 
 </div>
 

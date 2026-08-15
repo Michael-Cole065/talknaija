@@ -859,6 +859,10 @@ body.menu-open {
     overflow: hidden;
 }
 
+body.menu-open #homeScreen {
+    overflow: hidden;
+}
+
 .side-menu.open {
     transform: translateX(0);
 }
@@ -982,6 +986,10 @@ body.menu-open {
     text-align: left;
 
     cursor: pointer;
+    
+    justify-content: center;
+    
+    text-align: center;
 }
 
 .coffee-menu-btn:hover {
@@ -1499,3 +1507,151 @@ body.menu-open {
     margin: 22px auto 24px;
     text-align: center;
 }
+
+/* ========================================
+   SUPPORT PAYMENT MODAL
+======================================== */
+
+.coffee-modal {
+    position: fixed;
+    inset: 0;
+
+    overflow-y: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0, 0, 0, 0.65);
+
+    z-index: 9999;
+}
+
+body.coffee-modal-open {
+    overflow: hidden;
+}
+
+.coffee-modal.hidden {
+    display: none !important;
+}
+
+.coffee-modal-card {
+    position: relative;
+
+    width: 100%;
+    max-width: 430px;
+
+    padding: 28px 22px;
+
+    background: #12203c;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    box-sizing: border-box;
+}
+
+.coffee-modal-close {
+    position: absolute;
+
+    top: 12px;
+    right: 14px;
+
+    border: none;
+    background: transparent;
+
+    color: inherit;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.coffee-modal-icon {
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+.coffee-modal-card h2 {
+    margin-bottom: 8px;
+}
+
+.coffee-modal-card p {
+    line-height: 1.5;
+}
+
+.coffee-label {
+    display: block;
+
+    margin-top: 18px;
+    margin-bottom: 7px;
+
+    text-align: left;
+
+    font-weight: 600;
+}
+
+.coffee-input {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border: none;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.coffee-amount-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.coffee-amount-btn {
+    flex: 1;
+
+    padding: 11px 8px;
+
+    border: none;
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.coffee-pay-btn {
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 13px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #202f80;
+    color: white;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.coffee-payment-status {
+    min-height: 20px;
+
+    margin-top: 12px;
+}
+

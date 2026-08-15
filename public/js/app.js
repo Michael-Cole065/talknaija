@@ -2624,6 +2624,48 @@ document
 
     });
 
+function startCoffeePayment() {
+
+    const coffeeModal =
+        document.getElementById(
+            "coffeeModal"
+        );
+
+    const coffeeEmail =
+        document.getElementById(
+            "coffeeEmail"
+        );
+
+    const coffeeAmount =
+        document.getElementById(
+            "coffeeAmount"
+        );
+
+    const coffeeStatus =
+        document.getElementById(
+            "coffeePaymentStatus"
+        );
+
+    if (!coffeeModal) {
+        return;
+    }
+
+    coffeeEmail.value = "";
+    coffeeAmount.value = "";
+
+    if (coffeeStatus) {
+        coffeeStatus.textContent = "";
+    }
+
+    coffeeModal.classList.remove(
+        "hidden"
+    );
+
+    document.body.classList.add(
+        "coffee-modal-open"
+    );
+
+}
 
 if (coffeeMenuBtn) {
 
@@ -2631,18 +2673,228 @@ if (coffeeMenuBtn) {
 
         closeSideMenu();
 
-        /*
-        Existing Buy Me a Coffee
-        functionality will be connected here.
-        */
+        startCoffeePayment();
 
-        alert(
-            "Buy Me a Coffee will be connected soon."
+    };
+
+}
+
+document
+    .querySelectorAll(".coffee-btn")
+    .forEach((button) => {
+
+        button.onclick = () => {
+
+            startCoffeePayment();
+
+        };
+
+    });
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const coffeePayBtn =
+            document.getElementById(
+                "coffeePayBtn"
+            );
+
+        const closeCoffeeModal =
+            document.getElementById(
+                "closeCoffeeModal"
+            );
+
+        const coffeeModal =
+            document.getElementById(
+                "coffeeModal"
+            );
+
+        const coffeeEmail =
+            document.getElementById(
+                "coffeeEmail"
+            );
+
+        const coffeeAmount =
+            document.getElementById(
+                "coffeeAmount"
+            );
+
+        const coffeeStatus =
+            document.getElementById(
+                "coffeePaymentStatus"
+            );
+
+
+if (closeCoffeeModal) {
+
+    closeCoffeeModal.onclick = () => {
+
+        coffeeModal.classList.add(
+            "hidden"
+        );
+
+        document.body.classList.remove(
+            "coffee-modal-open"
         );
 
     };
 
 }
+
+if (coffeeModal) {
+
+    coffeeModal.addEventListener(
+        "click",
+        (event) => {
+
+            if (
+                event.target ===
+                coffeeModal
+            ) {
+
+                coffeeModal.classList.add(
+                    "hidden"
+                );
+
+                document.body.classList.remove(
+                    "coffee-modal-open"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+        document
+            .querySelectorAll(
+                ".coffee-amount-btn"
+            )
+            .forEach((button) => {
+
+                button.onclick = () => {
+
+                    coffeeAmount.value =
+                        button.dataset.amount;
+
+                };
+
+            });
+
+
+        if (coffeePayBtn) {
+
+            coffeePayBtn.onclick =
+                async () => {
+
+                    const email =
+                        coffeeEmail.value.trim();
+
+                    const amount =
+                        Number(
+                            coffeeAmount.value
+                        );
+
+
+                    if (!email) {
+
+                        coffeeStatus.textContent =
+                            "Please enter your email.";
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !Number.isInteger(amount) ||
+                        amount < 2000
+                    ) {
+
+                        coffeeStatus.textContent =
+                            "Minimum support amount is ₦2,000.";
+
+                        return;
+
+                    }
+
+
+                    coffeePayBtn.disabled = true;
+
+                    coffeeStatus.textContent =
+                        "Connecting to Paystack...";
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                "/api/payment/initialize",
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+                                            email,
+                                            amount
+                                        })
+
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (
+                            !response.ok ||
+                            !data.success
+                        ) {
+
+                            throw new Error(
+                                data.message ||
+                                "Unable to initialize payment."
+                            );
+
+                        }
+
+
+                        window.location.href =
+                            data.authorizationUrl;
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "❌ COFFEE PAYMENT ERROR:",
+                            error
+                        );
+
+                        coffeeStatus.textContent =
+                            error.message ||
+                            "Unable to start payment.";
+
+                        coffeePayBtn.disabled =
+                            false;
+
+                    }
+
+                };
+
+        }
+
+    }
+);
+
 
 /*
 ==================================================
@@ -2851,3 +3103,120 @@ document
         );
 
     });
+
+async function checkPaymentReturn() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const reference =
+        params.get("reference");
+
+    if (!reference) {
+        return;
+    }
+
+    console.log(
+        "💳 PAYSTACK REFERENCE:",
+        reference
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/payment/verify/${encodeURIComponent(reference)}`
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Payment verification failed."
+            );
+
+        }
+
+        const payment =
+            data.payment;
+
+
+        if (
+            payment.status ===
+            "success"
+        ) {
+
+            alert(
+                "☕ Payment successful!\n\n" +
+                "Thank you for supporting TalkNaija! ❤️"
+            );
+
+        } else {
+
+            alert(
+                "Payment was not completed.\n\n" +
+                "No money was charged."
+            );
+
+        }
+
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+        );
+
+
+        const coffeeModal =
+            document.getElementById(
+                "coffeeModal"
+            );
+
+        if (coffeeModal) {
+
+            coffeeModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        document.body.classList.remove(
+            "coffee-modal-open"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ PAYMENT VERIFICATION ERROR:",
+            error
+        );
+
+        alert(
+            "We couldn't verify the payment.\n\n" +
+            "Please try again."
+        );
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+        );
+
+    }
+
+}
+
+checkPaymentReturn();
+
+
