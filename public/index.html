@@ -74,6 +74,14 @@
             <span>Home</span>
         </button>
 
+	        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="profile"
+        >
+            👤
+            <span>Profile</span>
+        </button>
 
         <button
             type="button"
@@ -606,6 +614,96 @@
     </div>
 
 </div>
+
+</div>
+
+<!-- ========================================
+     PROFILE SCREEN
+======================================== -->
+
+<div
+    id="profileScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card profile-card">
+
+        <h1>
+            Profile
+        </h1>
+
+        <div class="profile-section">
+
+            <div class="profile-label">
+                TalkNaija ID
+            </div>
+
+            <div class="profile-id-row">
+
+                <strong id="profileTalkNaijaId">
+                    GUEST
+                </strong>
+
+                <button
+                    type="button"
+                    id="copyProfileIdBtn"
+                    class="profile-copy-btn"
+                    aria-label="Copy TalkNaija ID"
+                    title="Copy TalkNaija ID"
+                >
+                    ⧉
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-section">
+
+            <div class="profile-label">
+                User Level
+            </div>
+
+            <strong id="profileUserLevel">
+                Guest
+            </strong>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="profileUpgradeBtn"
+            class="main-call-btn"
+        >
+            Upgrade
+        </button>
+
+	        <button
+            type="button"
+            class="secondary-btn"
+            data-back-home
+        >
+           ‹ Back
+        </button>
+
+    </div>
+
+    <!-- PROFILE ADSENSE -->
+
+    <div class="adsense-slot profile-ad">
+
+        <ins
+            class="adsbygoogle"
+            style="display:block"
+            data-ad-client="YOUR_ADSENSE_CLIENT_ID"
+            data-ad-slot="YOUR_PROFILE_AD_SLOT_ID"
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+        ></ins>
+
+    </div>
 
 </div>
 

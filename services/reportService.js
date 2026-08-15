@@ -179,12 +179,56 @@ function getBlockedPairs() {
 
 }
 
+function getReportCountsByUser() {
+
+    const reports =
+        getReports();
+
+    const counts = {};
+
+    reports.forEach((report) => {
+
+        if (!report.reported) {
+            return;
+        }
+
+        counts[report.reported] =
+            (counts[report.reported] || 0) + 1;
+
+    });
+
+    return counts;
+
+}
+
+
+function getRedAccounts() {
+
+    const counts =
+        getReportCountsByUser();
+
+    return Object.entries(counts)
+        .filter(
+            ([userId, count]) =>
+                count >= 5
+        )
+        .map(
+            ([userId, count]) => ({
+                userId,
+                reports: count
+            })
+        );
+
+}
+
 module.exports = {
 
     getReports,
     addReport,
     updateReportStatus,
     setReportBlocked,
-    getBlockedPairs
+    getBlockedPairs,
+    getReportCountsByUser,
+    getRedAccounts
 
 };

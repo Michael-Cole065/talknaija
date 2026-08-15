@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TalkNaija Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .dashboard-section {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        .section-description {
+            color: #666;
+            font-size: 14px;
+            margin: 4px 0 0;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #111;
+            color: white;
+        }
+
+        .blue {
+            background: #e8f1ff;
+            color: #174ea6;
+        }
+
+        .danger {
+            background: #ffe9e9;
+            color: #b00020;
+        }
+
+        .muted {
+            background: #eee;
+        }
+
+        .report {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .reason {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #eee;
+        }
+
+        .details {
+            margin-top: 12px;
+            line-height: 1.6;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .red-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border: 1px solid #f0d0d0;
+            background: #fff7f7;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .red-label {
+            color: #b00020;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px 15px;
+            color: #666;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #900;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .dashboard-section {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ========================================
+         ADMIN HEADER
+    ========================================= -->
+
+    <header class="header">
+
+        <h1>
+            TalkNaija Admin
+        </h1>
+
+        <p>
+            Moderation & Support Control Center
+        </p>
+
+    </header>
+
+    <div id="error"></div>
+
+    <!-- ========================================
+         DASHBOARD STATS
+    ========================================= -->
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Reports
+            </div>
+
+            <div id="totalReports" class="stat-value">
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Pending
+            </div>
+
+            <div id="pendingReports" class="stat-value">
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Action Taken
+            </div>
+
+            <div id="actionTakenReports" class="stat-value">
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Red Accounts
+            </div>
+
+            <div id="redAccountsCount" class="stat-value">
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         RED ACCOUNTS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    🔴 Red Accounts
+                </h2>
+
+                <p class="section-description">
+                    Users with five or more reports.
+                </p>
+
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadRedAccounts()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="redAccounts">
+            Loading red accounts...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         REPORTS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    🚨 Reports
+                </h2>
+
+                <p class="section-description">
+                    Review and manage user reports.
+                </p>
+
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadReports()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="reports">
+            Loading reports...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         SUPPORT
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    📩 Support
+                </h2>
+
+                <p class="section-description">
+                    User support messages will appear here.
+                </p>
+
+            </div>
+
+            <button
+                class="blue"
+                onclick="loadTickets()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="tickets">
+            Loading support tickets...
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+
+/*
+==================================================
+ERROR
+==================================================
+*/
+
+const errorContainer =
+    document.getElementById("error");
+
+
+/*
+==================================================
+STATS
+==================================================
+*/
+
+async function loadStats() {
+
+    try {
+
+        const response =
+            await fetch("/api/admin/stats");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load admin statistics."
+            );
+
+        }
+
+        const stats =
+            await response.json();
+
+        document.getElementById(
+            "totalReports"
+        ).textContent =
+            stats.totalReports;
+
+        document.getElementById(
+            "pendingReports"
+        ).textContent =
+            stats.pendingReports;
+
+        document.getElementById(
+            "actionTakenReports"
+        ).textContent =
+            stats.actionTakenReports;
+
+        document.getElementById(
+            "redAccountsCount"
+        ).textContent =
+            stats.redAccounts;
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError();
+
+    }
+
+}
+
+
+/*
+==================================================
+RED ACCOUNTS
+==================================================
+*/
+
+async function loadRedAccounts() {
+
+    const container =
+        document.getElementById("redAccounts");
+
+    try {
+
+        const response =
+            await fetch("/api/admin/red-accounts");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load red accounts."
+            );
+
+        }
+
+        const accounts =
+            await response.json();
+
+        if (!accounts.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No red accounts currently.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            accounts
+                .map(
+                    (account) => `
+                        <div class="red-account">
+
+                            <div>
+
+                                <div>
+
+                                    <strong>
+                                        ${escapeHtml(account.userId)}
+                                    </strong>
+
+                                </div>
+
+                                <div class="red-label">
+                                    ${account.reports}
+                                    reports
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `
+                )
+                .join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load red accounts.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+REPORTS
+==================================================
+*/
+
+async function loadReports() {
+
+    const container =
+        document.getElementById("reports");
+
+    try {
+
+        const response =
+            await fetch("/api/reports");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load reports."
+            );
+
+        }
+
+        const reports =
+            await response.json();
+
+        if (!reports.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+
+                    <h3>
+                        No reports
+                    </h3>
+
+                    <p>
+                        There are currently
+                        no user reports.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            reports
+                .slice()
+                .reverse()
+                .map(
+                    (report) => `
+                        <div class="report">
+
+                            <div class="report-header">
+
+                                <div class="reason">
+                                    🚨
+                                    ${escapeHtml(report.reason)}
+                                </div>
+
+                                <div class="status">
+                                    ${escapeHtml(report.status)}
+                                </div>
+
+                            </div>
+
+                            <div class="details">
+
+                                <div>
+
+                                    <strong>
+                                        Reporter:
+                                    </strong>
+
+                                    ${escapeHtml(report.reporter)}
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Reported:
+                                    </strong>
+
+                                    ${escapeHtml(report.reported)}
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Created:
+                                    </strong>
+
+                                    ${new Date(
+                                        report.createdAt
+                                    ).toLocaleString()}
+
+                                </div>
+
+                            </div>
+
+                            <div class="actions">
+
+                                <button
+                                    class="blue"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'reviewed'
+                                    )"
+                                >
+                                    Mark Reviewed
+                                </button>
+
+                                <button
+                                    class="danger"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'action_taken'
+                                    )"
+                                >
+                                    Action Taken
+                                </button>
+
+                                <button
+                                    class="primary"
+                                    onclick="${
+                                        report.blocked
+                                            ? `unblockPair('${report.id}')`
+                                            : `blockPair('${report.id}')`
+                                    }"
+                                >
+                                    ${
+                                        report.blocked
+                                            ? "🔓 Unblock Pair"
+                                            : "🚫 Block Pair"
+                                    }
+                                </button>
+
+                                <button
+                                    class="muted"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'dismissed'
+                                    )"
+                                >
+                                    Dismiss
+                                </button>
+
+                            </div>
+
+                        </div>
+                    `
+                )
+                .join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load reports.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+BLOCK PAIR
+==================================================
+*/
+
+async function blockPair(id) {
+
+    if (!confirm(
+        "Block these two users from being matched with each other again?"
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/reports/${id}/block`,
+            {
+                method: "POST"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to block pair.");
+        }
+
+        alert("Pair blocked successfully.");
+
+        await loadReports();
+        await loadStats();
+        await loadRedAccounts();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Could not block this pair.");
+
+    }
+
+}
+
+/*
+==================================================
+UNBLOCK PAIR
+==================================================
+*/
+
+async function unblockPair(id) {
+
+    if (!confirm(
+        "Allow these two users to be matched with each other again?"
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/reports/${id}/unblock`,
+            {
+                method: "POST"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to unblock pair."
+            );
+        }
+
+        alert(
+            "Pair unblocked successfully."
+        );
+
+        await loadReports();
+        await loadStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not unblock this pair."
+        );
+
+    }
+
+}
+
+
+/*
+==================================================
+UPDATE REPORT
+==================================================
+*/
+
+async function updateReport(id, status) {
+
+    try {
+
+        const response = await fetch(
+            `/api/reports/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    status
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to update report."
+            );
+        }
+
+        await loadReports();
+        await loadStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not update the report."
+        );
+
+    }
+
+}
+
+
+/*
+==================================================
+SUPPORT
+==================================================
+*/
+
+async function loadTickets() {
+
+    const container =
+        document.getElementById("tickets");
+
+    try {
+
+        const response = await fetch(
+            "/api/support"
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load support tickets."
+            );
+        }
+
+        const data =
+            await response.json();
+
+        container.innerHTML = "";
+
+        if (
+            !data.tickets ||
+            data.tickets.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No support tickets yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        data.tickets.forEach((ticket) => {
+
+            const box =
+                document.createElement("div");
+
+            box.className = "report";
+
+            const title =
+                document.createElement("h3");
+
+            title.textContent =
+                ticket.subject;
+
+            const meta =
+                document.createElement("div");
+
+            meta.className = "details";
+
+            meta.textContent =
+                `${ticket.id} • ${ticket.email} • ${new Date(
+                    ticket.createdAt
+                ).toLocaleString()}`;
+
+            const status =
+                document.createElement("span");
+
+            status.className = "status";
+
+            status.textContent =
+                ticket.status;
+
+            const message =
+                document.createElement("div");
+
+            message.className = "details";
+
+            message.style.whiteSpace =
+                "pre-wrap";
+
+            message.textContent =
+                ticket.message;
+
+            box.appendChild(title);
+            box.appendChild(meta);
+
+            box.appendChild(
+                document.createElement("br")
+            );
+
+            box.appendChild(status);
+
+            box.appendChild(
+                document.createElement("br")
+            );
+
+            box.appendChild(
+                document.createElement("br")
+            );
+
+            box.appendChild(message);
+
+            container.appendChild(box);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Unable to load support tickets.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+HTML ESCAPING
+==================================================
+*/
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/*
+==================================================
+ERROR DISPLAY
+==================================================
+*/
+
+function showError() {
+
+    errorContainer.innerHTML = `
+        <div class="error">
+            Could not load admin statistics.
+        </div>
+    `;
+
+}
+
+
+/*
+==================================================
+INITIAL LOAD
+==================================================
+*/
+
+loadStats();
+loadRedAccounts();
+loadReports();
+loadTickets();
+
+</script>
+
+</body>
+
+</html>

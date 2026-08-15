@@ -1,8 +1,4 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+*{ margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif;
 }
 
 body{
@@ -1653,5 +1649,86 @@ body.coffee-modal-open {
     min-height: 20px;
 
     margin-top: 12px;
+}
+
+/* ========================================
+   PROFILE
+======================================== */
+
+.profile-card {
+    max-width: 450px;
+}
+
+.profile-section {
+    margin-top: 14px;
+    text-align: left;
+}
+
+.profile-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.65;
+    margin-bottom: 7px;
+}
+
+.profile-id-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.profile-id-row strong {
+    font-size: 1.05rem;
+    letter-spacing: 0.8px;
+}
+
+.profile-copy-btn {
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 1.1rem;
+
+    padding: 6px 8px;
+
+    border-radius: 7px;
+}
+
+.profile-copy-btn:hover {
+    background: rgba(0, 102, 255, 0.10);
+}
+
+.profile-copy-btn:active {
+    transform: scale(0.95);
+}
+
+#profileUserLevel {
+    display: block;
+
+    padding: 10px 14px;
+
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+
+    font-size: 1rem;
+}
+
+#profileUpgradeBtn {
+    margin-top: 18px;
+}
+
+/* Profile back button spacing */
+
+.profile-card [data-back-home] {
+    margin-top: 14px;
 }
 

@@ -222,6 +222,10 @@ function showScreen(screen) {
             "supportScreen"
         );
 
+    const profileScreen =
+    document.getElementById(
+        "profileScreen"
+    );
 
     if (faqScreen) {
 
@@ -249,6 +253,13 @@ function showScreen(screen) {
 
     }
 
+    if (profileScreen) {
+
+    profileScreen.classList.add(
+        "hidden"
+    );
+
+    }
 
     if (screen) {
 
@@ -294,6 +305,90 @@ function showScreen(screen) {
 
 }
 
+/*
+==================================================
+PROFILE
+==================================================
+*/
+
+const profileCopyBtn =
+    document.getElementById(
+        "copyProfileIdBtn"
+    );
+
+const profileTalkNaijaId =
+    document.getElementById(
+        "profileTalkNaijaId"
+    );
+
+
+if (
+    profileCopyBtn &&
+    profileTalkNaijaId
+) {
+
+    profileCopyBtn.addEventListener(
+        "click",
+        async () => {
+
+            const id =
+                profileTalkNaijaId.textContent.trim();
+
+            if (!id) {
+                return;
+            }
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    id
+                );
+
+                const originalText =
+                    profileCopyBtn.textContent;
+
+                profileCopyBtn.textContent =
+                    "✓";
+
+                setTimeout(
+                    () => {
+
+                        profileCopyBtn.textContent =
+                            originalText;
+
+                    },
+                    1200
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Profile ID copy failed:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
+
+const profileUpgradeBtn =
+    document.getElementById(
+        "profileUpgradeBtn"
+    );
+
+
+if (profileUpgradeBtn) {
+
+    profileUpgradeBtn.onclick = () => {
+
+	showPremiumComingSoon();
+
+    };
+
+}
 
 /*
 ==================================================
@@ -2244,6 +2339,25 @@ if (action === "policy") {
 
 }
 
+if (action === "profile") {
+
+    const profileScreen =
+        document.getElementById(
+            "profileScreen"
+        );
+
+    if (profileScreen) {
+
+        showScreen(
+            profileScreen
+        );
+
+    }
+
+    return;
+
+}
+
 if (action === "support") {
 
     const supportScreen =
@@ -2263,16 +2377,13 @@ if (action === "support") {
 
 }
 
-    if (action === "premium") {
+if (action === "premium") {
 
-        alert(
-            "TalkNaija Premium is coming soon."
-        );
+    showPremiumComingSoon();
 
-        return;
+    return;
 
-    }
-
+}
 
     if (action === "coffee") {
 
@@ -2570,6 +2681,153 @@ function showLeaveCallConfirmation(
 
 }
 
+function showPremiumComingSoon() {
+
+        document.body.style.overflow =
+           "hidden";
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.style.position =
+        "fixed";
+
+    overlay.style.top =
+        "0";
+
+    overlay.style.left =
+        "0";
+
+    overlay.style.right =
+        "0";
+
+    overlay.style.bottom =
+        "0";
+
+    overlay.style.background =
+        "rgba(0,0,0,0.65)";
+
+    overlay.style.display =
+        "flex";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.zIndex =
+        "99999";
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.style.background =
+        "#0d1730";
+
+    box.style.boxSizing =
+        "border-box";
+
+    box.style.boxShadow =
+        "0 10px 30px rgba(0,0,0,0.35)";
+
+    box.style.padding =
+        "25px";
+
+    box.style.borderRadius =
+        "15px";
+
+    box.style.textAlign =
+        "center";
+
+    box.style.maxWidth =
+        "320px";
+
+    box.style.width =
+        "85%";
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+    message.textContent =
+        "TalkNaija Premium is coming soon.";
+
+    message.style.fontSize =
+        "16px";
+
+    message.style.fontWeight =
+        "600";
+
+
+    const okayBtn =
+        document.createElement(
+            "button"
+        );
+
+    okayBtn.textContent =
+        "Okay";
+
+    okayBtn.style.background =
+        "#22c55e";
+
+    okayBtn.style.color =
+        "#fff";
+
+    okayBtn.style.border =
+        "none";
+
+    okayBtn.style.borderRadius =
+        "10px";
+
+    okayBtn.style.padding =
+        "12px 20px";
+
+    okayBtn.style.width =
+        "115px";
+
+    okayBtn.style.boxSizing =
+        "border-box";
+
+    okayBtn.style.minWidth =
+        "115px";
+
+    okayBtn.style.marginTop =
+        "20px";
+
+   okayBtn.onclick = () => {
+
+    overlay.remove();
+
+    document.body.style.overflow =
+        "";
+
+};
+
+    box.appendChild(
+        message
+    );
+
+    box.appendChild(
+        okayBtn
+    );
+
+    overlay.appendChild(
+        box
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+}
 
 /*
 ==================================================

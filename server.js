@@ -320,13 +320,17 @@ app.get(
 
 
 // ========================================
-// PROTECT ADMIN PAGE
+// PROTECT MAIN ADMIN DASHBOARD
 // ========================================
 
-app.get("/admin-reports.html", adminAuth, (req, res) => {
+app.get("/admin.html", adminAuth, (req, res) => {
 
     res.sendFile(
-        path.join(__dirname, "public", "admin-reports.html")
+        path.join(
+            __dirname,
+            "public",
+            "admin.html"
+        )
     );
 
 });
@@ -346,6 +350,77 @@ app.get(
                 "public",
                 "admin-support.html"
             )
+        );
+
+    }
+);
+
+// ========================================
+// ADMIN DASHBOARD API
+// ========================================
+
+app.get(
+    "/api/admin/stats",
+    adminAuth,
+    (req, res) => {
+
+        const reports =
+            reportService.getReports();
+
+        const redAccounts =
+            reportService.getRedAccounts();
+
+        const stats = {
+
+            totalReports:
+                reports.length,
+
+            pendingReports:
+                reports.filter(
+                    (report) =>
+                        report.status ===
+                        "pending"
+                ).length,
+
+            reviewedReports:
+                reports.filter(
+                    (report) =>
+                        report.status ===
+                        "reviewed"
+                ).length,
+
+            actionTakenReports:
+                reports.filter(
+                    (report) =>
+                        report.status ===
+                        "action_taken"
+                ).length,
+
+            dismissedReports:
+                reports.filter(
+                    (report) =>
+                        report.status ===
+                        "dismissed"
+                ).length,
+
+            redAccounts:
+                redAccounts.length
+
+        };
+
+        res.json(stats);
+
+    }
+);
+
+
+app.get(
+    "/api/admin/red-accounts",
+    adminAuth,
+    (req, res) => {
+
+        res.json(
+            reportService.getRedAccounts()
         );
 
     }
