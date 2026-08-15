@@ -2867,12 +2867,15 @@ if (coffeeModal) {
 
                         }
 
-
+			sessionStorage.setItem(
+			    "talknaija_paystack_active",
+			    "true"
+			);
                         window.location.href =
                             data.authorizationUrl;
 
 
-                    } catch (error) {
+			} catch (error) {
 
                         console.error(
                             "❌ COFFEE PAYMENT ERROR:",
@@ -3182,7 +3185,11 @@ if (!reference) {
             alert(
                 "☕ Payment successful!\n\n" +
                 "Thank you for supporting TalkNaija! ❤️"
-            );
+                );
+
+	    sessionStorage.removeItem(
+	       "talknaija_paystack_active"
+		);
 
         } else {
 
@@ -3243,5 +3250,60 @@ if (!reference) {
 }
 
 checkPaymentReturn();
+window.addEventListener(
+    "pageshow",
+    () => {
+
+        const paystackActive =
+            sessionStorage.getItem(
+                "talknaija_paystack_active"
+            );
+
+        if (!paystackActive) {
+            return;
+        }
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const reference =
+            params.get("reference");
+
+        if (reference) {
+            return;
+        }
+
+        const paymentButton =
+            document.getElementById(
+                "coffeePayBtn"
+            );
+
+        const paymentStatus =
+            document.getElementById(
+                "coffeePaymentStatus"
+            );
+
+        if (paymentButton) {
+
+            paymentButton.disabled =
+                false;
+
+        }
+
+        if (paymentStatus) {
+
+            paymentStatus.textContent =
+                "Payment cancelled. You can try again.";
+
+        }
+
+        sessionStorage.removeItem(
+            "talknaija_paystack_active"
+        );
+
+    }
+);
 
 
