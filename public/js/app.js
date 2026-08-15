@@ -3114,9 +3114,34 @@ async function checkPaymentReturn() {
     const reference =
         params.get("reference");
 
-    if (!reference) {
-        return;
+if (!reference) {
+
+    const paymentButton =
+        document.getElementById(
+            "coffeePayBtn"
+        );
+
+    const paymentStatus =
+        document.getElementById(
+            "coffeePaymentStatus"
+        );
+
+    if (paymentButton) {
+
+        paymentButton.disabled =
+            false;
+
     }
+
+    if (paymentStatus) {
+
+        paymentStatus.textContent =
+            "Payment cancelled. You can try again.";
+
+    }
+
+    return;
+}
 
     console.log(
         "💳 PAYSTACK REFERENCE:",
