@@ -8,6 +8,13 @@ require("dotenv").config();
 const queue = require("./services/queueService");
 const registerSocketHandlers = require("./sockets");
 const reportService = require("./services/reportService");
+const historyService =
+    require("./services/historyService");
+const identityService =
+    require("./services/identityService");
+
+const trafficService =
+    require("./services/trafficService");
 const {
     createSupportTicket,
     getAllSupportTickets
@@ -20,6 +27,8 @@ const {
 } = require(
     "./services/paystackService"
 );
+const donationService =
+    require("./services/donationService");
 const app = express();
 let server = http.createServer(app);
 
@@ -245,20 +254,30 @@ app.get(
 
                 });
 
+
             }
+	const result =
+    await verifyTransaction(
+        reference
+    );
 
-            const result =
-                await verifyTransaction(
-                    reference
-                );
+if (
+    result.status === "success"
+) {
 
-            return res.json({
+    donationService.recordDonation(
+        result
+    );
 
-                success: true,
+}
 
-                payment: result
+return res.json({
 
-            });
+    success: true,
+
+    payment: result
+
+});
 
         } catch (error) {
 
@@ -425,6 +444,407 @@ app.get(
 
     }
 );
+
+app.get(
+    "/api/admin/donations",
+    adminAuth,
+    (req, res) => {
+
+        const stats =
+            donationService.getDonationStats();
+
+        res.json(stats);
+
+    }
+);
+
+app.get(
+    "/api/admin/donations/history",
+    adminAuth,
+    (req, res) => {
+
+        res.json(
+            donationService.getAllDonations()
+        );
+
+    }
+);
+
+// ========================================
+// ADMIN TRAFFIC API
+// ========================================
+
+app.get(
+    "/api/admin/traffic",
+    adminAuth,
+    (req, res) => {
+
+        const limit =
+            Math.min(
+                Number(req.query.limit) || 100,
+                1000
+            );
+
+        const visits =
+            trafficService.getRecentVisits(
+                limit
+            );
+
+        res.json({
+            totalVisits:
+                trafficService.getVisitCount(),
+
+            visits
+        });
+
+    }
+);
+
+// ========================================
+// ADMIN GUESTS API
+// ========================================
+
+app.get(
+    "/api/admin/guests",
+    adminAuth,
+    (req, res) => {
+
+        const users =
+            identityService
+                .getUsers()
+                .filter(
+                    (user) =>
+                        user.type === "guest"
+                );
+
+        users.sort(
+            (a, b) =>
+                new Date(b.lastActive) -
+                new Date(a.lastActive)
+        );
+
+        res.json({
+            count:
+                users.length,
+
+            users
+        });
+
+    }
+);
+
+// ========================================
+// ADMIN MEMBERS API
+// ========================================
+
+app.get(
+    "/api/admin/members",
+    adminAuth,
+    (req, res) => {
+
+        const users =
+            identityService
+                .getUsers()
+                .filter(
+                    (user) =>
+                        user.type !== "guest"
+                );
+
+        users.sort(
+            (a, b) =>
+                new Date(b.lastActive) -
+                new Date(a.lastActive)
+        );
+
+        res.json({
+            count:
+                users.length,
+
+            users
+        });
+
+    }
+);
+
+// ========================================
+// ADMIN PREMIUM API
+// ========================================
+
+app.get(
+    "/api/admin/premium",
+    adminAuth,
+    (req, res) => {
+
+        const users =
+            identityService
+                .getUsers()
+                .filter(
+                    (user) =>
+                        user.isPremium === true
+                );
+
+        users.sort(
+            (a, b) =>
+                new Date(b.lastActive) -
+                new Date(a.lastActive)
+        );
+
+        res.json({
+            count:
+                users.length,
+
+            users
+        });
+
+    }
+);
+
+// ========================================
+// ADMIN USER HISTORY API
+// ========================================
+
+app.get(
+    "/api/admin/users/:uuid/history",
+    adminAuth,
+    (req, res) => {
+
+        const uuid =
+            req.params.uuid;
+
+        const user =
+            identityService.getUser(
+                uuid
+            );
+
+        if (!user) {
+
+            return res.status(404).json({
+                error:
+                    "User not found."
+            });
+
+        }
+
+        const visits =
+            trafficService.getUserVisits(
+                uuid
+            );
+
+        const reports =
+            reportService
+                .getReports()
+                .filter(
+                    (report) =>
+                        report.reporter === uuid ||
+                        report.reported === uuid
+                );
+
+        res.json({
+
+            user,
+
+            visits,
+
+            reports,
+
+            callHistory:
+                historyService.getUserHistory(
+                    uuid,
+                    user.isPremium === true
+                )
+
+        });
+
+    }
+);
+
+// ========================================
+// ADMIN SYSTEM HEALTH API
+// ========================================
+
+app.get(
+    "/api/admin/system-health",
+    adminAuth,
+    (req, res) => {
+
+        const memory =
+            process.memoryUsage();
+
+        const uptime =
+            process.uptime();
+
+        const users =
+            identityService.getUsers();
+
+        const traffic =
+            trafficService.getVisitCount();
+
+        res.json({
+
+            status:
+                "healthy",
+
+            uptimeSeconds:
+                Math.floor(uptime),
+
+            uptimeHours:
+                Number(
+                    (
+                        uptime / 3600
+                    ).toFixed(2)
+                ),
+
+            memory: {
+
+                rss:
+                    memory.rss,
+
+                heapUsed:
+                    memory.heapUsed,
+
+                heapTotal:
+                    memory.heapTotal
+
+            },
+
+            activeUsers:
+                users.filter(
+                    (user) =>
+                        user.lastActive &&
+                        (
+                            Date.now() -
+                            new Date(
+                                user.lastActive
+                            ).getTime()
+                        ) <
+                        5 * 60 * 1000
+                ).length,
+
+            registeredUsers:
+                users.length,
+
+            totalVisits:
+                traffic,
+
+            nodeVersion:
+                process.version,
+
+            platform:
+                process.platform,
+
+            environment:
+                process.env.NODE_ENV ||
+                "development",
+
+            timestamp:
+                new Date().toISOString()
+
+        });
+
+    }
+);
+
+// ========================================
+// ADMIN ENGAGEMENT API
+// ========================================
+
+app.get(
+    "/api/admin/engagement",
+    adminAuth,
+    (req, res) => {
+
+        const users =
+            identityService.getUsers();
+
+        const traffic =
+            trafficService.getRecentVisits(
+                1000
+            );
+
+        const reports =
+            reportService.getReports();
+
+        let totalCalls = 0;
+
+        let totalCallRecords = 0;
+
+        users.forEach(
+            (user) => {
+
+                const history =
+                    historyService.getUserHistory(
+                        user.uuid,
+                        user.isPremium === true
+                    );
+
+                totalCallRecords +=
+                    history.length;
+
+            }
+        );
+
+        totalCalls =
+            Math.floor(
+                totalCallRecords / 2
+            );
+
+        const uniqueVisitors =
+            new Set(
+                traffic.map(
+                    (visit) =>
+                        visit.uuid
+                )
+            ).size;
+
+        const premiumUsers =
+            users.filter(
+                (user) =>
+                    user.isPremium === true
+            ).length;
+
+        const guests =
+            users.filter(
+                (user) =>
+                    user.type === "guest"
+            ).length;
+
+        const members =
+            users.filter(
+                (user) =>
+                    user.type !== "guest"
+            ).length;
+
+        res.json({
+
+            uniqueVisitors,
+
+            registeredUsers:
+                users.length,
+
+            guests,
+
+            members,
+
+            premiumUsers,
+
+            totalVisits:
+                traffic.length,
+
+            totalCalls,
+
+            totalCallRecords,
+
+            totalReports:
+                reports.length,
+
+            generatedAt:
+                new Date().toISOString()
+
+        });
+
+    }
+);
+
 
 // ========================================
 // REPORT API

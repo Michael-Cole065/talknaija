@@ -11,6 +11,12 @@ const historyService =
 const locationService =
     require("../services/locationService");
 
+const identityService =
+    require("../services/identityService");
+
+const trafficService =
+    require("../services/trafficService");
+
 function getPairKey(user1, user2) {
 
     return [user1, user2]
@@ -110,31 +116,44 @@ function registerSocketHandlers(
 
         socket.isPremium = false;
 
+	socket.on(
+    "registerUser",
+    (data) => {
+        if (!data) {
+            return;
+        }
 
-        socket.on(
-            "registerUser",
-            (data) => {
+        if (
+            typeof data.userId === "string" &&
+            data.userId.length > 0
+        ) {
+            socket.userId = data.userId;
+        }
 
-                if (!data) {
-                    return;
-                }
+        socket.isPremium =
+            data.isPremium === true;
 
-                if (
-                    typeof data.userId ===
-                    "string" &&
-                    data.userId.length > 0
-                ) {
+	if (
+    socket.userId &&
+    data.isNewVisit === true
+) {
+    trafficService.recordVisit(
+        socket.userId,
+        socket.isPremium
+            ? "premium"
+            : "guest",
+        socket.isPremium
+    );
 
-                    socket.userId =
-                        data.userId;
+    identityService.recordVisit(
+        socket.userId,
+        socket.isPremium,
+        socket
+    );
+}
 
-                }
-
-                socket.isPremium =
-                    data.isPremium === true;
-
-            }
-        );
+    }
+);
 
 
         /*

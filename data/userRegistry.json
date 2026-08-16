@@ -1,0 +1,20 @@
+{
+  "20a3baeb-daf2-42fe-84ec-d8d00749c3fe": {
+    "uuid": "20a3baeb-daf2-42fe-84ec-d8d00749c3fe",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-16T19:56:13.889Z",
+    "lastActive": "2026-08-16T21:26:54.495Z",
+    "connectionCount": 7,
+    "visitCount": 1,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "62b31891feec87dd1817578364fafe029475ff49d693ed9d179dd14d70db1a8f"
+    ],
+    "userAgentHistory": [
+      "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
+    ]
+  }
+}
