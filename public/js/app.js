@@ -177,14 +177,26 @@ REGISTER USER
 ==================================================
 */
 
+const visitTracked =
+    sessionStorage.getItem(
+        "talknaijaVisitTracked"
+    ) === "true";
+
 socket.emit(
     "registerUser",
     {
         userId,
-        isPremium
+        isPremium,
+        isNewVisit: !visitTracked
     }
 );
 
+if (!visitTracked) {
+    sessionStorage.setItem(
+        "talknaijaVisitTracked",
+        "true"
+    );
+}
 
 /*
 ==================================================
