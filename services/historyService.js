@@ -122,17 +122,9 @@ function addCall(
 
     });
 
-    const limit =
-        isPremium
-            ? 15
-            : 5;
-
-    history[userId] =
-        history[userId].slice(
-            0,
-            limit
-        );
-
+    // Store the complete call history.
+    // The 5/15 viewing limit is applied
+    // inside getUserHistory(), not here.
     saveHistory(history);
 
 }
@@ -169,7 +161,6 @@ function getUserHistory(
     );
 
 }
-
 
 /*
 ==================================================
