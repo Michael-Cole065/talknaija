@@ -218,7 +218,7 @@
 
         }
 
-    </style>
+</style>
 
 </head>
 
@@ -242,63 +242,128 @@
 
     </header>
 
-    <div id="error"></div>
+    <div id="error">
 
-    <!-- ========================================
-         DASHBOARD STATS
-    ========================================= -->
+</div>
 
-    <section class="stats">
+<!-- ========================================
+     TOP MINI BANNERS
+========================================= -->
 
-        <div class="stat">
+<div class="stats">
 
-            <div class="stat-label">
-                Total Reports
-            </div>
-
-            <div id="totalReports" class="stat-value">
-                0
-            </div>
-
+    <div class="stat">
+        <div class="stat-label">
+            🚨 Reports
         </div>
 
-        <div class="stat">
+        <div
+            id="miniReports"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
 
-            <div class="stat-label">
-                Pending
-            </div>
 
-            <div id="pendingReports" class="stat-value">
-                0
-            </div>
-
+    <div class="stat">
+        <div class="stat-label">
+            📩 Mail
         </div>
 
-        <div class="stat">
+        <div
+            id="miniMail"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
 
-            <div class="stat-label">
-                Action Taken
-            </div>
 
-            <div id="actionTakenReports" class="stat-value">
-                0
-            </div>
-
+    <div class="stat">
+        <div class="stat-label">
+            ⚡ Action Taken
         </div>
 
-        <div class="stat">
+        <div
+            id="miniActionTaken"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
 
-            <div class="stat-label">
-                Red Accounts
-            </div>
 
-            <div id="redAccountsCount" class="stat-value">
-                0
-            </div>
-
+    <div class="stat">
+        <div class="stat-label">
+            🔴 Red Accounts
         </div>
 
-    </section>
+        <div
+            id="miniRed"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+    <div class="stat">
+        <div class="stat-label">
+            🌐 Traffic
+        </div>
+
+        <div
+            id="miniTraffic"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+    <div class="stat">
+        <div class="stat-label">
+            👤 Guests
+        </div>
+
+        <div
+            id="miniGuests"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+    <div class="stat">
+        <div class="stat-label">
+            👥 Members
+        </div>
+
+        <div
+            id="miniMembers"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+    <div class="stat">
+        <div class="stat-label">
+            ⭐ Premium
+        </div>
+
+        <div
+            id="miniPremium"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+</div>
 
     <!-- ========================================
          RED ACCOUNTS
@@ -405,6 +470,336 @@
 
     </section>
 
+    <!-- ========================================
+         ANALYTICS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>📊 Analytics</h2>
+                <p class="section-description">
+                    TalkNaija traffic and platform activity.
+                </p>
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadAnalytics()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div class="stats analytics-stats">
+
+            <div class="stat">
+                <div class="stat-label">Total Visits</div>
+                <div id="analyticsVisits" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Unique Visitors</div>
+                <div id="analyticsUnique" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Guests</div>
+                <div id="analyticsGuests" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Members</div>
+                <div id="analyticsMembers" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Premium</div>
+                <div id="analyticsPremium" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Total Calls</div>
+                <div id="analyticsCalls" class="stat-value">0</div>
+            </div>
+
+        </div>
+
+    </section>
+
+<!-- ========================================
+     SYSTEM HEALTH
+========================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>🩺 System Health</h2>
+
+            <p class="section-description">
+                Live TalkNaija server and platform status.
+            </p>
+
+        </div>
+
+        <button
+            class="primary"
+            onclick="loadSystemHealth()"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Status
+            </div>
+
+            <div
+                id="healthStatus"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Uptime
+            </div>
+
+            <div
+                id="healthUptime"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Active Users
+            </div>
+
+            <div
+                id="healthActiveUsers"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Registered Users
+            </div>
+
+            <div
+                id="healthRegistered"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Visits
+            </div>
+
+            <div
+                id="healthVisits"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        id="healthDetails"
+        class="details"
+        style="margin-top:20px;"
+    >
+        Loading system health...
+    </div>
+
+</section>
+
+    <!-- ========================================
+         TRAFFIC
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>🌐 Recent Traffic</h2>
+                <p class="section-description">
+                    Most recent recorded visits.
+                </p>
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadTraffic()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="traffic">
+            Loading traffic...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         USERS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>👥 Users</h2>
+                <p class="section-description">
+                    Guest, member and Premium account activity.
+                </p>
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadUsers()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="users">
+            Loading users...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         DONATIONS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>💰 Donations</h2>
+                <p class="section-description">
+                    TalkNaija support contributions.
+                </p>
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadDonations()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <div class="stat-label">
+                    Total Donations
+                </div>
+
+                <div id="donationCount" class="stat-value">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    Total Amount
+                </div>
+
+                <div id="donationAmount" class="stat-value">
+                    ₦0
+                </div>
+            </div>
+
+        </div>
+
+        <div id="donations">
+            Loading donations...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         USER HISTORY
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>🔎 User History</h2>
+                <p class="section-description">
+                    Look up a user's activity using their UUID.
+                </p>
+            </div>
+
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <input
+                id="historyUuid"
+                type="text"
+                placeholder="Enter user UUID"
+                style="flex:1;min-width:240px;"
+            >
+
+            <button
+                class="blue"
+                onclick="loadUserHistory()"
+            >
+                Search
+            </button>
+
+        </div>
+
+        <div id="userHistory" style="margin-top:20px;">
+        </div>
+
+    </section>
+
 </div>
 
 <script>
@@ -443,31 +838,69 @@ async function loadStats() {
         const stats =
             await response.json();
 
-        document.getElementById(
-            "totalReports"
-        ).textContent =
-            stats.totalReports;
+        /*
+        ================================================
+        TOP MINI BANNERS
+        ================================================
+        */
 
-        document.getElementById(
-            "pendingReports"
-        ).textContent =
-            stats.pendingReports;
+        const reports =
+            document.getElementById("miniReports");
 
-        document.getElementById(
-            "actionTakenReports"
-        ).textContent =
-            stats.actionTakenReports;
+        const mail =
+            document.getElementById("miniMail");
 
-        document.getElementById(
-            "redAccountsCount"
-        ).textContent =
-            stats.redAccounts;
+        const actionTaken =
+            document.getElementById("miniActionTaken");
+
+        const red =
+            document.getElementById("miniRed");
+
+
+        if (reports) {
+
+            reports.textContent =
+                stats.totalReports || 0;
+
+        }
+
+
+        if (mail) {
+
+            /*
+            Mail is loaded separately by
+            loadTickets().
+            */
+
+        }
+
+
+        if (actionTaken) {
+
+            actionTaken.textContent =
+                stats.actionTakenReports || 0;
+
+        }
+
+
+        if (red) {
+
+            red.textContent =
+                stats.redAccounts || 0;
+
+        }
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Admin statistics error:",
+            error
+        );
 
-        showError();
+        /*
+        Don't show the old global error anymore.
+        The dashboard can still load the other sections.
+        */
 
     }
 
@@ -892,6 +1325,18 @@ async function loadTickets() {
 
         const data =
             await response.json();
+	
+	        const miniMail =
+            document.getElementById("miniMail");
+
+        if (miniMail) {
+
+            miniMail.textContent =
+                data.tickets
+                ? data.tickets.length
+                : 0;
+
+        }
 
         container.innerHTML = "";
 
@@ -992,9 +1437,1083 @@ async function loadTickets() {
 
 /*
 ==================================================
+ANALYTICS
+==================================================
+*/
+
+async function loadAnalytics() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/engagement"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load engagement analytics."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "analyticsVisits"
+        ).textContent =
+            data.totalVisits || 0;
+
+        document.getElementById(
+            "analyticsUnique"
+        ).textContent =
+            data.uniqueVisitors || 0;
+
+        document.getElementById(
+            "analyticsGuests"
+        ).textContent =
+            data.guests || 0;
+
+        document.getElementById(
+            "analyticsMembers"
+        ).textContent =
+            data.members || 0;
+
+        document.getElementById(
+            "analyticsPremium"
+        ).textContent =
+            data.premiumUsers || 0;
+
+        document.getElementById(
+            "analyticsCalls"
+        ).textContent =
+            data.totalCalls || 0;
+
+    } catch (error) {
+
+        console.error(
+            "Analytics error:",
+            error
+        );
+
+    }
+
+}
+
+/*
+==================================================
+SYSTEM HEALTH
+==================================================
+*/
+
+function formatUptime(seconds) {
+
+    seconds =
+        Math.floor(
+            Number(seconds) || 0
+        );
+
+    const days =
+        Math.floor(
+            seconds / 86400
+        );
+
+    seconds %= 86400;
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+    seconds %= 3600;
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+    const secs =
+        seconds % 60;
+
+    const parts = [];
+
+    if (days) {
+        parts.push(
+            `${days}d`
+        );
+    }
+
+    if (hours) {
+        parts.push(
+            `${hours}h`
+        );
+    }
+
+    if (minutes) {
+        parts.push(
+            `${minutes}m`
+        );
+    }
+
+    if (!parts.length) {
+        parts.push(
+            `${secs}s`
+        );
+    }
+
+    return parts.join(" ");
+
+}
+
+
+function formatBytes(bytes) {
+
+    bytes =
+        Number(bytes) || 0;
+
+    if (bytes === 0) {
+        return "0 B";
+    }
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+    ];
+
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+    return (
+        bytes /
+        Math.pow(
+            1024,
+            index
+        )
+    ).toFixed(2) +
+    " " +
+    units[index];
+
+}
+
+async function loadSystemHealth() {
+
+    try {
+
+	        const response =
+            await fetch(
+                "/api/admin/system-health"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load system health."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "healthStatus"
+        ).textContent =
+            data.status === "healthy"
+            ? "🟢 Healthy"
+            : "🔴 " + (
+                data.status ||
+                "Unknown"
+            );
+
+        document.getElementById(
+            "healthUptime"
+        ).textContent =
+            formatUptime(
+                data.uptimeSeconds || 0
+            );
+
+        document.getElementById(
+            "healthActiveUsers"
+        ).textContent =
+            data.activeUsers || 0;
+
+        document.getElementById(
+            "healthRegistered"
+        ).textContent =
+            data.registeredUsers || 0;
+
+        document.getElementById(
+            "healthVisits"
+        ).textContent =
+            data.totalVisits || 0;
+
+        const memory =
+            data.memory || {};
+
+        const rss =
+            formatBytes(
+                memory.rss || 0
+            );
+
+        const heapUsed =
+            formatBytes(
+                memory.heapUsed || 0
+            );
+
+        const heapTotal =
+            formatBytes(
+                memory.heapTotal || 0
+            );
+
+        document.getElementById(
+            "healthDetails"
+        ).innerHTML = `
+
+            <div>
+                <strong>Node:</strong>
+                ${escapeHtml(
+                    data.nodeVersion || "Unknown"
+                )}
+            </div>
+
+            <div>
+                <strong>Platform:</strong>
+                ${escapeHtml(
+                    data.platform || "Unknown"
+                )}
+            </div>
+
+            <div>
+                <strong>Environment:</strong>
+                ${escapeHtml(
+                    data.environment || "Unknown"
+                )}
+            </div>
+
+            <div>
+                <strong>Memory RSS:</strong>
+                ${rss}
+            </div>
+
+            <div>
+                <strong>Heap Used:</strong>
+                ${heapUsed}
+            </div>
+
+            <div>
+                <strong>Heap Total:</strong>
+                ${heapTotal}
+            </div>
+
+            <div>
+                <strong>Last Checked:</strong>
+                ${
+                    data.timestamp
+                    ? new Date(
+                        data.timestamp
+                      ).toLocaleString()
+                    : "Unknown"
+                }
+            </div>
+
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "System health error:",
+            error
+        );
+
+        document.getElementById(
+            "healthStatus"
+        ).textContent =
+            "🔴 Unavailable";
+
+        document.getElementById(
+            "healthDetails"
+        ).innerHTML = `
+            <div class="error">
+                Could not load system health.
+            </div>
+        `;
+
+    }
+
+}
+
+/*
+==================================================
+TRAFFIC
+==================================================
+*/
+
+async function loadTraffic() {
+
+    const container =
+        document.getElementById("traffic");
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/traffic?limit=50"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load traffic."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            !data.visits ||
+            data.visits.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No traffic recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            data.visits.map(
+                (visit) => `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+
+                                ${
+                                    visit.type ===
+                                    "premium"
+                                    ? "⭐"
+                                    : "👤"
+                                }
+
+                                ${escapeHtml(
+                                    visit.type || "guest"
+                                )}
+
+                            </div>
+
+                            <div class="status">
+
+                                ${
+                                    visit.isPremium
+                                    ? "Premium"
+                                    : "Guest"
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>
+                                    User:
+                                </strong>
+
+                                ${escapeHtml(
+                                    visit.uuid || "Unknown"
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Visit:
+                                </strong>
+
+                                ${new Date(
+                                    visit.timestamp
+                                ).toLocaleString()}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+const miniTraffic =
+    document.getElementById("miniTraffic");
+
+if (miniTraffic) {
+
+    miniTraffic.textContent =
+        data.totalVisits || 0;
+
+}
+
+    } catch (error) {
+
+        console.error(
+            "Traffic error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load traffic.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+USERS
+==================================================
+*/
+
+async function loadUsers() {
+
+    const container =
+        document.getElementById("users");
+
+    try {
+
+        const [
+            guestsResponse,
+            membersResponse,
+            premiumResponse
+        ] = await Promise.all([
+
+            fetch("/api/admin/guests"),
+            fetch("/api/admin/members"),
+            fetch("/api/admin/premium")
+
+        ]);
+
+        if (
+            !guestsResponse.ok ||
+            !membersResponse.ok ||
+            !premiumResponse.ok
+        ) {
+
+            throw new Error(
+                "Failed to load users."
+            );
+
+        }
+
+        const guests =
+            await guestsResponse.json();
+
+        const members =
+            await membersResponse.json();
+
+        const premium =
+            await premiumResponse.json();
+
+        const allUsers = [
+            ...guests.users,
+            ...members.users
+        ];
+
+        const premiumIds =
+            new Set(
+                premium.users.map(
+                    (user) => user.uuid
+                )
+            );
+
+        if (!allUsers.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No users recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            allUsers.map(
+                (user) => `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+
+                                ${
+                                    premiumIds.has(
+                                        user.uuid
+                                    )
+                                    ? "⭐"
+                                    : user.type ===
+                                      "guest"
+                                    ? "👤"
+                                    : "👥"
+                                }
+
+                                ${escapeHtml(
+                                    user.uuid
+                                )}
+
+                            </div>
+
+                            <div class="status">
+
+                                ${
+                                    premiumIds.has(
+                                        user.uuid
+                                    )
+                                    ? "Premium"
+                                    : escapeHtml(
+                                        user.type
+                                    )
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>
+                                    First Seen:
+                                </strong>
+
+                                ${new Date(
+                                    user.firstSeen
+                                ).toLocaleString()}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Last Active:
+                                </strong>
+
+                                ${new Date(
+                                    user.lastActive
+                                ).toLocaleString()}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Connections:
+                                </strong>
+
+                                ${user.connectionCount || 0}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Visits:
+                                </strong>
+
+                                ${user.visitCount || 0}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Reports:
+                                </strong>
+
+                                ${user.reportCount || 0}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Banned:
+                                </strong>
+
+                                ${user.banned ? "Yes" : "No"}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+	const miniGuests =
+    document.getElementById("miniGuests");
+
+const miniMembers =
+    document.getElementById("miniMembers");
+
+const miniPremium =
+    document.getElementById("miniPremium");
+
+if (miniGuests) {
+
+    miniGuests.textContent =
+        guests.count || 0;
+
+}
+
+if (miniMembers) {
+
+    miniMembers.textContent =
+        members.count || 0;
+
+}
+
+if (miniPremium) {
+
+    miniPremium.textContent =
+        premium.count || 0;
+
+}
+
+    } catch (error) {
+
+        console.error(
+            "Users error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load users.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+DONATIONS
+==================================================
+*/
+
+async function loadDonations() {
+
+    const container =
+        document.getElementById("donations");
+
+    try {
+
+        const summaryResponse =
+            await fetch(
+                "/api/admin/donations"
+            );
+
+        const historyResponse =
+            await fetch(
+                "/api/admin/donations/history"
+            );
+
+        if (
+            !summaryResponse.ok ||
+            !historyResponse.ok
+        ) {
+
+            throw new Error(
+                "Failed to load donations."
+            );
+
+        }
+
+        const summary =
+            await summaryResponse.json();
+
+        const history =
+            await historyResponse.json();
+
+        document.getElementById(
+            "donationCount"
+        ).textContent =
+            summary.totalDonations || 0;
+
+        document.getElementById(
+            "donationAmount"
+        ).textContent =
+            "₦" +
+            Number(
+                summary.totalAmount || 0
+            ).toLocaleString();
+
+        const donations =
+            history.donations ||
+            history ||
+            [];
+
+        if (
+            !Array.isArray(donations) ||
+            donations.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No donations recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            donations.map(
+                (donation) => `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+                                💰
+
+                                ${escapeHtml(
+                                    donation.reference ||
+                                    donation.id ||
+                                    "Donation"
+                                )}
+                            </div>
+
+                            <div class="status">
+                                ${escapeHtml(
+                                    donation.status ||
+                                    "successful"
+                                )}
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>
+                                    Email:
+                                </strong>
+
+                                ${escapeHtml(
+                                    donation.email ||
+                                    "Not provided"
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Amount:
+                                </strong>
+
+                                ₦${Number(
+                                    donation.amount || 0
+                                ).toLocaleString()}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Date:
+                                </strong>
+
+                                ${
+                                    donation.createdAt
+                                    ? new Date(
+                                        donation.createdAt
+                                      ).toLocaleString()
+                                    : "Unknown"
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+    } catch (error) {
+
+        console.error(
+            "Donations error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load donations.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+USER HISTORY
+==================================================
+*/
+
+async function loadUserHistory() {
+
+    const input =
+        document.getElementById(
+            "historyUuid"
+        );
+
+    const container =
+        document.getElementById(
+            "userHistory"
+        );
+
+    const uuid =
+        input.value.trim();
+
+    if (!uuid) {
+
+        container.innerHTML = `
+            <div class="error">
+                Enter a user UUID first.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML = `
+        <div class="details">
+            Loading user history...
+        </div>
+    `;
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/admin/users/${encodeURIComponent(
+                    uuid
+                )}/history`
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "User history request failed."
+            );
+
+        }
+
+        const visits =
+            data.visits || [];
+
+        const reports =
+            data.reports || [];
+
+        const calls =
+            data.callHistory || [];
+
+        container.innerHTML = `
+
+            <div class="report">
+
+                <h3>
+                    👤 User
+                </h3>
+
+                <div class="details">
+
+                    <div>
+                        <strong>UUID:</strong>
+                        ${escapeHtml(
+                            data.user.uuid
+                        )}
+                    </div>
+
+                    <div>
+                        <strong>Type:</strong>
+                        ${escapeHtml(
+                            data.user.type
+                        )}
+                    </div>
+
+                    <div>
+                        <strong>Premium:</strong>
+                        ${
+                            data.user.isPremium
+                            ? "Yes"
+                            : "No"
+                        }
+                    </div>
+
+                    <div>
+                        <strong>First Seen:</strong>
+                        ${new Date(
+                            data.user.firstSeen
+                        ).toLocaleString()}
+                    </div>
+
+                    <div>
+                        <strong>Last Active:</strong>
+                        ${new Date(
+                            data.user.lastActive
+                        ).toLocaleString()}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="report">
+
+                <h3>
+                    🌐 Visits (${visits.length})
+                </h3>
+
+                ${
+                    visits.length
+                    ? visits.map(
+                        (visit) => `
+                            <div class="details">
+
+                                ${new Date(
+                                    visit.timestamp
+                                ).toLocaleString()}
+
+                                —
+                                ${escapeHtml(
+                                    visit.type || "guest"
+                                )}
+
+                            </div>
+                        `
+                    ).join("")
+                    : `
+                        <div class="empty">
+                            No visits.
+                        </div>
+                    `
+                }
+
+            </div>
+
+            <div class="report">
+
+                <h3>
+                    🚨 Reports (${reports.length})
+                </h3>
+
+                ${
+                    reports.length
+                    ? reports.map(
+                        (report) => `
+                            <div class="details">
+
+                                <strong>
+                                    ${escapeHtml(
+                                        report.reason
+                                    )}
+                                </strong>
+
+                                —
+                                ${escapeHtml(
+                                    report.status
+                                )}
+
+                            </div>
+                        `
+                    ).join("")
+                    : `
+                        <div class="empty">
+                            No reports.
+                        </div>
+                    `
+                }
+
+            </div>
+
+            <div class="report">
+
+                <h3>
+                    📞 Call History (${calls.length})
+                </h3>
+
+                ${
+                    calls.length
+                    ? calls.map(
+                        (call) => `
+                            <div class="details">
+                                ${escapeHtml(
+                                    JSON.stringify(call)
+                                )}
+                            </div>
+                        `
+                    ).join("")
+                    : `
+                        <div class="empty">
+                            No call history.
+                        </div>
+                    `
+                }
+
+            </div>
+
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "User history error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
 HTML ESCAPING
 ==================================================
 */
+
+
 
 function escapeHtml(value) {
 
@@ -1035,6 +2554,11 @@ loadStats();
 loadRedAccounts();
 loadReports();
 loadTickets();
+loadAnalytics();
+loadSystemHealth();
+loadTraffic();
+loadUsers();
+loadDonations();
 
 </script>
 
