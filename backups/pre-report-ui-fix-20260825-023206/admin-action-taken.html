@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TalkNaija Admin - Action Taken</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .page {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .back,
+        .refresh {
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .back {
+            background: #111;
+        }
+
+        .refresh {
+            background: #0d6efd;
+        }
+
+        .count {
+            margin: 20px 0;
+            padding: 14px;
+            border-radius: 10px;
+            background: #f1f3f5;
+            font-weight: bold;
+        }
+
+        .action {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            background: #fafafa;
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .report-badge {
+            background: #ffe8e8;
+            color: #b00020;
+        }
+
+        .unban-badge {
+            background: #e4f7ec;
+            color: #198754;
+        }
+
+        .details {
+            line-height: 1.7;
+        }
+
+        .empty {
+            padding: 30px 10px;
+            text-align: center;
+            color: #666;
+        }
+
+        .error {
+            padding: 15px;
+            border-radius: 10px;
+            background: #ffe8e8;
+            color: #b00020;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .page {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <h1>
+            TalkNaija Admin
+        </h1>
+
+        <p>
+            Moderation & Support Control Center
+        </p>
+
+    </header>
+
+    <main class="page">
+
+        <div class="top">
+
+            <a
+                href="/admin.html"
+                class="back"
+            >
+                ← Back to Dashboard
+            </a>
+
+            <button
+                class="refresh"
+                onclick="loadActions()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <h2>
+            ⚡ Action Taken
+        </h2>
+
+        <p>
+            Record of moderation actions taken by the admin.
+        </p>
+
+        <div
+            id="actionCount"
+            class="count"
+        >
+            Total Actions: 0
+        </div>
+
+        <div id="actions">
+            Loading...
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+async function loadActions() {
+
+    const container =
+        document.getElementById(
+            "actions"
+        );
+
+    const count =
+        document.getElementById(
+            "actionCount"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/action-taken"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load actions."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        const actions =
+            data.actions || [];
+
+        count.textContent =
+            `Total Actions: ${actions.length}`;
+
+        if (!actions.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No action taken records yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            actions.map(
+                (action) => {
+
+                    const isUnban =
+                        action.type ===
+                        "UNBAN";
+
+                    const isBan =
+                        action.type ===
+                        "BAN";
+
+                    return `
+
+                        <div class="action">
+
+                            <div class="action-header">
+
+                                <strong>
+                                    ${
+                                        isUnban
+                                            ? "🟢 Account Unbanned"
+                                            : isBan
+                                                ? "🔴 Account Banned"
+                                                : "⚡ Report Action Taken"
+                                    }
+                                </strong>
+
+                                <span
+                                    class="badge ${
+                                        isUnban
+                                            ? "unban-badge"
+                                            : isBan
+                                                ? "ban-badge"
+                                                : "report-badge"
+                                    }"
+                                >
+                                    ${
+                                        isUnban
+                                            ? "UNBAN"
+                                            : isBan
+                                                ? "BAN"
+                                                : "REPORT"
+                                    }
+                                </span>
+
+                            </div>
+
+                            <div class="details">
+
+                                ${
+                                    action.id
+                                        ? `
+                                            <div>
+                                                <strong>
+                                                    Action ID:
+                                                </strong>
+
+                                                ${escapeHtml(
+                                                    action.id
+                                                )}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    action.reportId
+                                        ? `
+                                            <div>
+                                                <strong>
+                                                    Report ID:
+                                                </strong>
+
+                                                ${escapeHtml(
+                                                    action.reportId
+                                                )}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                <div>
+                                    <strong>
+                                        User ID:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        action.userId ||
+                                        "Unknown"
+                                    )}
+                                </div>
+
+                                ${
+                                    !isUnban &&
+                                    action.reason
+                                        ? `
+                                            <div>
+                                                <strong>
+                                                    Report Reason:
+                                                </strong>
+
+                                                ${escapeHtml(
+                                                    action.reason
+                                                )}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    !isUnban &&
+                                    action.reporter
+                                        ? `
+                                            <div>
+                                                <strong>
+                                                    Reporter:
+                                                </strong>
+
+                                                ${escapeHtml(
+                                                    action.reporter
+                                                )}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    action.details
+                                        ? `
+                                            <div>
+                                                <strong>
+                                                    Details:
+                                                </strong>
+
+                                                ${escapeHtml(
+                                                    action.details
+                                                )}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                                <div>
+                                    <strong>
+                                        Date:
+                                    </strong>
+
+                                    ${
+                                        action.createdAt
+                                            ? new Date(
+                                                action.createdAt
+                                              ).toLocaleString()
+                                            : "Unknown"
+                                    }
+                                </div>
+
+                                ${
+                                    !isBan && action.userId
+                                        ? `
+                                            <button
+                                                class="danger"
+                                                onclick="banUser('${escapeHtml(action.userId)}')"
+                                            >
+                                                Ban User
+                                            </button>
+                                        `
+                                        : ""
+                                }
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            ).join("");
+
+    } catch (error) {
+
+        console.error(
+            "Action Taken error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load action records.
+            </div>
+        `;
+
+    }
+
+}
+
+loadActions();
+
+
+async function banUser(uuid) {
+
+    const confirmed =
+        confirm(
+            "Ban this account and return it to Red Accounts?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/action-taken/" +
+                encodeURIComponent(uuid) +
+                "/ban",
+                {
+                    method: "POST"
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Failed to ban user."
+            );
+
+        }
+
+        await loadActions();
+
+    } catch (error) {
+
+        console.error(
+            "Ban user error:",
+            error
+        );
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

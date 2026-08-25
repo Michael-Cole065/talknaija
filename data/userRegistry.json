@@ -4,9 +4,9 @@
     "type": "guest",
     "isPremium": false,
     "firstSeen": "2026-08-16T19:56:13.889Z",
-    "lastActive": "2026-08-16T21:26:54.495Z",
+    "lastActive": "2026-08-21T21:52:30.572Z",
     "connectionCount": 7,
-    "visitCount": 1,
+    "visitCount": 13,
     "reportCount": 0,
     "banned": false,
     "banHistory": [],
@@ -16,5 +16,203 @@
     "userAgentHistory": [
       "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
     ]
+  },
+  "tn-1787334183817-9p885hhm": {
+    "uuid": "tn-1787334183817-9p885hhm",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T17:46:36.616Z",
+    "lastActive": "2026-08-21T20:54:29.021Z",
+    "connectionCount": 1,
+    "visitCount": 1,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "bcf0821547629b012514a5802c510043d20f06698fe942d1d45bbc996484067d"
+    ],
+    "userAgentHistory": [
+      "5a23364114e35742a09f854229e084515ae8d0834ab71db16bf65e930fa1815f"
+    ]
+  },
+  "tn-1787334591876-hjrg210v": {
+    "uuid": "tn-1787334591876-hjrg210v",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T17:53:21.251Z",
+    "lastActive": "2026-08-21T17:53:21.251Z",
+    "connectionCount": 1,
+    "visitCount": 0,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "bcf0821547629b012514a5802c510043d20f06698fe942d1d45bbc996484067d"
+    ],
+    "userAgentHistory": [
+      "c3dff30601d302cc04a26e33529756f0b846ec7fce3a90f431245384a509cfac"
+    ]
+  },
+  "c313adb4-0a85-4ebe-8364-e1d485130814": {
+    "uuid": "c313adb4-0a85-4ebe-8364-e1d485130814",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T17:59:31.934Z",
+    "lastActive": "2026-08-21T17:59:31.934Z",
+    "connectionCount": 1,
+    "visitCount": 0,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "62b31891feec87dd1817578364fafe029475ff49d693ed9d179dd14d70db1a8f"
+    ],
+    "userAgentHistory": [
+      "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
+    ]
+  },
+  "tn-1787335001790-fxulx1im": {
+    "uuid": "tn-1787335001790-fxulx1im",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T18:00:11.219Z",
+    "lastActive": "2026-08-21T18:00:11.219Z",
+    "connectionCount": 1,
+    "visitCount": 0,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "bcf0821547629b012514a5802c510043d20f06698fe942d1d45bbc996484067d"
+    ],
+    "userAgentHistory": [
+      "1ad4ea5cb7515fc076e6b9d70d34e00e604578b5e0f03597721ae4e5b87ecb5b"
+    ]
+  },
+  "tn-1787345254855-nm7gdze5": {
+    "uuid": "tn-1787345254855-nm7gdze5",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T20:47:31.308Z",
+    "lastActive": "2026-08-21T20:47:31.308Z",
+    "connectionCount": 1,
+    "visitCount": 0,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "05da50346c6572454ec578e9baf14ae4adb6a34ef6184ed1449a11c6f5cf9c31"
+    ],
+    "userAgentHistory": [
+      "68dd0fe8bff7467f252efd4f44a72da60a5057e7c9d410782fe045d34417393f"
+    ]
+  },
+  "e4d1338c-b7df-4438-a489-a8009cf29e31": {
+    "uuid": "e4d1338c-b7df-4438-a489-a8009cf29e31",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T21:59:39.043Z",
+    "lastActive": "2026-08-22T02:00:10.504Z",
+    "connectionCount": 1,
+    "visitCount": 2,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "05da50346c6572454ec578e9baf14ae4adb6a34ef6184ed1449a11c6f5cf9c31"
+    ],
+    "userAgentHistory": [
+      "68dd0fe8bff7467f252efd4f44a72da60a5057e7c9d410782fe045d34417393f"
+    ]
+  },
+  "1d609980-51f9-4ac4-87dd-77b1529c3e91": {
+    "uuid": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T22:02:29.472Z",
+    "lastActive": "2026-08-25T04:59:34.551Z",
+    "connectionCount": 1,
+    "visitCount": 11,
+    "reportCount": 1,
+    "banned": false,
+    "banHistory": [
+      {
+        "reason": "Manually banned from Action Taken",
+        "timestamp": "2026-08-25T07:05:14.160Z"
+      },
+      {
+        "reason": "Manually banned from Action Taken",
+        "timestamp": "2026-08-25T06:25:42.789Z"
+      },
+      {
+        "reason": "Manually banned from Action Taken",
+        "timestamp": "2026-08-25T05:20:54.120Z"
+      },
+      {
+        "reason": "Automatic ban after reaching 5 reports",
+        "timestamp": "2026-08-25T05:18:33.798Z"
+      },
+      {
+        "reason": "Reached 5 reports",
+        "timestamp": "2026-08-23T15:17:41.044Z"
+      },
+      {
+        "reason": "Reached 5 reports",
+        "timestamp": "2026-08-23T06:06:31.053Z"
+      }
+    ],
+    "ipHistory": [
+      "bcf0821547629b012514a5802c510043d20f06698fe942d1d45bbc996484067d"
+    ],
+    "userAgentHistory": [
+      "5a23364114e35742a09f854229e084515ae8d0834ab71db16bf65e930fa1815f"
+    ],
+    "reportCycleStartedAt": "2026-08-25T07:05:17.127Z"
+  },
+  "fe59f03a-dc66-49c5-8b4a-c32c320c322f": {
+    "uuid": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T22:05:03.007Z",
+    "lastActive": "2026-08-25T07:08:38.944Z",
+    "connectionCount": 1,
+    "visitCount": 17,
+    "reportCount": 1,
+    "banned": false,
+    "banHistory": [],
+    "ipHistory": [
+      "62b31891feec87dd1817578364fafe029475ff49d693ed9d179dd14d70db1a8f"
+    ],
+    "userAgentHistory": [
+      "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
+    ]
+  },
+  "992e58b4-a10d-4447-a942-6d702c1bc479": {
+    "uuid": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "type": "guest",
+    "isPremium": false,
+    "firstSeen": "2026-08-21T22:38:13.353Z",
+    "lastActive": "2026-08-23T23:15:28.600Z",
+    "connectionCount": 1,
+    "visitCount": 43,
+    "reportCount": 0,
+    "banned": false,
+    "banHistory": [
+      {
+        "reason": "Reached 5 reports",
+        "timestamp": "2026-08-23T09:23:57.703Z"
+      },
+      {
+        "reason": "Reached 5 reports",
+        "timestamp": "2026-08-23T06:56:17.562Z"
+      }
+    ],
+    "ipHistory": [
+      "01089299899f4e2032d369555622e91d741300998eea7de58a42c832a0e1da95"
+    ],
+    "userAgentHistory": [
+      "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
+    ],
+    "reportCycleStartedAt": "2026-08-23T09:26:22.185Z"
   }
 }

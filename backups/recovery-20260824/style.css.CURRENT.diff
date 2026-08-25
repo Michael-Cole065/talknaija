@@ -1,0 +1,39 @@
+diff --git a/public/css/style.css b/public/css/style.css
+index c599c30..4cce87d 100644
+--- a/public/css/style.css
++++ b/public/css/style.css
+@@ -945,9 +945,34 @@ body.menu-open #homeScreen {
+ }
+ 
+ .side-menu-item:hover {
++    background: transparent;
++}
++
++.side-menu-item:focus,
++.side-menu-item:focus-visible {
++    background: transparent;
++    outline: none;
++}
++
++.side-menu-item:active {
+     background: #182844;
+ }
+ 
++@media (hover: hover) and (pointer: fine) {
++
++    .side-menu-item:hover {
++        background: #182844;
++    }
++
++}
++
++@media (hover: hover) and (pointer: fine) {
++
++    .side-menu-item:hover {
++        background: #182844;
++    }
++
++}
+ 
+ .side-menu-divider {
+     height: 1px;

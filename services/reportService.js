@@ -1,5 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const identityService =
+    require("./identityService");
 
 const reportsFile =
     path.join(__dirname, "../data/reports.json");
@@ -93,6 +95,59 @@ function addReport(report) {
     reports.push(newReport);
 
     saveReports(reports);
+
+    /*
+    ========================================
+    AUTOMATIC 5-REPORT BAN
+    ========================================
+    */
+
+    const reportedUserId =
+        newReport.reported;
+
+    if (reportedUserId) {
+
+        const user =
+            identityService.getUser(
+                reportedUserId
+            );
+
+        if (user) {
+
+            const counts =
+                getReportCountsByUser();
+
+            const currentCount =
+                counts[reportedUserId] || 0;
+
+            identityService.updateReportCount(
+                reportedUserId,
+                currentCount
+            );
+
+            if (
+                currentCount >= 5 &&
+                user.banned !== true
+            ) {
+
+                identityService.setBanned(
+                    reportedUserId,
+                    true,
+                    "Automatic ban after reaching 5 reports"
+                );
+
+                console.log(
+                    "🔴 AUTOMATIC USER BAN:",
+                    reportedUserId,
+                    "Reports:",
+                    currentCount
+                );
+
+            }
+
+        }
+
+    }
 
     return newReport;
 
@@ -192,30 +247,58 @@ function getReportCountsByUser() {
             return;
         }
 
+        const user =
+            identityService.getUser(
+                report.reported
+            );
+
+        if (
+            user &&
+            user.reportCycleStartedAt &&
+            report.createdAt &&
+            new Date(report.createdAt) <
+            new Date(user.reportCycleStartedAt)
+        ) {
+            return;
+        }
+
         counts[report.reported] =
             (counts[report.reported] || 0) + 1;
 
     });
 
     return counts;
-
 }
-
 
 function getRedAccounts() {
 
     const counts =
         getReportCountsByUser();
 
-    return Object.entries(counts)
+    const users =
+        identityService.getUsers();
+
+    return users
         .filter(
-            ([userId, count]) =>
-                count >= 5
+            (user) =>
+                user &&
+                (
+                    user.banned === true ||
+                    (counts[user.uuid] || 0) >= 5
+                )
         )
         .map(
-            ([userId, count]) => ({
-                userId,
-                reports: count
+            (user) => ({
+                userId:
+                    user.uuid,
+
+                reports:
+                    counts[user.uuid] ||
+                    Number(user.reportCount) ||
+                    0,
+
+                banned:
+                    user.banned === true
             })
         );
 

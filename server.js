@@ -15,9 +15,12 @@ const identityService =
 
 const trafficService =
     require("./services/trafficService");
+
 const {
     createSupportTicket,
-    getAllSupportTickets
+    getAllSupportTickets,
+    getSupportTicket,
+    addReply
 } = require(
     "./services/supportService"
 );
@@ -29,8 +32,45 @@ const {
 );
 const donationService =
     require("./services/donationService");
+
+const adminActionService =
+    require("./services/adminActionService");
+const {
+    sendSupportReply
+} = require("./services/emailService");
 const app = express();
-let server = http.createServer(app);
+let server;
+
+if (process.env.NODE_ENV === "production") {
+
+    server =
+        http.createServer(app);
+
+} else {
+
+    server =
+        https.createServer(
+            {
+                key:
+                    fs.readFileSync(
+                        path.join(
+                            __dirname,
+                            "cert/server.key"
+                        )
+                    ),
+
+                cert:
+                    fs.readFileSync(
+                        path.join(
+                            __dirname,
+                            "cert/server.crt"
+                        )
+                    )
+            },
+            app
+        );
+
+}
 
 const io = new Server(server);
 const activePairs = new Map();
@@ -234,6 +274,8 @@ app.post(
 );
 
 
+
+
 app.get(
     "/api/payment/verify/:reference",
     async (req, res) => {
@@ -337,6 +379,138 @@ app.get(
     }
 );
 
+app.get(
+    "/api/support/:id",
+    adminAuth,
+    (req, res) => {
+
+        try {
+
+            const ticket =
+                getSupportTicket(
+                    req.params.id
+                );
+
+            if (!ticket) {
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Support message not found."
+                });
+            }
+
+            res.json({
+                success: true,
+                ticket
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Support message error:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message:
+                    "Unable to load support message."
+            });
+
+        }
+
+    }
+);
+
+
+app.post(
+    "/api/support/:id/reply",
+    adminAuth,
+    async (req, res) => {
+
+        try {
+
+            const message =
+                typeof req.body?.message === "string"
+                    ? req.body.message.trim()
+                    : "";
+
+            if (!message) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Reply message is required."
+                });
+
+            }
+
+            const ticket =
+                getSupportTicket(
+                    req.params.id
+                );
+
+            if (!ticket) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Support message not found."
+                });
+
+            }
+
+            const reply =
+                addReply(
+                    req.params.id,
+                    message
+                );
+
+            if (!reply) {
+
+                return res.status(500).json({
+                    success: false,
+                    message:
+                        "Unable to save support reply."
+                });
+
+            }
+
+            await sendSupportReply({
+                to:
+                    ticket.email,
+
+                subject:
+                    ticket.subject,
+
+                message,
+
+                ticketId:
+                    ticket.id
+            });
+
+            res.json({
+                success: true,
+                reply
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Support reply error:",
+                error
+            );
+
+            res.status(500).json({
+                success: false,
+                message:
+                    "Unable to send reply."
+            });
+
+        }
+
+    }
+);
 
 // ========================================
 // PROTECT MAIN ADMIN DASHBOARD
@@ -441,6 +615,184 @@ app.get(
         res.json(
             reportService.getRedAccounts()
         );
+
+    }
+);
+
+app.get(
+    "/api/admin/action-taken",
+    adminAuth,
+    (req, res) => {
+
+        const reports =
+            reportService
+                .getReports()
+                .filter(
+                    (report) =>
+                        report.status ===
+                        "action_taken"
+                )
+                .map(
+                    (report) => ({
+
+                        type:
+                            "REPORT",
+
+                        id:
+                            report.id,
+
+                        userId:
+                            report.reported,
+
+                        reporter:
+                            report.reporter,
+
+                        reason:
+                            report.reason,
+
+                        createdAt:
+                            report.updatedAt ||
+                            report.createdAt
+
+                    })
+                );
+
+        const adminActions =
+            adminActionService
+                .getAllActions();
+
+        const actions = [
+            ...reports,
+            ...adminActions
+        ];
+
+        actions.sort(
+            (a, b) =>
+                new Date(b.createdAt) -
+                new Date(a.createdAt)
+        );
+
+        res.json({
+            count:
+                actions.length,
+
+            actions
+        });
+
+    }
+);
+
+app.post(
+    "/api/admin/action-taken/:uuid/ban",
+    adminAuth,
+    (req, res) => {
+
+        const uuid =
+            req.params.uuid;
+
+        const user =
+            identityService.getUser(
+                uuid
+            );
+
+        if (!user) {
+
+            return res.status(404).json({
+                error:
+                    "User not found."
+            });
+
+        }
+
+        const success =
+            identityService.setBanned(
+                uuid,
+                true,
+                "Manually banned from Action Taken"
+            );
+
+        if (!success) {
+
+            return res.status(400).json({
+                error:
+                    "Could not ban user."
+            });
+
+        }
+
+        adminActionService.recordAction({
+
+            type:
+                "BAN",
+
+            userId:
+                uuid,
+
+            details:
+                "Account manually banned from Action Taken and returned to Red Accounts."
+
+        });
+
+        console.log(
+            "🔴 USER MANUALLY BANNED:",
+            uuid
+        );
+
+        res.json({
+            success: true,
+
+            message:
+                "User banned successfully."
+        });
+
+    }
+);
+
+app.post(
+    "/api/admin/red-accounts/:uuid/unban",
+    adminAuth,
+    (req, res) => {
+
+        const uuid =
+            req.params.uuid;
+
+        const success =
+            identityService.resetReportCount(
+                uuid
+            );
+
+        if (!success) {
+
+            return res.status(404).json({
+                error:
+                    "User not found."
+            });
+
+        }
+
+        adminActionService.recordAction({
+
+            type:
+                "UNBAN",
+
+            userId:
+                uuid,
+
+            details:
+                "Account unbanned and current report count reset."
+
+        });
+
+        console.log(
+            "🟢 USER UNBANNED:",
+            uuid
+        );
+
+        res.json({
+            success: true,
+            message:
+                "User unbanned successfully."
+        });
 
     }
 );
@@ -648,10 +1000,7 @@ app.get(
             reports,
 
             callHistory:
-                historyService.getUserHistory(
-                    uuid,
-                    user.isPremium === true
-                )
+                historyService.getAllHistory()[uuid] || []
 
         });
 
@@ -707,18 +1056,8 @@ app.get(
 
             },
 
-            activeUsers:
-                users.filter(
-                    (user) =>
-                        user.lastActive &&
-                        (
-                            Date.now() -
-                            new Date(
-                                user.lastActive
-                            ).getTime()
-                        ) <
-                        5 * 60 * 1000
-                ).length,
+	activeUsers:
+    registerSocketHandlers.getOnlineCount(),
 
             registeredUsers:
                 users.length,
@@ -764,87 +1103,83 @@ app.get(
         const reports =
             reportService.getReports();
 
-        let totalCalls = 0;
+	let totalCalls = 0;
 
-        let totalCallRecords = 0;
+let totalCallRecords = 0;
 
-        users.forEach(
-            (user) => {
+const allHistory =
+    historyService.getAllHistory();
 
-                const history =
-                    historyService.getUserHistory(
-                        user.uuid,
-                        user.isPremium === true
-                    );
+Object.values(allHistory).forEach(
+    (history) => {
 
-                totalCallRecords +=
-                    history.length;
-
-            }
-        );
-
-        totalCalls =
-            Math.floor(
-                totalCallRecords / 2
-            );
-
-        const uniqueVisitors =
-            new Set(
-                traffic.map(
-                    (visit) =>
-                        visit.uuid
-                )
-            ).size;
-
-        const premiumUsers =
-            users.filter(
-                (user) =>
-                    user.isPremium === true
-            ).length;
-
-        const guests =
-            users.filter(
-                (user) =>
-                    user.type === "guest"
-            ).length;
-
-        const members =
-            users.filter(
-                (user) =>
-                    user.type !== "guest"
-            ).length;
-
-        res.json({
-
-            uniqueVisitors,
-
-            registeredUsers:
-                users.length,
-
-            guests,
-
-            members,
-
-            premiumUsers,
-
-            totalVisits:
-                traffic.length,
-
-            totalCalls,
-
-            totalCallRecords,
-
-            totalReports:
-                reports.length,
-
-            generatedAt:
-                new Date().toISOString()
-
-        });
+        totalCallRecords +=
+            history.length;
 
     }
 );
 
+totalCalls =
+    Math.floor(
+        totalCallRecords / 2
+    );
+
+const uniqueVisitors =
+    new Set(
+        traffic.map(
+            (visit) =>
+                visit.uuid
+        )
+    ).size;
+
+	const premiumUsers =
+    users.filter(
+        (user) =>
+            user.isPremium === true
+    ).length;
+
+const guests =
+    users.filter(
+        (user) =>
+            user.type === "guest"
+    ).length;
+
+const members =
+    users.filter(
+        (user) =>
+            user.type !== "guest"
+    ).length;
+
+res.json({
+
+    uniqueVisitors,
+
+    registeredUsers:
+        users.length,
+
+    guests,
+
+    members,
+
+    premiumUsers,
+
+    totalVisits:
+        traffic.length,
+
+    totalCalls,
+
+    totalCallRecords,
+
+    totalReports:
+        reports.length,
+
+    generatedAt:
+        new Date().toISOString()
+
+});
+
+}
+);
 
 // ========================================
 // REPORT API

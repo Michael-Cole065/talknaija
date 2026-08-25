@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -10,7 +11,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>TalkNaija Admin - Reports</title>
+    <title>TalkNaija Admin — Reports</title>
 
     <style>
 
@@ -27,91 +28,173 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: auto;
         }
 
-        h1 {
-            margin-bottom: 5px;
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 25px;
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .page {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+        }
+
+        .refresh {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #174ea6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .report {
-            background: white;
+            border: 1px solid #ddd;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 16px;
+            margin-bottom: 14px;
+            background: #fff;
         }
 
         .report-header {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
         }
 
         .reason {
-            font-size: 18px;
             font-weight: bold;
+            font-size: 16px;
         }
 
         .status {
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            background: #eee;
+            background: #e8f1ff;
+            color: #174ea6;
+            padding: 6px 9px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
         }
 
         .details {
-            margin-top: 15px;
             line-height: 1.6;
             color: #444;
         }
 
+        .details div {
+            margin-bottom: 5px;
+        }
+
         .actions {
-            margin-top: 15px;
             display: flex;
-            gap: 8px;
             flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
         }
 
-        button {
-            border: none;
+        .actions button {
+            border: 0;
             border-radius: 8px;
-            padding: 10px 14px;
-            cursor: pointer;
+            padding: 9px 12px;
             font-weight: bold;
+            cursor: pointer;
         }
 
-        .reviewed {
+        .blue {
             background: #e8f1ff;
+            color: #174ea6;
         }
 
-        .action {
-            background: #ffe9e9;
+        .primary {
+            background: #174ea6;
+            color: white;
         }
 
-        .dismiss {
-            background: #eee;
+        .danger {
+            background: #ffe8e8;
+            color: #b00020;
         }
 
         .empty {
+            padding: 35px 20px;
             text-align: center;
-            padding: 50px 20px;
-            background: white;
-            border-radius: 12px;
+            color: #666;
         }
 
         .error {
-            background: #ffe5e5;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            background: #ffe8e8;
+            color: #b00020;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .page {
+                padding: 15px;
+            }
+
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .report-header {
+                flex-direction: column;
+            }
+
         }
 
     </style>
@@ -122,51 +205,215 @@
 
 <div class="container">
 
-    <h1>TalkNaija Reports</h1>
+    <header class="header">
 
-    <div class="subtitle">
-        Moderation Dashboard
-    </div>
+        <h1>
+            TalkNaija Admin
+        </h1>
 
-    <div id="error"></div>
+        <p>
+            Moderation & Support Control Center
+        </p>
 
-    <div id="reports">
-        Loading reports...
-    </div>
+    </header>
+
+    <main class="page">
+
+        <a
+            href="/admin.html"
+            class="back"
+        >
+            ← Back to Dashboard
+        </a>
+
+        <div class="page-header">
+
+            <h2>
+                🚨 Reports
+            </h2>
+
+            <button
+                class="refresh"
+                onclick="loadReports()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="reports">
+            Loading reports...
+        </div>
+
+    </main>
 
 </div>
 
 <script>
 
-const reportsContainer =
-    document.getElementById("reports");
-
-const errorContainer =
-    document.getElementById("error");
-
 async function loadReports() {
 
-    try {
+    const container =
+        document.getElementById("reports");
 
-        errorContainer.innerHTML = "";
+    try {
 
         const response =
             await fetch("/api/reports");
 
         if (!response.ok) {
-            throw new Error("Failed to load reports.");
+
+            throw new Error(
+                "Failed to load reports."
+            );
+
         }
 
         const reports =
             await response.json();
 
-        renderReports(reports);
+        if (!Array.isArray(reports) ||
+            reports.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    <h3>
+                        No reports
+                    </h3>
+
+                    <p>
+                        There are currently
+                        no user reports.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            reports
+                .slice()
+                .reverse()
+                .map(
+                    (report) => `
+
+                        <div class="report">
+
+                            <div class="report-header">
+
+                                <div class="reason">
+                                    🚨
+                                    ${escapeHtml(
+                                        report.reason
+                                    )}
+                                </div>
+
+                                <div class="status">
+                                    ${escapeHtml(
+                                        report.status
+                                    )}
+                                </div>
+
+                            </div>
+
+                            <div class="details">
+
+                                <div>
+                                    <strong>
+                                        Reporter:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        report.reporter
+                                    )}
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        Reported:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        report.reported
+                                    )}
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        Created:
+                                    </strong>
+
+                                    ${new Date(
+                                        report.createdAt
+                                    ).toLocaleString()}
+                                </div>
+
+                            </div>
+
+                            <div class="actions">
+
+                                <button
+                                    class="blue"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'reviewed'
+                                    )"
+                                >
+                                    Mark Reviewed
+                                </button>
+
+                                <button
+                                    class="danger"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'action_taken'
+                                    )"
+                                >
+                                    Action Taken
+                                </button>
+
+                                <button
+                                    class="primary"
+                                    onclick="${
+                                        report.blocked
+                                            ? `unblockPair('${report.id}')`
+                                            : `blockPair('${report.id}')`
+                                    }"
+                                >
+                                    ${
+                                        report.blocked
+                                            ? "Unblock"
+                                            : "Block"
+                                    }
+                                </button>
+
+                                <button
+                                    class="muted"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'dismissed'
+                                    )"
+                                >
+                                    Dismiss
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    `
+                )
+                .join("");
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Reports page error:",
+            error
+        );
 
-        errorContainer.innerHTML = `
+        container.innerHTML = `
             <div class="error">
                 Could not load reports.
             </div>
@@ -176,226 +423,43 @@ async function loadReports() {
 
 }
 
-function renderReports(reports) {
 
-    if (!reports.length) {
+function escapeHtml(value) {
 
-        reportsContainer.innerHTML = `
-            <div class="empty">
-                <h2>No reports</h2>
-                <p>There are currently no user reports.</p>
-            </div>
-        `;
-
-        return;
-
-    }
-
-    reportsContainer.innerHTML =
-        reports
-            .slice()
-            .reverse()
-            .map(report => {
-
-                return `
-
-                    <div class="report">
-
-                        <div class="report-header">
-
-                            <div class="reason">
-                                🚨 ${escapeHtml(report.reason)}
-                            </div>
-
-                            <div class="status">
-                                ${escapeHtml(report.status)}
-                            </div>
-
-                        </div>
-
-                        <div class="details">
-
-                            <div>
-                                <strong>Reporter:</strong>
-                                ${escapeHtml(report.reporter)}
-                            </div>
-
-                            <div>
-                                <strong>Reported:</strong>
-                                ${escapeHtml(report.reported)}
-                            </div>
-
-                            <div>
-                                <strong>Created:</strong>
-                                ${new Date(report.createdAt).toLocaleString()}
-                            </div>
-
-                        </div>
-
-                        <div class="actions">
-
-                            <button
-                                class="reviewed"
-                                onclick="updateReport(
-                                    '${report.id}',
-                                    'reviewed'
-                                )"
-                            >
-                                Mark Reviewed
-                            </button>
-
-                            <button
-                                class="action"
-                                onclick="updateReport(
-                                    '${report.id}',
-                                    'action_taken'
-                                )"
-                            >
-                                Action Taken
-                            </button>
-
-                            <button
-                                class="block"
-                                onclick="${
-                                    report.blocked
-                                        ? `unblockPair('${report.id}')`
-                                        : `blockPair('${report.id}')`
-                                }"
-                            >
-                                ${
-                                    report.blocked
-                                        ? "🔓 Unblock Pair"
-                                        : "🚫 Block Pair"
-                                }
-                            </button>
-
-                            <button
-                                class="dismiss"
-                                onclick="updateReport(
-                                    '${report.id}',
-                                    'dismissed'
-                                )"
-                            >
-                                Dismiss
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
-async function blockPair(id) {
 
-    const confirmed = confirm(
-        "Block these two users from being matched with each other again?"
-    );
-
-    if (!confirmed) {
-        return;
-    }
+async function updateReport(
+    id,
+    status
+) {
 
     try {
 
         const response =
             await fetch(
-                `/api/reports/${id}/block`,
+                "/api/reports/" +
+                encodeURIComponent(id),
                 {
-                    method: "POST"
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        status
+                    })
                 }
             );
-
-        if (!response.ok) {
-            throw new Error(
-                "Failed to block pair."
-            );
-        }
-
-        alert(
-            "Pair blocked successfully."
-        );
-
-        await loadReports();
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not block this pair."
-        );
-
-    }
-
-}
-
-async function unblockPair(id) {
-
-    const confirmed = confirm(
-        "Allow these two users to be matched with each other again?"
-    );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch(
-                `/api/reports/${id}/unblock`,
-                {
-                    method: "POST"
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Failed to unblock pair."
-            );
-        }
-
-        alert(
-            "Pair unblocked successfully."
-        );
-
-        await loadReports();
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not unblock this pair."
-        );
-
-    }
-
-}
-
-async function updateReport(id, status) {
-
-    try {
-
-        const response =
-            await fetch(`/api/reports/${id}`, {
-
-                method: "PUT",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    status
-                })
-
-            });
 
         if (!response.ok) {
 
@@ -419,16 +483,80 @@ async function updateReport(id, status) {
 
 }
 
-function escapeHtml(value) {
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+async function blockPair(id) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/reports/" +
+                encodeURIComponent(id) +
+                "/block",
+                {
+                    method: "POST"
+                }
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to block pair."
+            );
+
+        }
+
+        await loadReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not block the pair."
+        );
+
+    }
 
 }
+
+
+async function unblockPair(id) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/reports/" +
+                encodeURIComponent(id) +
+                "/unblock",
+                {
+                    method: "POST"
+                }
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to unblock pair."
+            );
+
+        }
+
+        await loadReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not unblock the pair."
+        );
+
+    }
+
+}
+
 
 loadReports();
 
@@ -437,10 +565,3 @@ loadReports();
 </body>
 
 </html>
-
-<style>
-.block {
-    background: #111;
-    color: white;
-}
-</style>

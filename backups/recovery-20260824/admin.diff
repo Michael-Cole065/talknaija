@@ -1,0 +1,314 @@
+diff --git a/public/admin.html b/public/admin.html
+index 4a9b24b..92c9f88 100644
+--- a/public/admin.html
++++ b/public/admin.html
+@@ -252,7 +252,8 @@
+ 
+ <div class="stats">
+ 
+-    <div class="stat">
++    <div class="stat" onclick="openMiniBanner('miniReports','reports','/admin-reports.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             🚨 Reports
+         </div>
+@@ -266,7 +267,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniMail','mail','/admin-mail.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             📩 Mail
+         </div>
+@@ -280,7 +282,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniActionTaken','actionTaken','/admin-action-taken.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             ⚡ Action Taken
+         </div>
+@@ -294,7 +297,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniRed','red','/admin-red.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             🔴 Red Accounts
+         </div>
+@@ -308,7 +312,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniTraffic','traffic','/admin-traffic.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             🌐 Traffic
+         </div>
+@@ -322,7 +327,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniGuests','guests','/admin-guests.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             👤 Guests
+         </div>
+@@ -336,7 +342,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniMembers','members','/admin-members.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             👥 Members
+         </div>
+@@ -350,7 +357,8 @@
+     </div>
+ 
+ 
+-    <div class="stat">
++<div class="stat" onclick="openMiniBanner('miniPremium','premium','/admin-premium.html')" style="cursor:pointer;">
++
+         <div class="stat-label">
+             ⭐ Premium
+         </div>
+@@ -813,6 +821,76 @@ ERROR
+ const errorContainer =
+     document.getElementById("error");
+ 
++/*
++==================================================
++MINI BANNER COUNT TRACKING
++==================================================
++*/
++
++function updateMiniBannerCount(
++    id,
++    count,
++    key
++) {
++
++    const element =
++        document.getElementById(id);
++
++    if (!element) {
++        return;
++    }
++
++    const currentCount =
++        Number(count) || 0;
++
++    element.dataset.currentCount =
++        currentCount;
++
++    const acknowledged =
++        Number(
++            localStorage.getItem(
++                "talknaija_admin_" + key
++            )
++        ) || 0;
++
++    const newCount =
++        Math.max(
++            0,
++            currentCount - acknowledged
++        );
++
++    element.textContent =
++        newCount;
++
++}
++
++
++function openMiniBanner(
++    id,
++    key,
++    url
++) {
++
++    const element =
++        document.getElementById(id);
++
++    const currentCount =
++        element
++        ? Number(
++            element.dataset.currentCount
++        ) || 0
++        : 0;
++
++    localStorage.setItem(
++        "talknaija_admin_" + key,
++        currentCount
++    );
++
++    window.location.href =
++        url;
++
++}
++
+ 
+ /*
+ ==================================================
+@@ -857,13 +935,15 @@ async function loadStats() {
+             document.getElementById("miniRed");
+ 
+ 
+-        if (reports) {
++	if (reports) {
+ 
+-            reports.textContent =
+-                stats.totalReports || 0;
+-
+-        }
++	    updateMiniBannerCount(
++	        "miniReports",
++	        stats.totalReports || 0,
++	        "reports"
++	    );
+ 
++	}
+ 
+         if (mail) {
+ 
+@@ -875,20 +955,26 @@ async function loadStats() {
+         }
+ 
+ 
+-        if (actionTaken) {
++	if (actionTaken) {
+ 
+-            actionTaken.textContent =
+-                stats.actionTakenReports || 0;
++	    updateMiniBannerCount(
++	        "miniActionTaken",
++	        stats.actionTakenReports || 0,
++	        "actionTaken"
++	    );
+ 
+-        }
++	}
+ 
++	if (red) {
+ 
+-        if (red) {
++	    updateMiniBannerCount(
++	        "miniRed",
++	        stats.redAccounts || 0,
++	        "red"
++	    );
+ 
+-            red.textContent =
+-                stats.redAccounts || 0;
++	}
+ 
+-        }
+ 
+     } catch (error) {
+ 
+@@ -1329,14 +1415,17 @@ async function loadTickets() {
+ 	        const miniMail =
+             document.getElementById("miniMail");
+ 
+-        if (miniMail) {
++	if (miniMail) {
+ 
+-            miniMail.textContent =
+-                data.tickets
+-                ? data.tickets.length
+-                : 0;
++	    updateMiniBannerCount(
++	        "miniMail",
++	        data.tickets
++	        ? data.tickets.length
++	        : 0,
++	        "mail"
++	    );
+ 
+-        }
++	}
+ 
+         container.innerHTML = "";
+ 
+@@ -1860,12 +1949,16 @@ async function loadTraffic() {
+ const miniTraffic =
+     document.getElementById("miniTraffic");
+ 
+-if (miniTraffic) {
++	if (miniTraffic) {
+ 
+-    miniTraffic.textContent =
+-        data.totalVisits || 0;
++	    updateMiniBannerCount(
++	        "miniTraffic",
++	        data.totalVisits || 0,
++	        "traffic"
++	    );
++
++	}
+ 
+-}
+ 
+     } catch (error) {
+ 
+@@ -2069,24 +2162,33 @@ const miniMembers =
+ const miniPremium =
+     document.getElementById("miniPremium");
+ 
+-if (miniGuests) {
++	if (miniGuests) {
+ 
+-    miniGuests.textContent =
+-        guests.count || 0;
++    updateMiniBannerCount(
++        "miniGuests",
++        guests.count || 0,
++        "guests"
++    );
+ 
+ }
+ 
+ if (miniMembers) {
+ 
+-    miniMembers.textContent =
+-        members.count || 0;
++    updateMiniBannerCount(
++        "miniMembers",
++        members.count || 0,
++        "members"
++    );
+ 
+ }
+ 
+ if (miniPremium) {
+ 
+-    miniPremium.textContent =
+-        premium.count || 0;
++    updateMiniBannerCount(
++        "miniPremium",
++        premium.count || 0,
++        "premium"
++    );
+ 
+ }
+ 
+@@ -2559,6 +2661,10 @@ loadSystemHealth();
+ loadTraffic();
+ loadUsers();
+ loadDonations();
++// Keep analytics live
++setInterval(() => {
++    loadAnalytics();
++}, 3000);
+ 
+ </script>
+ 

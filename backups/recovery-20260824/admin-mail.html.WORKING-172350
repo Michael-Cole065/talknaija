@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TalkNaija Admin — Mail</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .page {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            margin: 0;
+        }
+
+        .refresh {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #174ea6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .mail {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            background: white;
+        }
+
+        .mail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mail-sender {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .mail-subject {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .mail-date {
+            margin-top: 5px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .mail-status {
+            background: #e8f1ff;
+            color: #174ea6;
+            padding: 6px 9px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .mail-message {
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .mail-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .mail-actions button {
+            border: 0;
+            border-radius: 8px;
+            padding: 9px 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .blue {
+            background: #e8f1ff;
+            color: #174ea6;
+        }
+
+        .primary {
+            background: #174ea6;
+            color: white;
+        }
+
+        .empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .error {
+            padding: 20px;
+            border-radius: 10px;
+            background: #ffe8e8;
+            color: #b00020;
+        }
+
+        /* MAIL MODAL */
+
+        .mail-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .mail-modal.open {
+            display: flex;
+        }
+
+        .mail-modal-card {
+            width: min(700px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .mail-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 50%;
+            background: #eee;
+            color: #111;
+            font-size: 22px;
+            line-height: 36px;
+            text-align: center;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .mail-meta {
+            padding-right: 45px;
+            margin-bottom: 18px;
+        }
+
+        .mail-meta strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .mail-modal-message {
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        .replies {
+            margin-top: 20px;
+        }
+
+        .replies h3 {
+            margin-bottom: 12px;
+        }
+
+        .reply {
+            border-left: 4px solid #174ea6;
+            background: #f5f5f5;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .reply-meta {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 7px;
+        }
+
+        .reply-message {
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .modal-actions button {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .mail-reply {
+            display: none;
+            margin-top: 18px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .mail-reply textarea {
+            display: block;
+            width: 100%;
+            min-height: 130px;
+            margin-top: 10px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: vertical;
+            font: inherit;
+            font-size: 16px;
+        }
+
+        .mail-reply-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .mail-reply-actions button {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .page {
+                padding: 15px;
+            }
+
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .mail-header {
+                flex-direction: column;
+            }
+
+            .mail-modal {
+                padding: 10px;
+            }
+
+            .mail-modal-card {
+                max-height: 94vh;
+                padding: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <h1>
+            TalkNaija Admin
+        </h1>
+
+        <p>
+            Moderation & Support Control Center
+        </p>
+
+    </header>
+
+    <main class="page">
+
+        <a
+            href="/admin.html"
+            class="back"
+        >
+            ← Back to Dashboard
+        </a>
+
+        <div class="page-header">
+
+            <h2>
+                📩 Mail
+            </h2>
+
+            <button
+                class="refresh"
+                onclick="loadMail()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div id="mailList">
+            Loading mail...
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- MAIL MODAL -->
+
+<div
+    id="mailModal"
+    class="mail-modal"
+>
+
+    <div class="mail-modal-card">
+
+        <button
+            class="mail-modal-close"
+            onclick="closeMailModal()"
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+        <div
+            id="mailModalMeta"
+            class="mail-meta"
+        ></div>
+
+        <div
+            id="mailModalMessage"
+            class="mail-modal-message"
+        ></div>
+
+        <div
+            id="mailModalReplies"
+            class="replies"
+        ></div>
+
+        <div
+            id="mailModalActions"
+            class="modal-actions"
+        >
+
+            <button
+                class="primary"
+                onclick="showReplyBox()"
+            >
+                Reply
+            </button>
+
+        </div>
+
+        <div
+            id="mailReplyArea"
+            class="mail-reply"
+        >
+
+            <strong>
+                Reply
+            </strong>
+
+            <textarea
+                id="mailReplyInput"
+                placeholder="Write your reply..."
+            ></textarea>
+
+            <div class="mail-reply-actions">
+
+                <button
+                    class="primary"
+                    onclick="sendMailReply()"
+                >
+                    Send Reply
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="hideReplyBox()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let currentMail = null;
+
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+async function loadMail() {
+
+    const container =
+        document.getElementById(
+            "mailList"
+        );
+
+    try {
+
+        const response =
+            await fetch("/api/support");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load mail."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        const tickets =
+            Array.isArray(data.tickets)
+                ? data.tickets
+                : [];
+
+        if (!tickets.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    <h3>
+                        No support messages
+                    </h3>
+
+                    <p>
+                        There are currently
+                        no support messages.
+                    </p>
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            tickets
+                .map(
+                    (mail) => `
+
+                        <div class="mail">
+
+                            <div class="mail-header">
+
+                                <div>
+
+                                    <div class="mail-sender">
+                                        ${escapeHtml(
+                                            mail.email
+                                        )}
+                                    </div>
+
+                                    <div class="mail-subject">
+                                        ${escapeHtml(
+                                            mail.subject
+                                        )}
+                                    </div>
+
+                                    <div class="mail-date">
+                                        ${mail.createdAt
+                                            ? new Date(
+                                                mail.createdAt
+                                            ).toLocaleString()
+                                            : ""}
+                                    </div>
+
+                                </div>
+
+                                <span class="mail-status">
+                                    ${escapeHtml(
+                                        mail.status ||
+                                        "open"
+                                    )}
+                                </span>
+
+                            </div>
+
+                            <div class="mail-message">
+                                ${escapeHtml(
+                                    mail.message
+                                )}
+                            </div>
+
+                            <div class="mail-actions">
+
+                                <button
+                                    class="blue"
+                                    onclick='openMail(${JSON.stringify(
+                                        mail
+                                    )})'
+                                >
+                                    Open
+                                </button>
+
+                                <button
+                                    class="primary"
+                                    onclick='openMailAndReply(${JSON.stringify(
+                                        mail
+                                    )})'
+                                >
+                                    Reply
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    `
+                )
+                .join("");
+
+    } catch (error) {
+
+        console.error(
+            "Mail page error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load support mail.
+            </div>
+        `;
+
+    }
+
+}
+
+
+async function openMailFromQuery() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const mailId =
+        params.get("mail");
+
+    if (!mailId) {
+        return;
+    }
+
+    const shouldReply =
+        params.get("reply") === "1";
+
+    try {
+
+        const response =
+            await fetch("/api/support");
+
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load support mail."
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const tickets =
+            Array.isArray(data.tickets)
+                ? data.tickets
+                : [];
+
+        const mail =
+            tickets.find(
+                (ticket) =>
+                    String(ticket.id) ===
+                    String(mailId)
+            );
+
+        if (!mail) {
+
+            console.error(
+                "Mail not found:",
+                mailId
+            );
+
+            return;
+        }
+
+        if (shouldReply) {
+            openMailAndReply(mail);
+        } else {
+            openMail(mail);
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not open requested mail:",
+            error
+        );
+
+    }
+
+}
+
+
+function renderMailModal(mail) {
+
+    currentMail = mail;
+
+    const modal =
+        document.getElementById(
+            "mailModal"
+        );
+
+    const meta =
+        document.getElementById(
+            "mailModalMeta"
+        );
+
+    const message =
+        document.getElementById(
+            "mailModalMessage"
+        );
+
+    const replies =
+        document.getElementById(
+            "mailModalReplies"
+        );
+
+    meta.innerHTML = `
+        <strong>
+            ${escapeHtml(mail.email)}
+        </strong>
+
+        <div>
+            ${escapeHtml(mail.subject)}
+        </div>
+
+        ${
+            mail.createdAt
+                ? `<div class="mail-date">
+                    ${new Date(
+                        mail.createdAt
+                    ).toLocaleString()}
+                </div>`
+                : ""
+        }
+    `;
+
+    message.textContent =
+        mail.message || "";
+
+    const replyList =
+        Array.isArray(mail.replies)
+            ? mail.replies
+            : [];
+
+    if (!replyList.length) {
+
+        replies.innerHTML = `
+            <h3>
+                Replies
+            </h3>
+
+            <div class="empty">
+                No replies yet.
+            </div>
+        `;
+
+    } else {
+
+        replies.innerHTML = `
+            <h3>
+                Replies
+            </h3>
+
+            ${replyList
+                .map(
+                    (reply) => `
+
+                        <div class="reply">
+
+                            <div class="reply-meta">
+                                ${
+                                    reply.from === "admin"
+                                        ? "Admin"
+                                        : "Reply"
+                                }
+
+                                ${
+                                    reply.createdAt
+                                        ? " • " +
+                                          new Date(
+                                              reply.createdAt
+                                          ).toLocaleString()
+                                        : ""
+                                }
+                            </div>
+
+                            <div class="reply-message">
+                                ${escapeHtml(
+                                    reply.message
+                                )}
+                            </div>
+
+                        </div>
+
+                    `
+                )
+                .join("")}
+
+        `;
+
+    }
+
+    document.getElementById(
+        "mailReplyArea"
+    ).style.display = "none";
+
+    document.getElementById(
+        "mailReplyInput"
+    ).value = "";
+
+    modal.classList.add("open");
+
+    document.body.classList.add(
+        "modal-open"
+    );
+
+}
+
+
+function openMail(mail) {
+
+    renderMailModal(mail);
+
+}
+
+
+function openMailAndReply(mail) {
+
+    renderMailModal(mail);
+
+    showReplyBox();
+
+}
+
+
+function closeMailModal() {
+
+    const modal =
+        document.getElementById(
+            "mailModal"
+        );
+
+    modal.classList.remove("open");
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+    currentMail = null;
+
+}
+
+
+function showReplyBox() {
+
+    const area =
+        document.getElementById(
+            "mailReplyArea"
+        );
+
+    const input =
+        document.getElementById(
+            "mailReplyInput"
+        );
+
+    area.style.display = "block";
+
+    setTimeout(() => {
+
+        input.focus({
+            preventScroll: true
+        });
+
+    }, 50);
+
+}
+
+
+function hideReplyBox() {
+
+    document.getElementById(
+        "mailReplyArea"
+    ).style.display = "none";
+
+    document.getElementById(
+        "mailReplyInput"
+    ).value = "";
+
+}
+
+
+async function sendMailReply() {
+
+    if (!currentMail) {
+        return;
+    }
+
+    const input =
+        document.getElementById(
+            "mailReplyInput"
+        );
+
+    const message =
+        input.value.trim();
+
+    if (!message) {
+
+        alert(
+            "Please write a reply."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/support/" +
+                encodeURIComponent(
+                    currentMail.id
+                ) +
+                "/reply",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok ||
+            !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to send reply."
+            );
+
+        }
+
+        currentMail.replies =
+            Array.isArray(
+                currentMail.replies
+            )
+                ? currentMail.replies
+                : [];
+
+        currentMail.replies.push(
+            data.reply
+        );
+
+        renderMailModal(
+            currentMail
+        );
+
+        hideReplyBox();
+
+        await loadMail();
+
+    } catch (error) {
+
+        console.error(
+            "Reply error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to send reply."
+        );
+
+    }
+
+}
+
+
+document.getElementById(
+    "mailModal"
+).addEventListener(
+    "click",
+    (event) => {
+
+        if (
+            event.target.id ===
+            "mailModal"
+        ) {
+
+            closeMailModal();
+
+        }
+
+    }
+);
+
+
+loadMail();
+
+</script>
+
+</body>
+
+</html>

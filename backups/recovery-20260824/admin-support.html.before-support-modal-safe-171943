@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>TalkNaija Support</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f4f7fb;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.ticket {
+    background: white;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.08);
+}
+
+.ticket h2 {
+    margin-top: 0;
+}
+
+.ticket-meta {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.ticket-message {
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    font-size: 13px;
+}
+
+.empty {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+    📩 TalkNaija Support Inbox
+</h1>
+
+<div id="tickets">
+    Loading support tickets...
+</div>
+
+
+<script>
+
+async function loadTickets() {
+
+    const container =
+        document.getElementById(
+            "tickets"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/support"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load support tickets."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        container.innerHTML = "";
+
+
+        if (
+            !data.tickets ||
+            data.tickets.length === 0
+        ) {
+
+            container.innerHTML =
+                '<div class="empty">No support tickets yet.</div>';
+
+            return;
+
+        }
+
+
+        data.tickets.forEach(
+            (ticket) => {
+
+                const box =
+                    document.createElement(
+                        "div"
+                    );
+
+                box.className =
+                    "ticket";
+
+
+                const title =
+                    document.createElement(
+                        "h2"
+                    );
+
+                title.textContent =
+                    ticket.subject;
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "ticket-meta";
+
+                meta.textContent =
+                    `${ticket.id} • ${ticket.email} • ${new Date(ticket.createdAt).toLocaleString()}`;
+
+
+                const status =
+                    document.createElement(
+                        "span"
+                    );
+
+                status.className =
+                    "status";
+
+                status.textContent =
+                    ticket.status;
+
+
+                const message =
+                    document.createElement(
+                        "div"
+                    );
+
+                message.className =
+                    "ticket-message";
+
+                message.textContent =
+                    ticket.message;
+
+
+                box.appendChild(
+                    title
+                );
+
+                box.appendChild(
+                    meta
+                );
+
+                box.appendChild(
+                    status
+                );
+
+                box.appendChild(
+                    document.createElement(
+                        "br"
+                    )
+                );
+
+                box.appendChild(
+                    document.createElement(
+                        "br"
+                    )
+                );
+
+                box.appendChild(
+                    message
+                );
+
+                const actions =
+                    document.createElement(
+                        "div"
+                    );
+
+                actions.style.display = "flex";
+                actions.style.gap = "8px";
+                actions.style.flexWrap = "wrap";
+                actions.style.marginTop = "16px";
+
+                actions.innerHTML = `
+                    <button
+                        type="button"
+                        style="background:#111;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;"
+                        onclick="openSupportMail('${ticket.id}', false)"
+                    >
+                        Open
+                    </button>
+
+                    <button
+                        type="button"
+                        style="background:#174ea6;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;"
+                        onclick="openSupportMail('${ticket.id}', true)"
+                    >
+                        Reply
+                    </button>
+                `;
+
+                box.appendChild(
+                    actions
+                );
+
+
+                container.appendChild(
+                    box
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+        container.textContent =
+            "Unable to load support tickets.";
+
+    }
+
+}
+
+
+loadTickets();
+
+</script>
+
+</body>
+
+</html>

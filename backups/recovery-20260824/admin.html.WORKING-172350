@@ -1,0 +1,3374 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TalkNaija Admin</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .dashboard-section {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        .section-description {
+            color: #666;
+            font-size: 14px;
+            margin: 4px 0 0;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #111;
+            color: white;
+        }
+
+        .blue {
+            background: #e8f1ff;
+            color: #174ea6;
+        }
+
+        .danger {
+            background: #ffe9e9;
+            color: #b00020;
+        }
+
+        .muted {
+            background: #eee;
+        }
+
+        .report {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .reason {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #eee;
+        }
+
+        .details {
+            margin-top: 12px;
+            line-height: 1.6;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .red-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border: 1px solid #f0d0d0;
+            background: #fff7f7;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .red-label {
+            color: #b00020;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px 15px;
+            color: #666;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #900;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .dashboard-section {
+                padding: 15px;
+            }
+
+        }
+
+</style>
+
+
+<style>
+.support-mail-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,0.55);
+    z-index: 99999;
+    overflow: hidden;
+}
+
+.support-mail-modal.open {
+    display: flex;
+}
+
+.support-mail-modal-card {
+    width: min(700px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.support-mail-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: #eee;
+    color: #111;
+    font-size: 22px;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.support-mail-meta {
+    padding-right: 45px;
+    margin-bottom: 18px;
+}
+
+.support-mail-meta strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.support-mail-message {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+}
+
+.support-mail-replies {
+    margin-top: 20px;
+}
+
+.support-mail-reply {
+    border-left: 4px solid #174ea6;
+    background: #f5f5f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 0 10px 10px 0;
+}
+
+.support-mail-reply-meta {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 7px;
+}
+
+.support-mail-reply-message {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.support-mail-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.support-mail-reply-area {
+    display: none;
+    margin-top: 18px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.support-mail-reply-area textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    font: inherit;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.support-mail-reply-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+body.support-mail-modal-open {
+    overflow: hidden !important;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ========================================
+         ADMIN HEADER
+    ========================================= -->
+
+    <header class="header">
+
+        <h1>
+            TalkNaija Admin
+        </h1>
+
+        <p>
+            Moderation & Support Control Center
+        </p>
+
+    </header>
+
+    <div id="error">
+
+</div>
+
+<!-- ========================================
+     TOP MINI BANNERS
+========================================= -->
+
+<div class="stats">
+
+    <div class="stat" onclick="openMiniBanner('miniReports','reports','/admin-reports.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            🚨 Reports
+        </div>
+
+        <div
+            id="miniReports"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniMail','mail','/admin-mail.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            📩 Mail
+        </div>
+
+        <div
+            id="miniMail"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniActionTaken','actionTaken','/admin-action-taken.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            ⚡ Action Taken
+        </div>
+
+        <div
+            id="miniActionTaken"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniRed','red','/admin-red.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            🔴 Red Accounts
+        </div>
+
+        <div
+            id="miniRed"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniTraffic','traffic','/admin-traffic.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            🌐 Traffic
+        </div>
+
+        <div
+            id="miniTraffic"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniGuests','guests','/admin-guests.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            👤 Guests
+        </div>
+
+        <div
+            id="miniGuests"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniMembers','members','/admin-members.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            👥 Members
+        </div>
+
+        <div
+            id="miniMembers"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+
+<div class="stat" onclick="openMiniBanner('miniPremium','premium','/admin-premium.html')" style="cursor:pointer;">
+
+        <div class="stat-label">
+            ⭐ Premium
+        </div>
+
+        <div
+            id="miniPremium"
+            class="stat-value"
+        >
+            0
+        </div>
+    </div>
+
+</div>
+
+    <!-- ========================================
+         RED ACCOUNTS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    🔴 Red Accounts
+                </h2>
+
+                <p class="section-description">
+                    Users with five or more reports.
+                </p>
+
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button
+                    class="primary"
+                    onclick="loadRedAccounts()"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="window.location.href='/admin-red.html'"
+                >
+                    View More
+                </button>
+            </div>
+
+        </div>
+
+        <div id="redAccounts">
+            Loading red accounts...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         REPORTS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    🚨 Reports
+                </h2>
+
+                <p class="section-description">
+                    Review and manage user reports.
+                </p>
+
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button
+                    class="primary"
+                    onclick="loadReports()"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="window.location.href='/admin-reports.html'"
+                >
+                    View More
+                </button>
+            </div>
+
+        </div>
+
+        <div id="reports">
+            Loading reports...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         SUPPORT
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    📩 Support
+                </h2>
+
+                <p class="section-description">
+                    User support messages will appear here.
+                </p>
+
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button
+                    class="primary"
+                    onclick="loadTickets()"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="window.location.href='/admin-mail.html'"
+                >
+                    View More
+                </button>
+            </div>
+
+        </div>
+
+        <div id="tickets">
+            Loading support tickets...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         ANALYTICS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>📊 Analytics</h2>
+                <p class="section-description">
+                    TalkNaija traffic and platform activity.
+                </p>
+            </div>
+
+            <button
+                class="primary"
+                onclick="loadAnalytics()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <div class="stats analytics-stats">
+
+            <div class="stat">
+                <div class="stat-label">Total Visits</div>
+                <div id="analyticsVisits" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Unique Visitors</div>
+                <div id="analyticsUnique" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Guests</div>
+                <div id="analyticsGuests" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Members</div>
+                <div id="analyticsMembers" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Premium</div>
+                <div id="analyticsPremium" class="stat-value">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">Total Calls</div>
+                <div id="analyticsCalls" class="stat-value">0</div>
+            </div>
+
+        </div>
+
+    </section>
+
+<!-- ========================================
+     SYSTEM HEALTH
+========================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>🩺 System Health</h2>
+
+            <p class="section-description">
+                Live TalkNaija server and platform status.
+            </p>
+
+        </div>
+
+        <button
+            class="primary"
+            onclick="loadSystemHealth()"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Status
+            </div>
+
+            <div
+                id="healthStatus"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Uptime
+            </div>
+
+            <div
+                id="healthUptime"
+                class="stat-value"
+            >
+                —
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Active Users
+            </div>
+
+            <div
+                id="healthActiveUsers"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Registered Users
+            </div>
+
+            <div
+                id="healthRegistered"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Visits
+            </div>
+
+            <div
+                id="healthVisits"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        id="healthDetails"
+        class="details"
+        style="margin-top:20px;"
+    >
+        Loading system health...
+    </div>
+
+</section>
+
+    <!-- ========================================
+         TRAFFIC
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>🌐 Recent Traffic</h2>
+                <p class="section-description">
+                    Most recent recorded visits.
+                </p>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button
+                    class="primary"
+                    onclick="loadTraffic()"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="window.location.href='/admin-traffic.html'"
+                >
+                    View More
+                </button>
+            </div>
+
+        </div>
+
+        <div id="traffic">
+            Loading traffic...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         USERS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>👥 Users</h2>
+                <p class="section-description">
+                    Guest, member and Premium account activity.
+                </p>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button
+                    class="primary"
+                    onclick="loadUsers()"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="window.location.href='/admin-users.html'"
+                >
+                    View More
+                </button>
+            </div>
+
+        </div>
+
+        <div id="users">
+            Loading users...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         DONATIONS
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>💰 Donations</h2>
+                <p class="section-description">
+                    TalkNaija support contributions.
+                </p>
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button
+                    class="primary"
+                    onclick="loadDonations()"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="window.location.href='/admin-donations.html'"
+                >
+                    View More
+                </button>
+            </div>
+
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <div class="stat-label">
+                    Total Donations
+                </div>
+
+                <div id="donationCount" class="stat-value">
+                    0
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    Total Amount
+                </div>
+
+                <div id="donationAmount" class="stat-value">
+                    ₦0
+                </div>
+            </div>
+
+        </div>
+
+        <div id="donations">
+            Loading donations...
+        </div>
+
+    </section>
+
+    <!-- ========================================
+         USER HISTORY
+    ========================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>🔎 User History</h2>
+                <p class="section-description">
+                    Look up a user's activity using their UUID.
+                </p>
+            </div>
+
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+            <input
+                id="historyUuid"
+                type="text"
+                placeholder="Enter user UUID"
+                style="flex:1;min-width:240px;"
+            >
+
+            <button
+                class="blue"
+                onclick="loadUserHistory()"
+            >
+                Search
+            </button>
+
+        </div>
+
+        <div id="userHistory" style="margin-top:20px;">
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+
+/*
+==================================================
+ERROR
+==================================================
+*/
+
+const errorContainer =
+    document.getElementById("error");
+
+/*
+==================================================
+MINI BANNER COUNT TRACKING
+==================================================
+*/
+
+function updateMiniBannerCount(
+    id,
+    count,
+    key
+) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+        return;
+    }
+
+    const currentCount =
+        Number(count) || 0;
+
+    element.dataset.currentCount =
+        currentCount;
+
+    const acknowledged =
+        Number(
+            localStorage.getItem(
+                "talknaija_admin_" + key
+            )
+        ) || 0;
+
+    const newCount =
+        Math.max(
+            0,
+            currentCount - acknowledged
+        );
+
+    element.textContent =
+        newCount;
+
+}
+
+
+function openMiniBanner(
+    id,
+    key,
+    url
+) {
+
+    const element =
+        document.getElementById(id);
+
+    const currentCount =
+        element
+        ? Number(
+            element.dataset.currentCount
+        ) || 0
+        : 0;
+
+    localStorage.setItem(
+        "talknaija_admin_" + key,
+        currentCount
+    );
+
+    window.location.href =
+        url;
+
+}
+
+
+/*
+==================================================
+STATS
+==================================================
+*/
+
+async function loadStats() {
+
+    try {
+
+        const response =
+            await fetch("/api/admin/stats");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load admin statistics."
+            );
+
+        }
+
+        const stats =
+            await response.json();
+
+        /*
+        ================================================
+        TOP MINI BANNERS
+        ================================================
+        */
+
+        const reports =
+            document.getElementById("miniReports");
+
+        const mail =
+            document.getElementById("miniMail");
+
+        const actionTaken =
+            document.getElementById("miniActionTaken");
+
+        const red =
+            document.getElementById("miniRed");
+
+
+	if (reports) {
+
+	    updateMiniBannerCount(
+	        "miniReports",
+	        stats.totalReports || 0,
+	        "reports"
+	    );
+
+	}
+
+        if (mail) {
+
+            /*
+            Mail is loaded separately by
+            loadTickets().
+            */
+
+        }
+
+
+	if (actionTaken) {
+
+	    updateMiniBannerCount(
+	        "miniActionTaken",
+	        stats.actionTakenReports || 0,
+	        "actionTaken"
+	    );
+
+	}
+
+	if (red) {
+
+	    updateMiniBannerCount(
+	        "miniRed",
+	        stats.redAccounts || 0,
+	        "red"
+	    );
+
+	}
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin statistics error:",
+            error
+        );
+
+        /*
+        Don't show the old global error anymore.
+        The dashboard can still load the other sections.
+        */
+
+    }
+
+}
+
+
+/*
+==================================================
+RED ACCOUNTS
+==================================================
+*/
+
+async function loadRedAccounts() {
+
+    const container =
+        document.getElementById("redAccounts");
+
+    try {
+
+        const response =
+            await fetch("/api/admin/red-accounts");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load red accounts."
+            );
+
+        }
+
+        const accounts =
+            await response.json();
+
+        if (!accounts.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No red accounts currently.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            accounts
+                .slice(0, 3)
+                .map(
+                    (account) => `
+                        <div class="red-account">
+
+                            <div>
+
+                                <div>
+
+                                    <strong>
+                                        ${escapeHtml(account.userId)}
+                                    </strong>
+
+                                </div>
+
+                                <div class="red-label">
+                                    ${account.reports}
+                                    reports
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `
+                )
+                .join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load red accounts.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+REPORTS
+==================================================
+*/
+
+async function loadReports() {
+
+    const container =
+        document.getElementById("reports");
+
+    try {
+
+        const response =
+            await fetch("/api/reports");
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load reports."
+            );
+
+        }
+
+        const reports =
+            await response.json();
+
+        if (!reports.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+
+                    <h3>
+                        No reports
+                    </h3>
+
+                    <p>
+                        There are currently
+                        no user reports.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            reports
+                .slice()
+                .reverse()
+                .slice(0, 3)
+                .map(
+                    (report) => `
+                        <div class="report">
+
+                            <div class="report-header">
+
+                                <div class="reason">
+                                    🚨
+                                    ${escapeHtml(report.reason)}
+                                </div>
+
+                                <div class="status">
+                                    ${escapeHtml(report.status)}
+                                </div>
+
+                            </div>
+
+                            <div class="details">
+
+                                <div>
+
+                                    <strong>
+                                        Reporter:
+                                    </strong>
+
+                                    ${escapeHtml(report.reporter)}
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Reported:
+                                    </strong>
+
+                                    ${escapeHtml(report.reported)}
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Created:
+                                    </strong>
+
+                                    ${new Date(
+                                        report.createdAt
+                                    ).toLocaleString()}
+
+                                </div>
+
+                            </div>
+
+                            <div class="actions">
+
+                                <button
+                                    class="blue"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'reviewed'
+                                    )"
+                                >
+                                    Mark Reviewed
+                                </button>
+
+                                <button
+                                    class="danger"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'action_taken'
+                                    )"
+                                >
+                                    Action Taken
+                                </button>
+
+                                <button
+                                    class="primary"
+                                    onclick="${
+                                        report.blocked
+                                            ? `unblockPair('${report.id}')`
+                                            : `blockPair('${report.id}')`
+                                    }"
+                                >
+                                    ${
+                                        report.blocked
+                                            ? "🔓 Unblock Pair"
+                                            : "🚫 Block Pair"
+                                    }
+                                </button>
+
+                                <button
+                                    class="muted"
+                                    onclick="updateReport(
+                                        '${report.id}',
+                                        'dismissed'
+                                    )"
+                                >
+                                    Dismiss
+                                </button>
+
+                            </div>
+
+                        </div>
+                    `
+                )
+                .join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load reports.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+BLOCK PAIR
+==================================================
+*/
+
+async function blockPair(id) {
+
+    if (!confirm(
+        "Block these two users from being matched with each other again?"
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/reports/${id}/block`,
+            {
+                method: "POST"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to block pair.");
+        }
+
+        alert("Pair blocked successfully.");
+
+        await loadReports();
+        await loadStats();
+        await loadRedAccounts();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Could not block this pair.");
+
+    }
+
+}
+
+/*
+==================================================
+UNBLOCK PAIR
+==================================================
+*/
+
+async function unblockPair(id) {
+
+    if (!confirm(
+        "Allow these two users to be matched with each other again?"
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/api/reports/${id}/unblock`,
+            {
+                method: "POST"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to unblock pair."
+            );
+        }
+
+        alert(
+            "Pair unblocked successfully."
+        );
+
+        await loadReports();
+        await loadStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not unblock this pair."
+        );
+
+    }
+
+}
+
+
+/*
+==================================================
+UPDATE REPORT
+==================================================
+*/
+
+async function updateReport(id, status) {
+
+    try {
+
+        const response = await fetch(
+            `/api/reports/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    status
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to update report."
+            );
+        }
+
+        await loadReports();
+        await loadStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not update the report."
+        );
+
+    }
+
+}
+
+
+/*
+==================================================
+SUPPORT
+==================================================
+*/
+
+async function loadTickets() {
+
+    const container =
+        document.getElementById("tickets");
+
+    try {
+
+        const response = await fetch(
+            "/api/support"
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Unable to load support tickets."
+            );
+        }
+
+        const data =
+            await response.json();
+	
+	        const miniMail =
+            document.getElementById("miniMail");
+
+	if (miniMail) {
+
+	    updateMiniBannerCount(
+	        "miniMail",
+	        data.tickets
+	        ? data.tickets.length
+	        : 0,
+	        "mail"
+	    );
+
+	}
+
+        container.innerHTML = "";
+
+        if (
+            !data.tickets ||
+            data.tickets.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No support tickets yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        data.tickets
+            .slice(0, 3)
+            .forEach((ticket) => {
+
+            const box =
+                document.createElement("div");
+
+            box.className = "report";
+
+            const title =
+                document.createElement("h3");
+
+            title.textContent =
+                ticket.subject;
+
+            const meta =
+                document.createElement("div");
+
+            meta.className = "details";
+
+            meta.textContent =
+                `${ticket.id} • ${ticket.email} • ${new Date(
+                    ticket.createdAt
+                ).toLocaleString()}`;
+
+            const status =
+                document.createElement("span");
+
+            status.className = "status";
+
+            status.textContent =
+                ticket.status;
+
+            const message =
+                document.createElement("div");
+
+            message.className = "details";
+
+            message.style.whiteSpace =
+                "pre-wrap";
+
+            message.textContent =
+                ticket.message;
+
+            box.appendChild(title);
+            box.appendChild(meta);
+
+            box.appendChild(
+                document.createElement("br")
+            );
+
+            box.appendChild(status);
+
+            box.appendChild(
+                document.createElement("br")
+            );
+
+            box.appendChild(
+                document.createElement("br")
+            );
+
+            box.appendChild(message);
+
+            const actions =
+                document.createElement("div");
+
+            actions.className = "actions";
+
+            actions.innerHTML = `
+                <button
+                    class="blue"
+                    onclick="openSupportMail('${ticket.id}', false)"
+                >
+                    Open
+                </button>
+
+                <button
+                    class="primary"
+                    onclick="openSupportMail('${ticket.id}', true)"
+                >
+                    Reply
+                </button>
+            `;
+
+            box.appendChild(actions);
+
+            container.appendChild(box);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Unable to load support tickets.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+ANALYTICS
+==================================================
+*/
+
+async function loadAnalytics() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/engagement"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load engagement analytics."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "analyticsVisits"
+        ).textContent =
+            data.totalVisits || 0;
+
+        document.getElementById(
+            "analyticsUnique"
+        ).textContent =
+            data.uniqueVisitors || 0;
+
+        document.getElementById(
+            "analyticsGuests"
+        ).textContent =
+            data.guests || 0;
+
+        document.getElementById(
+            "analyticsMembers"
+        ).textContent =
+            data.members || 0;
+
+        document.getElementById(
+            "analyticsPremium"
+        ).textContent =
+            data.premiumUsers || 0;
+
+        document.getElementById(
+            "analyticsCalls"
+        ).textContent =
+            data.totalCalls || 0;
+
+    } catch (error) {
+
+        console.error(
+            "Analytics error:",
+            error
+        );
+
+    }
+
+}
+
+/*
+==================================================
+SYSTEM HEALTH
+==================================================
+*/
+
+function formatUptime(seconds) {
+
+    seconds =
+        Math.floor(
+            Number(seconds) || 0
+        );
+
+    const days =
+        Math.floor(
+            seconds / 86400
+        );
+
+    seconds %= 86400;
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+    seconds %= 3600;
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+    const secs =
+        seconds % 60;
+
+    const parts = [];
+
+    if (days) {
+        parts.push(
+            `${days}d`
+        );
+    }
+
+    if (hours) {
+        parts.push(
+            `${hours}h`
+        );
+    }
+
+    if (minutes) {
+        parts.push(
+            `${minutes}m`
+        );
+    }
+
+    if (!parts.length) {
+        parts.push(
+            `${secs}s`
+        );
+    }
+
+    return parts.join(" ");
+
+}
+
+
+function formatBytes(bytes) {
+
+    bytes =
+        Number(bytes) || 0;
+
+    if (bytes === 0) {
+        return "0 B";
+    }
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+    ];
+
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+    return (
+        bytes /
+        Math.pow(
+            1024,
+            index
+        )
+    ).toFixed(2) +
+    " " +
+    units[index];
+
+}
+
+async function loadSystemHealth() {
+
+    try {
+
+	        const response =
+            await fetch(
+                "/api/admin/system-health"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load system health."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "healthStatus"
+        ).textContent =
+            data.status === "healthy"
+            ? "🟢 Healthy"
+            : "🔴 " + (
+                data.status ||
+                "Unknown"
+            );
+
+        document.getElementById(
+            "healthUptime"
+        ).textContent =
+            formatUptime(
+                data.uptimeSeconds || 0
+            );
+
+        document.getElementById(
+            "healthActiveUsers"
+        ).textContent =
+            data.activeUsers || 0;
+
+        document.getElementById(
+            "healthRegistered"
+        ).textContent =
+            data.registeredUsers || 0;
+
+        document.getElementById(
+            "healthVisits"
+        ).textContent =
+            data.totalVisits || 0;
+
+        const memory =
+            data.memory || {};
+
+        const rss =
+            formatBytes(
+                memory.rss || 0
+            );
+
+        const heapUsed =
+            formatBytes(
+                memory.heapUsed || 0
+            );
+
+        const heapTotal =
+            formatBytes(
+                memory.heapTotal || 0
+            );
+
+        document.getElementById(
+            "healthDetails"
+        ).innerHTML = `
+
+            <div>
+                <strong>Node:</strong>
+                ${escapeHtml(
+                    data.nodeVersion || "Unknown"
+                )}
+            </div>
+
+            <div>
+                <strong>Platform:</strong>
+                ${escapeHtml(
+                    data.platform || "Unknown"
+                )}
+            </div>
+
+            <div>
+                <strong>Environment:</strong>
+                ${escapeHtml(
+                    data.environment || "Unknown"
+                )}
+            </div>
+
+            <div>
+                <strong>Memory RSS:</strong>
+                ${rss}
+            </div>
+
+            <div>
+                <strong>Heap Used:</strong>
+                ${heapUsed}
+            </div>
+
+            <div>
+                <strong>Heap Total:</strong>
+                ${heapTotal}
+            </div>
+
+            <div>
+                <strong>Last Checked:</strong>
+                ${
+                    data.timestamp
+                    ? new Date(
+                        data.timestamp
+                      ).toLocaleString()
+                    : "Unknown"
+                }
+            </div>
+
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "System health error:",
+            error
+        );
+
+        document.getElementById(
+            "healthStatus"
+        ).textContent =
+            "🔴 Unavailable";
+
+        document.getElementById(
+            "healthDetails"
+        ).innerHTML = `
+            <div class="error">
+                Could not load system health.
+            </div>
+        `;
+
+    }
+
+}
+
+/*
+==================================================
+TRAFFIC
+==================================================
+*/
+
+async function loadTraffic() {
+
+    const container =
+        document.getElementById("traffic");
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/traffic?limit=50"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load traffic."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            !data.visits ||
+            data.visits.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No traffic recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            data.visits
+            .slice(0, 3)
+            .map(
+                (visit) => `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+
+                                ${
+                                    visit.type ===
+                                    "premium"
+                                    ? "⭐"
+                                    : "👤"
+                                }
+
+                                ${escapeHtml(
+                                    visit.type || "guest"
+                                )}
+
+                            </div>
+
+                            <div class="status">
+
+                                ${
+                                    visit.isPremium
+                                    ? "Premium"
+                                    : "Guest"
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>
+                                    User:
+                                </strong>
+
+                                ${escapeHtml(
+                                    visit.uuid || "Unknown"
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Visit:
+                                </strong>
+
+                                ${new Date(
+                                    visit.timestamp
+                                ).toLocaleString()}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+const miniTraffic =
+    document.getElementById("miniTraffic");
+
+	if (miniTraffic) {
+
+	    updateMiniBannerCount(
+	        "miniTraffic",
+	        data.totalVisits || 0,
+	        "traffic"
+	    );
+
+	}
+
+
+    } catch (error) {
+
+        console.error(
+            "Traffic error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load traffic.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+USERS
+==================================================
+*/
+
+async function loadUsers() {
+
+    const container =
+        document.getElementById("users");
+
+    try {
+
+        const [
+            guestsResponse,
+            membersResponse,
+            premiumResponse
+        ] = await Promise.all([
+
+            fetch("/api/admin/guests"),
+            fetch("/api/admin/members"),
+            fetch("/api/admin/premium")
+
+        ]);
+
+        if (
+            !guestsResponse.ok ||
+            !membersResponse.ok ||
+            !premiumResponse.ok
+        ) {
+
+            throw new Error(
+                "Failed to load users."
+            );
+
+        }
+
+        const guests =
+            await guestsResponse.json();
+
+        const members =
+            await membersResponse.json();
+
+        const premium =
+            await premiumResponse.json();
+
+        const allUsers = [
+            ...guests.users,
+            ...members.users
+        ];
+
+        const premiumIds =
+            new Set(
+                premium.users.map(
+                    (user) => user.uuid
+                )
+            );
+
+        if (!allUsers.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No users recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            allUsers
+            .slice(0, 3)
+            .map(
+                (user) => `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+
+                                ${
+                                    premiumIds.has(
+                                        user.uuid
+                                    )
+                                    ? "⭐"
+                                    : user.type ===
+                                      "guest"
+                                    ? "👤"
+                                    : "👥"
+                                }
+
+                                ${escapeHtml(
+                                    user.uuid
+                                )}
+
+                            </div>
+
+                            <div class="status">
+
+                                ${
+                                    premiumIds.has(
+                                        user.uuid
+                                    )
+                                    ? "Premium"
+                                    : escapeHtml(
+                                        user.type
+                                    )
+                                }
+
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>
+                                    First Seen:
+                                </strong>
+
+                                ${new Date(
+                                    user.firstSeen
+                                ).toLocaleString()}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Last Active:
+                                </strong>
+
+                                ${new Date(
+                                    user.lastActive
+                                ).toLocaleString()}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Connections:
+                                </strong>
+
+                                ${user.connectionCount || 0}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Visits:
+                                </strong>
+
+                                ${user.visitCount || 0}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Reports:
+                                </strong>
+
+                                ${user.reportCount || 0}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Banned:
+                                </strong>
+
+                                ${user.banned ? "Yes" : "No"}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+	const miniGuests =
+    document.getElementById("miniGuests");
+
+const miniMembers =
+    document.getElementById("miniMembers");
+
+const miniPremium =
+    document.getElementById("miniPremium");
+
+	if (miniGuests) {
+
+    updateMiniBannerCount(
+        "miniGuests",
+        guests.count || 0,
+        "guests"
+    );
+
+}
+
+if (miniMembers) {
+
+    updateMiniBannerCount(
+        "miniMembers",
+        members.count || 0,
+        "members"
+    );
+
+}
+
+if (miniPremium) {
+
+    updateMiniBannerCount(
+        "miniPremium",
+        premium.count || 0,
+        "premium"
+    );
+
+}
+
+    } catch (error) {
+
+        console.error(
+            "Users error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load users.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+DONATIONS
+==================================================
+*/
+
+async function loadDonations() {
+
+    const container =
+        document.getElementById("donations");
+
+    try {
+
+        const summaryResponse =
+            await fetch(
+                "/api/admin/donations"
+            );
+
+        const historyResponse =
+            await fetch(
+                "/api/admin/donations/history"
+            );
+
+        if (
+            !summaryResponse.ok ||
+            !historyResponse.ok
+        ) {
+
+            throw new Error(
+                "Failed to load donations."
+            );
+
+        }
+
+        const summary =
+            await summaryResponse.json();
+
+        const history =
+            await historyResponse.json();
+
+        document.getElementById(
+            "donationCount"
+        ).textContent =
+            summary.totalDonations || 0;
+
+        document.getElementById(
+            "donationAmount"
+        ).textContent =
+            "₦" +
+            Number(
+                summary.totalAmount || 0
+            ).toLocaleString();
+
+        const donations =
+            history.donations ||
+            history ||
+            [];
+
+        if (
+            !Array.isArray(donations) ||
+            donations.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No donations recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            donations
+            .slice(0, 3)
+            .map(
+                (donation) => `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+                                💰
+
+                                ${escapeHtml(
+                                    donation.reference ||
+                                    donation.id ||
+                                    "Donation"
+                                )}
+                            </div>
+
+                            <div class="status">
+                                ${escapeHtml(
+                                    donation.status ||
+                                    "successful"
+                                )}
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>
+                                    Email:
+                                </strong>
+
+                                ${escapeHtml(
+                                    donation.email ||
+                                    "Not provided"
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Amount:
+                                </strong>
+
+                                ₦${Number(
+                                    donation.amount || 0
+                                ).toLocaleString()}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Date:
+                                </strong>
+
+                                ${
+                                    donation.createdAt
+                                    ? new Date(
+                                        donation.createdAt
+                                      ).toLocaleString()
+                                    : "Unknown"
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+    } catch (error) {
+
+        console.error(
+            "Donations error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load donations.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+USER HISTORY
+==================================================
+*/
+
+async function loadUserHistory() {
+
+    const input =
+        document.getElementById(
+            "historyUuid"
+        );
+
+    const container =
+        document.getElementById(
+            "userHistory"
+        );
+
+    const uuid =
+        input.value.trim();
+
+    if (!uuid) {
+
+        container.innerHTML = `
+            <div class="error">
+                Enter a user UUID first.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML = `
+        <div class="details">
+            Loading user history...
+        </div>
+    `;
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/admin/users/${encodeURIComponent(
+                    uuid
+                )}/history`
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "User history request failed."
+            );
+
+        }
+
+        const visits =
+            data.visits || [];
+
+        const reports =
+            data.reports || [];
+
+        const calls =
+            data.callHistory || [];
+
+        container.innerHTML = `
+
+            <div class="report">
+
+                <h3>
+                    👤 User
+                </h3>
+
+                <div class="details">
+
+                    <div>
+                        <strong>UUID:</strong>
+                        ${escapeHtml(
+                            data.user.uuid
+                        )}
+                    </div>
+
+                    <div>
+                        <strong>Type:</strong>
+                        ${escapeHtml(
+                            data.user.type
+                        )}
+                    </div>
+
+                    <div>
+                        <strong>Premium:</strong>
+                        ${
+                            data.user.isPremium
+                            ? "Yes"
+                            : "No"
+                        }
+                    </div>
+
+                    <div>
+                        <strong>First Seen:</strong>
+                        ${new Date(
+                            data.user.firstSeen
+                        ).toLocaleString()}
+                    </div>
+
+                    <div>
+                        <strong>Last Active:</strong>
+                        ${new Date(
+                            data.user.lastActive
+                        ).toLocaleString()}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="report">
+
+                <h3>
+                    🌐 Visits (${visits.length})
+                </h3>
+
+                ${
+                    visits.length
+                    ? visits.map(
+                        (visit) => `
+                            <div class="details">
+
+                                ${new Date(
+                                    visit.timestamp
+                                ).toLocaleString()}
+
+                                —
+                                ${escapeHtml(
+                                    visit.type || "guest"
+                                )}
+
+                            </div>
+                        `
+                    ).join("")
+                    : `
+                        <div class="empty">
+                            No visits.
+                        </div>
+                    `
+                }
+
+            </div>
+
+            <div class="report">
+
+                <h3>
+                    🚨 Reports (${reports.length})
+                </h3>
+
+                ${
+                    reports.length
+                    ? reports.map(
+                        (report) => `
+                            <div class="details">
+
+                                <strong>
+                                    ${escapeHtml(
+                                        report.reason
+                                    )}
+                                </strong>
+
+                                —
+                                ${escapeHtml(
+                                    report.status
+                                )}
+
+                            </div>
+                        `
+                    ).join("")
+                    : `
+                        <div class="empty">
+                            No reports.
+                        </div>
+                    `
+                }
+
+            </div>
+
+            <div class="report">
+
+                <h3>
+                    📞 Call History (${calls.length})
+                </h3>
+
+                ${
+                    calls.length
+                    ? calls.map(
+                        (call) => `
+                            <div class="details">
+                                ${escapeHtml(
+                                    JSON.stringify(call)
+                                )}
+                            </div>
+                        `
+                    ).join("")
+                    : `
+                        <div class="empty">
+                            No call history.
+                        </div>
+                    `
+                }
+
+            </div>
+
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "User history error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>
+        `;
+
+    }
+
+}
+
+
+/*
+==================================================
+HTML ESCAPING
+==================================================
+*/
+
+
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/*
+==================================================
+ERROR DISPLAY
+==================================================
+*/
+
+function showError() {
+
+    errorContainer.innerHTML = `
+        <div class="error">
+            Could not load admin statistics.
+        </div>
+    `;
+
+}
+
+
+/*
+==================================================
+INITIAL LOAD
+==================================================
+*/
+
+loadStats();
+loadRedAccounts();
+loadReports();
+loadTickets();
+loadAnalytics();
+loadSystemHealth();
+loadTraffic();
+loadUsers();
+loadDonations();
+// Keep analytics live
+setInterval(() => {
+    loadAnalytics();
+}, 3000);
+
+</script>
+
+
+<!-- SUPPORT PREVIEW MAIL MODAL -->
+
+<div
+    id="supportMailModal"
+    class="support-mail-modal"
+>
+
+    <div class="support-mail-modal-card">
+
+        <button
+            class="support-mail-modal-close"
+            onclick="closeSupportMailModal()"
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+        <div
+            id="supportMailModalMeta"
+            class="support-mail-meta"
+        ></div>
+
+        <div
+            id="supportMailModalMessage"
+            class="support-mail-message"
+        ></div>
+
+        <div
+            id="supportMailModalReplies"
+            class="support-mail-replies"
+        ></div>
+
+        <div class="support-mail-actions">
+
+            <button
+                class="primary"
+                onclick="showSupportMailReplyBox()"
+            >
+                Reply
+            </button>
+
+        </div>
+
+        <div
+            id="supportMailReplyArea"
+            class="support-mail-reply-area"
+        >
+
+            <strong>Reply</strong>
+
+            <textarea
+                id="supportMailReplyInput"
+                placeholder="Write your reply..."
+            ></textarea>
+
+            <div class="support-mail-reply-actions">
+
+                <button
+                    class="primary"
+                    onclick="sendSupportMailReply()"
+                >
+                    Send Reply
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="hideSupportMailReplyBox()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+<script>
+/* ========================================
+   SUPPORT PREVIEW MAIL MODAL
+======================================== */
+
+let currentSupportMail = null;
+
+function escapeSupportMailHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value == null
+            ? ""
+            : String(value);
+
+    return div.innerHTML;
+
+}
+
+
+async function openSupportMail(ticketId, replyMode) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/support/" +
+                encodeURIComponent(ticketId),
+                {
+                    credentials: "same-origin"
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.success ||
+            !data.ticket
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load support message."
+            );
+
+        }
+
+        currentSupportMail =
+            data.ticket;
+
+        renderSupportMailModal(
+            currentSupportMail
+        );
+
+        const modal =
+            document.getElementById(
+                "supportMailModal"
+            );
+
+        modal.classList.add("open");
+
+        document.body.classList.add(
+            "support-mail-modal-open"
+        );
+
+        if (replyMode) {
+            showSupportMailReplyBox();
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Support preview error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to load support message."
+        );
+
+    }
+
+}
+
+
+function renderSupportMailModal(mail) {
+
+    const meta =
+        document.getElementById(
+            "supportMailModalMeta"
+        );
+
+    const message =
+        document.getElementById(
+            "supportMailModalMessage"
+        );
+
+    const replies =
+        document.getElementById(
+            "supportMailModalReplies"
+        );
+
+    meta.innerHTML = `
+        <strong>
+            ${escapeSupportMailHtml(mail.email)}
+        </strong>
+
+        <div>
+            ${escapeSupportMailHtml(mail.subject)}
+        </div>
+
+        <div>
+            ID: ${escapeSupportMailHtml(mail.id)}
+        </div>
+
+        <div>
+            Status: ${escapeSupportMailHtml(mail.status)}
+        </div>
+
+        ${
+            mail.createdAt
+                ? `<div>
+                    ${new Date(
+                        mail.createdAt
+                    ).toLocaleString()}
+                </div>`
+                : ""
+        }
+    `;
+
+    message.textContent =
+        mail.message || "";
+
+    const replyList =
+        Array.isArray(mail.replies)
+            ? mail.replies
+            : [];
+
+    if (!replyList.length) {
+
+        replies.innerHTML = `
+            <h3>Replies</h3>
+            <div class="empty">
+                No replies yet.
+            </div>
+        `;
+
+    } else {
+
+        replies.innerHTML = `
+            <h3>Replies</h3>
+
+            ${replyList.map(
+                (reply) => `
+
+                    <div class="support-mail-reply">
+
+                        <div class="support-mail-reply-meta">
+                            ${
+                                reply.from === "admin"
+                                    ? "Admin"
+                                    : "Reply"
+                            }
+
+                            ${
+                                reply.createdAt
+                                    ? " • " +
+                                      new Date(
+                                          reply.createdAt
+                                      ).toLocaleString()
+                                    : ""
+                            }
+                        </div>
+
+                        <div class="support-mail-reply-message">
+                            ${escapeSupportMailHtml(
+                                reply.message
+                            )}
+                        </div>
+
+                    </div>
+
+                `
+            ).join("")}
+        `;
+
+    }
+
+    document.getElementById(
+        "supportMailReplyArea"
+    ).style.display = "none";
+
+    document.getElementById(
+        "supportMailReplyInput"
+    ).value = "";
+
+}
+
+
+function showSupportMailReplyBox() {
+
+    const area =
+        document.getElementById(
+            "supportMailReplyArea"
+        );
+
+    const input =
+        document.getElementById(
+            "supportMailReplyInput"
+        );
+
+    area.style.display =
+        "block";
+
+    setTimeout(() => {
+
+        input.focus({
+            preventScroll: true
+        });
+
+    }, 50);
+
+}
+
+
+function hideSupportMailReplyBox() {
+
+    document.getElementById(
+        "supportMailReplyArea"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "supportMailReplyInput"
+    ).value = "";
+
+}
+
+
+function closeSupportMailModal() {
+
+    const modal =
+        document.getElementById(
+            "supportMailModal"
+        );
+
+    modal.classList.remove("open");
+
+    document.body.classList.remove(
+        "support-mail-modal-open"
+    );
+
+    currentSupportMail =
+        null;
+
+}
+
+
+async function sendSupportMailReply() {
+
+    if (!currentSupportMail) {
+        return;
+    }
+
+    const input =
+        document.getElementById(
+            "supportMailReplyInput"
+        );
+
+    const message =
+        input.value.trim();
+
+    if (!message) {
+
+        alert(
+            "Please write a reply."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/support/" +
+                encodeURIComponent(
+                    currentSupportMail.id
+                ) +
+                "/reply",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to send reply."
+            );
+
+        }
+
+        currentSupportMail.replies =
+            Array.isArray(
+                currentSupportMail.replies
+            )
+                ? currentSupportMail.replies
+                : [];
+
+        currentSupportMail.replies.push(
+            data.reply
+        );
+
+        renderSupportMailModal(
+            currentSupportMail
+        );
+
+        await loadTickets();
+
+    } catch (error) {
+
+        console.error(
+            "Support reply error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to send reply."
+        );
+
+    }
+
+}
+
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        const modal =
+            document.getElementById(
+                "supportMailModal"
+            );
+
+        if (
+            modal &&
+            event.target === modal
+        ) {
+
+            closeSupportMailModal();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            currentSupportMail
+        ) {
+
+            closeSupportMailModal();
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

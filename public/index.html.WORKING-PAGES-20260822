@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>TalkNaija</title>
+
+<link
+    rel="stylesheet"
+    href="css/style.css"
+>
+
+
+<!-- GOOGLE ADSENSE -->
+<script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6781193955997029"
+    crossorigin="anonymous"
+></script>
+
+</head>
+
+<body>
+
+<!-- ========================================
+     TALKNAIJA SIDEBAR
+======================================== -->
+
+<div
+    id="sidebarOverlay"
+    class="sidebar-overlay hidden"
+></div>
+
+
+<aside
+    id="sideMenu"
+    class="side-menu"
+>
+
+    <div class="side-menu-header">
+
+        <div>
+            <strong>TalkNaija</strong>
+            <span>Connect. Talk. Meet Nigerians.</span>
+        </div>
+
+        <button
+            id="closeMenuBtn"
+            class="close-menu-btn"
+            type="button"
+            aria-label="Close menu"
+        >
+            ✕
+        </button>
+
+    </div>
+
+
+    <nav class="side-menu-nav">
+
+        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="home"
+        >
+            🏠
+            <span>Home</span>
+        </button>
+
+	        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="profile"
+        >
+            👤
+            <span>Profile</span>
+        </button>
+
+        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="faq"
+        >
+            ❓
+            <span>FAQ</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="policy"
+        >
+            🛡️
+            <span>TalkNaija Policy</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="support"
+        >
+            🎧
+            <span>Support</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="side-menu-item"
+            data-menu-action="premium"
+        >
+            ⭐
+            <span>Premium</span>
+        </button>
+
+    </nav>
+
+
+    <div class="side-menu-divider"></div>
+
+
+    <button
+        type="button"
+        id="coffeeMenuBtn"
+        class="coffee-menu-btn"
+    >
+        ☕
+        <span>Buy Me a Coffee</span>
+    </button>
+
+    <div class="side-menu-support-note">
+
+        <strong>Help Keep TalkNaija Running</strong>
+
+        <p>
+            TalkNaija is independently created and
+            maintained. Keeping the platform available,
+            maintaining hosting and infrastructure,
+            and continuously improving the experience
+            all come with ongoing costs.
+        </p>
+
+        <p>
+            If you enjoy using TalkNaija, your support
+            can help keep the service running and give
+            the creator room to continue improving and
+            expanding the platform.
+        </p>
+
+        <p>
+            Every contribution, large or small, helps.
+            ❤️
+        </p>
+
+    </div>
+
+</aside>
+
+<header class="topbar">
+
+    <button
+        id="menuBtn"
+        class="menu-btn"
+        type="button"
+        aria-label="Open menu"
+    >
+        ☰
+    </button>
+
+    <div class="demo-logo">
+        🎙
+    </div>
+
+    <h2>TalkNaija</h2>
+
+    <p>
+        Connect. Talk. Meet Nigerians.
+    </p>
+
+</header>
+
+
+<!-- ========================================
+     HOME SCREEN
+======================================== -->
+
+<div
+    id="homeScreen"
+    class="screen"
+>
+
+    <div class="home-card">
+
+        <h1>
+            Connect with Nigerians
+        </h1>
+
+        <p class="intro">
+            Random anonymous voice conversations.
+        </p>
+
+
+<div class="online-box">
+
+    <div id="connectionIndicator">
+        🟢 Online
+    </div>
+
+    <div>
+        👥 :
+        <strong id="onlineUsers">0</strong>
+    </div>
+
+    <div class="waiting">
+        ⏳ Waiting:
+        <strong id="queueCount">0</strong>
+    </div>
+
+</div>
+
+        <button
+            id="startBtn"
+            class="main-call-btn"
+        >
+            Start Talking
+        </button>
+
+
+        <!-- QUICK CONTROLS -->
+
+        <div class="quick-controls">
+
+            <label class="toggle-control">
+
+                <input
+                    type="checkbox"
+                    id="autoCallToggle"
+                >
+
+                Auto Call
+
+            </label>
+
+            <button
+                id="historyBtn"
+                class="secondary-btn"
+                type="button"
+            >
+                🕘 Call History
+            </button>
+
+        </div>
+
+
+        <!-- CALL HISTORY -->
+
+        <div
+            id="callHistorySection"
+            class="history-panel hidden"
+        >
+
+            <div class="history-header">
+
+                <div>
+
+                    <h2>
+                        🕘 Call History
+                    </h2>
+
+                    <p
+                        id="historyLimitText"
+                        class="history-limit"
+                    >
+                        Your last 5 calls
+                    </p>
+
+                </div>
+
+                <button
+                    id="closeHistoryBtn"
+                    class="close-btn"
+                    type="button"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            <div id="callHistoryList">
+
+                <p class="history-empty">
+                    No call history yet.
+                </p>
+
+            </div>
+
+        </div>
+
+	<!-- HOME ADSENSE -->
+
+<div class="adsense-slot home-ad">
+
+    <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-6781193955997029"
+        data-ad-slot="5671102372"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+    ></ins>
+
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+</div>
+
+        <!-- GUIDELINES -->
+
+        <details class="guidelines">
+
+            <summary>
+                📜 TalkNaija Guidelines
+            </summary>
+
+            <div class="guidelines-content">
+
+                <p>
+                    TalkNaija is a place for relaxed,
+                    anonymous conversations with people
+                    around Nigeria.
+                </p>
+
+                <ul>
+
+                    <li>
+			Users need to be 18 years or above.
+		    </li>
+
+		    <li>
+                        Treat the person on the other end
+                        with basic respect.
+                    </li>
+
+                    <li>
+                        Do not harass, threaten or bully
+                        other users.
+                    </li>
+
+                    <li>
+                        Do not use TalkNaija to scam,
+                        impersonate or deceive people.
+                    </li>
+
+                    <li>
+                        Avoid sharing passwords, financial
+                        information or other private details.
+                    </li>
+
+                    <li>
+                        Sexual, abusive or hateful behaviour
+                        may result in a report or restriction.
+                    </li>
+
+                    <li>
+                        If a conversation becomes uncomfortable,
+                        simply end the call or use Next Person.
+                    </li>
+
+                </ul>
+
+                <div class="warning-box">
+
+                    <strong>
+                        Stay safe
+                    </strong>
+
+                    <p>
+                        TalkNaija is anonymous, but always
+                        use good judgment when speaking with
+                        strangers online.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </details>
+
+
+        <!-- COMMUNITY DROPDOWN -->
+
+        <details class="community-dropdown">
+
+            <summary>
+                🌍 Community
+            </summary>
+
+            <div class="dropdown-content">
+
+
+                <div class="content-section">
+
+                    <h2>
+                        About TalkNaija
+                    </h2>
+
+                    <p>
+                        TalkNaija gives Nigerians a simple
+                        way to meet and have spontaneous
+                        conversations with strangers.
+                    </p>
+
+                    <p>
+                        No profiles. No pressure.
+                        Just conversation.
+                    </p>
+
+                </div>
+
+
+                <div class="content-section">
+
+                    <h2>
+                        💡 What We Believe
+                    </h2>
+
+                    <p>
+                        Sometimes a random conversation
+                        can brighten someone's day.
+                    </p>
+
+                    <p>
+                        Keep it respectful, keep it real,
+                        and give everyone a fair chance
+                        to enjoy the platform.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </details>
+
+<!-- ========================================
+     SUPPORT TALKNAIJA
+======================================== -->
+
+<div class="content-section support-section">
+
+    <div class="support-title">
+
+        <span class="support-icon">
+            ☕
+        </span>
+
+        <h2>
+            Support TalkNaija
+        </h2>
+
+    </div>
+
+    <p>
+        Enjoying TalkNaija? You can support
+        the project and help us keep improving
+        the platform.
+    </p>
+
+    <button
+        class="coffee-btn"
+        type="button"
+    >
+        ☕ Buy Me a Coffee
+    </button>
+
+    <p class="support-thanks">
+        Every bit of support means a lot.
+        ❤️
+    </p>
+
+</div>
+
+    </div>
+
+<!-- ========================================
+     SUPPORT PAYMENT MODAL
+======================================== -->
+
+<div
+    id="coffeeModal"
+    class="coffee-modal hidden"
+>
+
+    <div class="coffee-modal-card">
+
+        <button
+            id="closeCoffeeModal"
+            class="coffee-modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div class="coffee-modal-icon">
+            ☕
+        </div>
+
+        <h2>
+            Support TalkNaija
+        </h2>
+
+        <p>
+            Help keep TalkNaija running,
+            maintained and improving.
+        </p>
+
+
+        <label
+            for="coffeeEmail"
+            class="coffee-label"
+        >
+            Email
+        </label>
+
+        <input
+            id="coffeeEmail"
+            class="coffee-input"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+        >
+
+
+        <label
+            for="coffeeAmount"
+            class="coffee-label"
+        >
+            Support Amount
+        </label>
+
+        <div
+            class="coffee-amount-options"
+        >
+
+            <button
+                type="button"
+                class="coffee-amount-btn"
+                data-amount="2000"
+            >
+                ₦2,000
+            </button>
+
+            <button
+                type="button"
+                class="coffee-amount-btn"
+                data-amount="5000"
+            >
+                ₦5,000
+            </button>
+
+            <button
+                type="button"
+                class="coffee-amount-btn"
+                data-amount="10000"
+            >
+                ₦10,000
+            </button>
+
+        </div>
+
+
+        <input
+            id="coffeeAmount"
+            class="coffee-input"
+            type="number"
+            min="2000"
+            step="100"
+            placeholder="Or enter custom amount"
+        >
+
+
+        <button
+            id="coffeePayBtn"
+            class="coffee-pay-btn"
+            type="button"
+        >
+            ☕ Support TalkNaija
+        </button>
+
+
+        <p
+            id="coffeePaymentStatus"
+            class="coffee-payment-status"
+        ></p>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- ========================================
+     PROFILE SCREEN
+======================================== -->
+
+<div
+    id="profileScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card profile-card">
+
+        <h1>
+            Profile
+        </h1>
+
+        <div class="profile-section">
+
+            <div class="profile-label">
+                TalkNaija ID
+            </div>
+
+            <div class="profile-id-row">
+
+                <strong id="profileTalkNaijaId">
+                    GUEST
+                </strong>
+
+                <button
+                    type="button"
+                    id="copyProfileIdBtn"
+                    class="profile-copy-btn"
+                    aria-label="Copy TalkNaija ID"
+                    title="Copy TalkNaija ID"
+                >
+                    ⧉
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-section">
+
+            <div class="profile-label">
+                User Level
+            </div>
+
+            <strong id="profileUserLevel">
+                Guest
+            </strong>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="profileUpgradeBtn"
+            class="main-call-btn"
+        >
+            Upgrade
+        </button>
+
+	        <button
+            type="button"
+            class="secondary-btn"
+            data-back-home
+        >
+           ‹ Back
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ========================================
+     FAQ SCREEN
+======================================== -->
+
+<div
+    id="faqScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <div class="page-header">
+
+            <button
+                class="page-back-btn"
+                type="button"
+                data-back-home
+            >
+                ‹ Back
+            </button>
+
+            <h1>
+                Frequently Asked Questions
+            </h1>
+
+        </div>
+
+
+        <div class="page-content">
+
+            <details>
+                <summary>What is TalkNaija?</summary>
+
+                <p>
+                    TalkNaija is a platform for anonymous
+                    conversations with people from around
+                    Nigeria.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>Do I need an account?</summary>
+
+                <p>
+                    No account is required for the basic
+                    TalkNaija experience.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>How does matching work?</summary>
+
+                <p>
+                    When you start talking, TalkNaija
+                    searches for another available user
+                    and connects you for a random
+                    conversation.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>Can I end a conversation?</summary>
+
+                <p>
+                    Yes. You can end the conversation or
+                    choose Next Person at any time.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>What is Auto Call?</summary>
+
+                <p>
+                    Auto Call automatically searches for
+                    another person after a conversation
+                    ends.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>How do I report someone?</summary>
+
+                <p>
+                    During a call, use the Report option
+                    if another user violates the TalkNaija
+                    guidelines or makes you uncomfortable.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>Is TalkNaija free?</summary>
+
+                <p>
+                    The core TalkNaija experience is
+                    currently available without a paid
+                    subscription.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>Can I support TalkNaija?</summary>
+
+                <p>
+                    Yes. You can support the project through
+                    the Buy Me a Coffee option in the menu.
+                    Support helps us maintain hosting and
+                    continue improving the platform.
+                </p>
+
+            </details>
+
+
+            <details>
+                <summary>What is Premium?</summary>
+
+                <p>
+                    Premium features are currently being
+                    developed and will be announced when
+                    available.
+                </p>
+
+            </details>
+
+        </div>
+
+    </div>
+
+<!-- FAQ ADSENSE -->
+
+<div class="adsense-slot faq-ad">
+
+    <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-6781193955997029"
+        data-ad-slot="1508496085"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+    ></ins>
+
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+</div>
+
+</div>
+
+
+<!-- ========================================
+     TALKNAIJA POLICY SCREEN
+======================================== -->
+
+<div
+    id="policyScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <div class="page-header">
+
+            <button
+                class="page-back-btn"
+                type="button"
+                data-back-home
+            >
+                ‹ Back
+            </button>
+
+            <h1>
+                TalkNaija Policy
+            </h1>
+
+        </div>
+
+
+        <div class="page-content">
+
+            <h2>Our Purpose</h2>
+
+            <p>
+                TalkNaija exists to make spontaneous,
+                anonymous conversations simple and
+                accessible.
+            </p>
+
+
+            <h2>Respect</h2>
+
+            <p>
+                Treat other users with basic respect.
+                Harassment, threats, bullying and
+                deliberately abusive behaviour are not
+                welcome.
+            </p>
+
+
+            <h2>Safety</h2>
+
+            <p>
+                Do not share passwords, financial
+                information, private addresses or other
+                sensitive personal information with
+                strangers.
+            </p>
+
+
+            <h2>Prohibited Behaviour</h2>
+
+            <p>
+                Scamming, impersonation, deception,
+                harassment, hateful behaviour and other
+                harmful conduct may result in reports,
+                restrictions or removal from the platform.
+            </p>
+
+
+            <h2>Reporting</h2>
+
+            <p>
+                Users can report inappropriate behaviour
+                during a conversation. Reports help us
+                identify problems and improve the safety
+                of TalkNaija.
+            </p>
+
+
+            <h2>Anonymous Conversations</h2>
+
+            <p>
+                TalkNaija conversations are designed to
+                be anonymous. Users should still exercise
+                good judgment when communicating with
+                strangers online.
+            </p>
+
+
+            <h2>Policy Updates</h2>
+
+            <p>
+                These policies may be updated as TalkNaija
+                grows, new features are introduced and
+                additional safety measures become necessary.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+   <!-- ========================================
+     SUPPORT SCREEN
+======================================== -->
+
+<div
+    id="supportScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <div class="page-header">
+
+            <button
+                class="page-back-btn"
+                type="button"
+                data-back-home
+            >
+                ‹ Back
+            </button>
+
+            <h1>
+                TalkNaija Support
+            </h1>
+
+        </div>
+
+
+        <div class="page-content">
+
+            <p>
+                Need help with TalkNaija?
+            </p>
+
+            <p>
+                If you're experiencing a problem,
+                have a question, or need help with
+                a TalkNaija feature, send us a message
+                below.
+            </p>
+
+
+            <div class="support-note">
+
+                <strong>
+                    Before contacting support
+                </strong>
+
+                <p>
+                    Please describe the issue clearly
+                    and include the feature or page
+                    where you experienced it. This helps
+                    us investigate the problem faster.
+                </p>
+
+            </div>
+
+
+            <!-- SUPPORT FORM -->
+
+            <form
+                id="supportForm"
+                class="support-form"
+            >
+
+                <label
+                    for="supportEmail"
+                >
+                    Your Email
+                </label>
+
+                <input
+                    id="supportEmail"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+
+                <label
+                    for="supportSubject"
+                >
+                    Subject
+                </label>
+
+                <input
+                    id="supportSubject"
+                    name="subject"
+                    type="text"
+                    placeholder="What can we help with?"
+                    maxlength="120"
+                    required
+                >
+
+
+                <label
+                    for="supportMessage"
+                >
+                    Message
+                </label>
+
+                <textarea
+                    id="supportMessage"
+                    name="message"
+                    rows="6"
+                    maxlength="2000"
+                    placeholder="Tell us what happened..."
+                    required
+                ></textarea>
+
+
+                <button
+                    id="supportSubmitBtn"
+                    type="submit"
+                    class="main-call-btn"
+                >
+                    Send Message
+                </button>
+
+            </form>
+
+
+            <p
+                id="supportStatus"
+                class="support-status hidden"
+            ></p>
+
+
+            <div class="support-note">
+
+                <strong>
+                    Why your email is required
+                </strong>
+
+                <p>
+                    We use your email only so our support
+                    team can respond to your request.
+                    Please avoid including passwords,
+                    payment details or other sensitive
+                    information in your message.
+                </p>
+
+            </div>
+
+        </div>
+	
+	<!-- SUPPORT / USER MAILING ADSENSE -->
+
+<div class="adsense-slot support-mailing-ad">
+
+    <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-6781193955997029"
+        data-ad-slot="1382850494"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+    ></ins>
+
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+</div>
+
+    </div>
+
+</div>
+
+<!-- ========================================
+     SEARCH SCREEN
+======================================== -->
+
+<div
+    id="searchScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <h2>
+            🔎 Searching...
+        </h2>
+
+        <div class="loader"></div>
+
+        <p id="status">
+            Finding another Nigerian...
+        </p>
+
+        <button
+            id="cancelBtn"
+            class="secondary-btn"
+            type="button"
+        >
+            Cancel Search
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     CALL SCREEN
+======================================== -->
+
+<div
+    id="callScreen"
+    class="screen hidden"
+>
+
+    <div class="home-card">
+
+        <div class="call-avatar">
+            🎙
+        </div>
+
+        <h2>
+            Anonymous User
+        </h2>
+
+        <p id="connectionStatus">
+            Connecting...
+        </p>
+
+        <h1 id="timer">
+            00:00
+        </h1>
+
+
+        <!-- CALL CONTROLS -->
+
+        <div class="call-controls">
+
+            <button
+                id="muteBtn"
+                class="control-btn"
+                type="button"
+            >
+                Mute
+            </button>
+
+            <button
+                id="nextBtn"
+                class="control-btn"
+                type="button"
+            >
+                Next
+            </button>
+
+            <button
+                id="reportBtn"
+                class="control-btn report-control"
+                type="button"
+            >
+                Report
+            </button>
+
+        </div>
+
+
+        <button
+            id="endBtn"
+            class="end-btn"
+            type="button"
+        >
+            End Call
+        </button>
+
+
+        <!-- CHAT -->
+
+        <div class="chat-section">
+
+	<button
+	    id="chatToggle"
+	    class="chat-toggle"
+	    type="button"
+	>
+	    💬 Open Chat
+	    <span
+	        id="chatUnreadBadge"
+	        class="chat-unread-badge hidden"
+    	>
+        	0
+	    </span>
+	</button>
+
+            <div
+                id="chatBox"
+                class="chat-box hidden"
+            >
+
+                <div
+                    id="chatMessages"
+                    class="chat-messages"
+                >
+
+                    <div class="chat-empty">
+                        Messages will appear here.
+                    </div>
+
+                </div>
+
+                <div class="chat-input-row">
+
+                    <input
+                        id="chatInput"
+                        type="text"
+                        maxlength="500"
+                        placeholder="Type a message..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="chatSendBtn"
+                        type="button"
+                    >
+                        Send
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REMOTE AUDIO -->
+
+        <audio
+            id="remoteAudio"
+            autoplay
+            playsinline
+        ></audio>
+
+
+        <!-- DEBUG -->
+
+        <div
+            id="debugBox"
+            class="debug-box"
+        >
+            WebRTC Debug:<br>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     PERMANENT FOOTER
+======================================== -->
+
+<footer class="site-footer">
+
+    <div class="footer-column">
+
+        <h3>
+            TalkNaija
+        </h3>
+
+        <p>
+            Anonymous conversations.
+        </p>
+
+        <p>
+            Built for Nigerians.
+        </p>
+
+    </div>
+
+
+    <div class="footer-column">
+
+        <h3>
+            Follow Us
+        </h3>
+
+        <p>
+            Stay connected with TalkNaija.
+        </p>
+
+        <div class="social-icons">
+
+            <span>𝕏</span>
+
+            <span>f</span>
+
+            <span>◎</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 TalkNaija. All rights reserved.
+
+    </div>
+
+</footer>
+
+
+<!-- ========================================
+     SCRIPTS
+======================================== -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="js/socket.js"></script>
+
+<script src="js/webrtc.js?v=2"></script>
+
+<script src="js/app.js"></script>
+
+
+</body>
+
+</html>

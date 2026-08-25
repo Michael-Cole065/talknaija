@@ -1,0 +1,436 @@
+const socket = io();
+
+
+/*
+==================================================
+GLOBAL BAN STATE
+==================================================
+*/
+
+let talknaijaBanned = false;
+
+
+/*
+==================================================
+GLOBAL BAN LOCK
+==================================================
+*/
+
+function showGlobalBanDialog(message) {
+
+    if (talknaijaBanned) {
+        return;
+    }
+
+    talknaijaBanned = true;
+
+    console.log(
+        "🚫 GLOBAL BAN LOCK ACTIVATED"
+    );
+
+
+    /*
+    ================================================
+    STOP NORMAL PAGE INTERACTION
+    ================================================
+    */
+
+    document.documentElement.style.overflow =
+        "hidden";
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    /*
+    ================================================
+    DISABLE PAGE CONTENT
+    ================================================
+    */
+
+    const pageContent =
+        document.body;
+
+    if (pageContent) {
+
+        pageContent.setAttribute(
+            "data-talknaija-banned",
+            "true"
+        );
+
+    }
+
+
+    /*
+    ================================================
+    CREATE OVERLAY
+    ================================================
+    */
+
+    let overlay =
+        document.getElementById(
+            "talknaijaBanOverlay"
+        );
+
+    if (overlay) {
+        return;
+    }
+
+
+    overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "talknaijaBanOverlay";
+
+
+    /*
+    ================================================
+    OVERLAY STYLE
+    ================================================
+    */
+
+    overlay.style.position =
+        "fixed";
+
+    overlay.style.inset =
+        "0";
+
+    overlay.style.width =
+        "100vw";
+
+    overlay.style.height =
+        "100vh";
+
+    overlay.style.background =
+        "rgba(0, 0, 0, 0.88)";
+
+    overlay.style.display =
+        "flex";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.padding =
+        "20px";
+
+    overlay.style.boxSizing =
+        "border-box";
+
+    overlay.style.zIndex =
+        "2147483647";
+
+    overlay.style.pointerEvents =
+        "auto";
+
+
+    /*
+    ================================================
+    BAN DIALOG
+    ================================================
+    */
+
+    const dialog =
+        document.createElement("div");
+
+    dialog.style.width =
+        "min(440px, 100%)";
+
+    dialog.style.boxSizing =
+        "border-box";
+
+    dialog.style.background =
+        "#ffffff";
+
+    dialog.style.color =
+        "#111111";
+
+    dialog.style.borderRadius =
+        "18px";
+
+    dialog.style.padding =
+        "30px 24px";
+
+    dialog.style.textAlign =
+        "center";
+
+    dialog.style.boxShadow =
+        "0 20px 60px rgba(0,0,0,0.45)";
+
+    dialog.style.fontFamily =
+        "Arial, sans-serif";
+
+
+    /*
+    ================================================
+    ICON
+    ================================================
+    */
+
+    const icon =
+        document.createElement("div");
+
+    icon.textContent =
+        "🚫";
+
+    icon.style.fontSize =
+        "52px";
+
+    icon.style.marginBottom =
+        "14px";
+
+
+    /*
+    ================================================
+    TITLE
+    ================================================
+    */
+
+    const title =
+        document.createElement("h2");
+
+    title.textContent =
+        "Account Restricted";
+
+    title.style.margin =
+        "0 0 12px 0";
+
+    title.style.fontSize =
+        "24px";
+
+
+    /*
+    ================================================
+    MESSAGE
+    ================================================
+    */
+
+    const text =
+        document.createElement("p");
+
+    text.textContent =
+        message ||
+        "Your account has been temporarily restricted due to multiple reports.";
+
+    text.style.margin =
+        "0";
+
+    text.style.lineHeight =
+        "1.6";
+
+    text.style.fontSize =
+        "15px";
+
+    text.style.color =
+        "#555555";
+
+
+    /*
+    ================================================
+    NOTICE
+    ================================================
+    */
+
+    const notice =
+        document.createElement("p");
+
+    notice.textContent =
+        "You cannot use TalkNaija while this restriction is active.";
+
+    notice.style.margin =
+        "18px 0 0 0";
+
+    notice.style.fontSize =
+        "13px";
+
+    notice.style.fontWeight =
+        "600";
+
+    notice.style.color =
+        "#d00000";
+
+
+    dialog.appendChild(icon);
+    dialog.appendChild(title);
+    dialog.appendChild(text);
+    dialog.appendChild(notice);
+
+    overlay.appendChild(dialog);
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    /*
+    ================================================
+    BLOCK KEYBOARD INTERACTION
+    ================================================
+    */
+
+    document.addEventListener(
+        "keydown",
+        blockBannedKeyboard,
+        true
+    );
+
+}
+
+
+/*
+==================================================
+BLOCK BANNED KEYBOARD ACTIONS
+==================================================
+*/
+
+function blockBannedKeyboard(event) {
+
+    if (!talknaijaBanned) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+}
+
+
+/*
+==================================================
+SOCKET CONNECT
+==================================================
+*/
+
+socket.on(
+    "connect",
+    () => {
+
+        console.log(
+            "Socket Connected"
+        );
+
+        const indicator =
+            document.getElementById(
+                "connectionIndicator"
+            );
+
+        if (indicator) {
+
+            indicator.textContent =
+                "🟢 Online";
+
+        }
+
+
+        /*
+        ================================================
+        REGISTER USER AFTER SOCKET CONNECTION
+        ================================================
+        */
+
+        const userId =
+            localStorage.getItem(
+                "talknaijaUserId"
+            );
+
+        const isPremium =
+            localStorage.getItem(
+                "talknaijaPremium"
+            ) === "true";
+
+        const visitTracked =
+            sessionStorage.getItem(
+                "talknaijaVisitTracked"
+            ) === "true";
+
+
+        if (userId) {
+
+            console.log(
+                "🔐 REGISTERING USER:",
+                userId
+            );
+
+            socket.emit(
+                "registerUser",
+                {
+                    userId,
+                    isPremium,
+                    isNewVisit:
+                        !visitTracked
+                }
+            );
+
+
+            if (!visitTracked) {
+
+                sessionStorage.setItem(
+                    "talknaijaVisitTracked",
+                    "true"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/*
+==================================================
+USER BANNED
+==================================================
+*/
+
+socket.on(
+    "userBanned",
+    (data) => {
+
+        console.log(
+            "🚫 USER BANNED:",
+            data?.message ||
+            "Account restricted."
+        );
+
+
+        showGlobalBanDialog(
+            data?.message ||
+            "Your account has been temporarily restricted due to multiple reports."
+        );
+
+    }
+);
+
+
+/*
+==================================================
+SOCKET DISCONNECT
+==================================================
+*/
+
+socket.on(
+    "disconnect",
+    () => {
+
+        console.log(
+            "Socket Disconnected"
+        );
+
+        const indicator =
+            document.getElementById(
+                "connectionIndicator"
+            );
+
+        if (indicator) {
+
+            indicator.textContent =
+                "🔴 Offline";
+
+        }
+
+    }
+);

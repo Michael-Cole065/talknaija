@@ -1,3 +1,4 @@
+
 let dots = 0;
 let searchAnimation = null;
 
@@ -154,8 +155,25 @@ let userId =
 
 if (!userId) {
 
-    userId =
-        crypto.randomUUID();
+    if (
+        crypto &&
+        crypto.randomUUID
+    ) {
+
+        userId =
+            crypto.randomUUID();
+
+    } else {
+
+        userId =
+            "tn-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 10);
+
+    }
 
     localStorage.setItem(
         "talknaijaUserId",
@@ -164,39 +182,11 @@ if (!userId) {
 
 }
 
-
 let isPremium =
     localStorage.getItem(
         "talknaijaPremium"
     ) === "true";
 
-
-/*
-==================================================
-REGISTER USER
-==================================================
-*/
-
-const visitTracked =
-    sessionStorage.getItem(
-        "talknaijaVisitTracked"
-    ) === "true";
-
-socket.emit(
-    "registerUser",
-    {
-        userId,
-        isPremium,
-        isNewVisit: !visitTracked
-    }
-);
-
-if (!visitTracked) {
-    sessionStorage.setItem(
-        "talknaijaVisitTracked",
-        "true"
-    );
-}
 
 /*
 ==================================================
@@ -281,41 +271,9 @@ function showScreen(screen) {
 
     }
 
-    // INITIALIZE ADSENSE FOR VISIBLE SECONDARY SCREENS
-
-    if (
-        screen &&
-        screen.id !== "homeScreen"
-    ) {
-
-        const ad =
-            screen.querySelector(
-                ".adsbygoogle"
-            );
-
-        if (ad) {
-
-            try {
-
-                (
-                    window.adsbygoogle =
-                    window.adsbygoogle || []
-                ).push({});
-
-            } catch (error) {
-
-                console.log(
-                    "AdSense initialization:",
-                    error
-                );
-
-            }
-
-        }
-
-    }
 
 }
+
 
 /*
 ==================================================
@@ -1924,8 +1882,9 @@ socket.on(
 
         loadCallHistory();
 
-        alert(
-            "The other user ended the call."
+        showTalkNaijaInfoDialog(
+            "Call ended",
+            "The other user ended this call."
         );
 
         if (
@@ -2178,8 +2137,9 @@ socket.on(
         loadCallHistory();
 
 
-        alert(
-            "Report submitted. Thank you for helping keep TalkNaija safe."
+        showTalkNaijaInfoDialog(
+            "Report submitted",
+            "Thank you for helping keep TalkNaija safe."
         );
 
 
@@ -2313,95 +2273,101 @@ function performSidebarNavigation(
     }
 
 
-if (action === "faq") {
+    if (action === "profile") {
 
-    const faqScreen =
-        document.getElementById(
-            "faqScreen"
-        );
+        const profileScreen =
+            document.getElementById(
+                "profileScreen"
+            );
 
-    if (faqScreen) {
+        if (profileScreen) {
 
-        showScreen(
-            faqScreen
-        );
+            showScreen(
+                profileScreen
+            );
 
-    }
+        }
 
-    return;
-
-}
-
-if (action === "policy") {
-
-    const policyScreen =
-        document.getElementById(
-            "policyScreen"
-        );
-
-    if (policyScreen) {
-
-        showScreen(
-            policyScreen
-        );
+        return;
 
     }
 
-    return;
 
-}
+    if (action === "faq") {
 
-if (action === "profile") {
+        const faqScreen =
+            document.getElementById(
+                "faqScreen"
+            );
 
-    const profileScreen =
-        document.getElementById(
-            "profileScreen"
-        );
+        if (faqScreen) {
 
-    if (profileScreen) {
+            showScreen(
+                faqScreen
+            );
 
-        showScreen(
-            profileScreen
-        );
+        }
 
-    }
-
-    return;
-
-}
-
-if (action === "support") {
-
-    const supportScreen =
-        document.getElementById(
-            "supportScreen"
-        );
-
-    if (supportScreen) {
-
-        showScreen(
-            supportScreen
-        );
+        return;
 
     }
 
-    return;
 
-}
+    if (action === "policy") {
 
-if (action === "premium") {
+        const policyScreen =
+            document.getElementById(
+                "policyScreen"
+            );
 
-    showPremiumComingSoon();
+        if (policyScreen) {
 
-    return;
+            showScreen(
+                policyScreen
+            );
 
-}
+        }
+
+        return;
+
+    }
+
+
+    if (action === "support") {
+
+        const supportScreen =
+            document.getElementById(
+                "supportScreen"
+            );
+
+        if (supportScreen) {
+
+            showScreen(
+                supportScreen
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    if (action === "premium") {
+
+        showPremiumComingSoon();
+
+        return;
+
+    }
+
 
     if (action === "coffee") {
 
-        alert(
-            "Buy Me a Coffee will be available soon."
-        );
+	closeSideMenu();
+
+
+        startCoffeePayment();
 
         return;
 
@@ -2409,6 +2375,485 @@ if (action === "premium") {
 
 }
 
+/*
+==================================================
+TALKNAIJA INFO DIALOG
+==================================================
+*/
+
+function showTalkNaijaInfoDialog(
+    title,
+    description,
+    buttonText = "OK"
+) {
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.style.position =
+        "fixed";
+
+    overlay.style.top =
+        "0";
+
+    overlay.style.left =
+        "0";
+
+    overlay.style.right =
+        "0";
+
+    overlay.style.bottom =
+        "0";
+
+    overlay.style.background =
+        "rgba(0,0,0,0.65)";
+
+    overlay.style.display =
+        "flex";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.zIndex =
+        "99999";
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.style.background =
+        "#0d1730";
+
+    box.style.boxSizing =
+        "border-box";
+
+    box.style.boxShadow =
+        "0 10px 30px rgba(0,0,0,0.35)";
+
+    box.style.padding =
+        "25px";
+
+    box.style.borderRadius =
+        "15px";
+
+    box.style.textAlign =
+        "center";
+
+    box.style.maxWidth =
+        "320px";
+
+    box.style.width =
+        "85%";
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+    message.textContent =
+        title;
+
+    message.style.fontSize =
+        "16px";
+
+    message.style.fontWeight =
+        "600";
+
+
+    const details =
+        document.createElement(
+            "div"
+        );
+
+    details.textContent =
+        description;
+
+    details.style.fontSize =
+        "13px";
+
+    details.style.opacity =
+        "0.8";
+
+    details.style.marginTop =
+        "10px";
+
+    details.style.lineHeight =
+        "1.5";
+
+
+    const buttonRow =
+        document.createElement(
+            "div"
+        );
+
+    buttonRow.style.display =
+        "flex";
+
+    buttonRow.style.justifyContent =
+        "center";
+
+    buttonRow.style.marginTop =
+        "20px";
+
+
+    const okBtn =
+        document.createElement(
+            "button"
+        );
+
+    okBtn.textContent =
+        buttonText;
+
+    okBtn.style.background =
+        "#0d6efd";
+
+    okBtn.style.color =
+        "#fff";
+
+    okBtn.style.border =
+        "none";
+
+    okBtn.style.borderRadius =
+        "10px";
+
+    okBtn.style.padding =
+        "12px 20px";
+
+    okBtn.style.width =
+        "115px";
+
+    okBtn.style.minWidth =
+        "115px";
+
+    okBtn.style.fontSize =
+        "15px";
+
+    okBtn.style.fontWeight =
+        "600";
+
+    okBtn.style.cursor =
+        "pointer";
+
+
+    buttonRow.appendChild(
+        okBtn
+    );
+
+    box.appendChild(
+        message
+    );
+
+    box.appendChild(
+        details
+    );
+
+    box.appendChild(
+        buttonRow
+    );
+
+    overlay.appendChild(
+        box
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    okBtn.onclick =
+        () => {
+
+            overlay.remove();
+
+        };
+
+}
+
+
+
+/*
+==================================================
+LEAVE QUEUE CONFIRMATION
+==================================================
+*/
+
+function showLeaveQueueConfirmation(
+    action
+) {
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.style.position =
+        "fixed";
+
+    overlay.style.top =
+        "0";
+
+    overlay.style.left =
+        "0";
+
+    overlay.style.right =
+        "0";
+
+    overlay.style.bottom =
+        "0";
+
+    overlay.style.background =
+        "rgba(0,0,0,0.65)";
+
+    overlay.style.display =
+        "flex";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.zIndex =
+        "99999";
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.style.background =
+        "#0d1730";
+
+    box.style.boxSizing =
+        "border-box";
+
+    box.style.boxShadow =
+        "0 10px 30px rgba(0,0,0,0.35)";
+
+    box.style.padding =
+        "25px";
+
+    box.style.borderRadius =
+        "15px";
+
+    box.style.textAlign =
+        "center";
+
+    box.style.maxWidth =
+        "320px";
+
+    box.style.width =
+        "85%";
+
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+    message.textContent =
+        "Leave the queue?";
+
+    message.style.fontSize =
+        "16px";
+
+    message.style.fontWeight =
+        "600";
+
+
+    const description =
+        document.createElement(
+            "div"
+        );
+
+    description.textContent =
+        "Your current search will stop if you continue.";
+
+    description.style.fontSize =
+        "13px";
+
+    description.style.opacity =
+        "0.8";
+
+    description.style.marginTop =
+        "10px";
+
+
+    const buttonRow =
+        document.createElement(
+            "div"
+        );
+
+    buttonRow.style.display =
+        "flex";
+
+    buttonRow.style.justifyContent =
+        "center";
+
+    buttonRow.style.gap =
+        "28px";
+
+    buttonRow.style.marginTop =
+        "20px";
+
+
+    const stayBtn =
+        document.createElement(
+            "button"
+        );
+
+    stayBtn.textContent =
+        "Stay";
+
+    stayBtn.style.background =
+        "#22c55e";
+
+    stayBtn.style.color =
+        "#fff";
+
+    stayBtn.style.border =
+        "none";
+
+    stayBtn.style.borderRadius =
+        "10px";
+
+    stayBtn.style.padding =
+        "12px 20px";
+
+    stayBtn.style.width =
+        "115px";
+
+    stayBtn.style.minWidth =
+        "115px";
+
+    stayBtn.style.fontSize =
+        "15px";
+
+    stayBtn.style.fontWeight =
+        "600";
+
+    stayBtn.style.cursor =
+        "pointer";
+
+
+    const leaveBtn =
+        document.createElement(
+            "button"
+        );
+
+    leaveBtn.textContent =
+        "Leave Queue";
+
+    leaveBtn.style.background =
+        "#ef4444";
+
+    leaveBtn.style.color =
+        "#fff";
+
+    leaveBtn.style.border =
+        "none";
+
+    leaveBtn.style.borderRadius =
+        "10px";
+
+    leaveBtn.style.padding =
+        "12px 20px";
+
+    leaveBtn.style.width =
+        "115px";
+
+    leaveBtn.style.minWidth =
+        "115px";
+
+    leaveBtn.style.fontSize =
+        "15px";
+
+    leaveBtn.style.fontWeight =
+        "600";
+
+    leaveBtn.style.cursor =
+        "pointer";
+
+
+    buttonRow.appendChild(
+        stayBtn
+    );
+
+    buttonRow.appendChild(
+        leaveBtn
+    );
+
+
+    box.appendChild(
+        message
+    );
+
+    box.appendChild(
+        description
+    );
+
+    box.appendChild(
+        buttonRow
+    );
+
+    overlay.appendChild(
+        box
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    stayBtn.onclick =
+        () => {
+
+            overlay.remove();
+
+        };
+
+
+    leaveBtn.onclick =
+        () => {
+
+            overlay.remove();
+
+            socket.emit(
+                "endCall"
+            );
+
+            clearInterval(
+                searchAnimation
+            );
+
+            searchAnimation =
+                null;
+
+            startBtn.disabled =
+                false;
+
+            showScreen(
+                homeScreen
+            );
+
+            closeSideMenu();
+
+            performSidebarNavigation(
+                action
+            );
+
+        };
+
+}
 
 /*
 ==================================================
@@ -2683,11 +3128,32 @@ function showLeaveCallConfirmation(
             connectionStatus.textContent =
                 "Disconnected";
 
-            loadCallHistory();
+	loadCallHistory();
 
-            performSidebarNavigation(
-                action
-            );
+if (
+    action === "premium" ||
+    action === "coffee"
+) {
+
+    performSidebarNavigation(
+        "home"
+    );
+
+    setTimeout(() => {
+
+        performSidebarNavigation(
+            action
+        );
+
+    }, 0);
+
+} else {
+
+    performSidebarNavigation(
+        action
+    );
+
+}
 
         };
 
@@ -2857,9 +3323,10 @@ document
             "click",
             () => {
 
-                const action =
-                    item.dataset.menuAction;
+		const action =
+    item.dataset.menuAction;
 
+		item.blur();
 
                 /*
                 ========================================
@@ -2883,6 +3350,34 @@ document
                 }
 
 
+                /*
+                ========================================
+                ACTIVE SEARCH
+                ========================================
+                */
+
+                if (
+                    searchScreen &&
+                    !searchScreen.classList.contains(
+                        "hidden"
+                    )
+                ) {
+
+                    showLeaveQueueConfirmation(
+                        action
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                ========================================
+                NORMAL NAVIGATION
+                ========================================
+                */
+
                 closeSideMenu();
 
                 performSidebarNavigation(
@@ -2893,6 +3388,75 @@ document
         );
 
     });
+
+
+/*
+==================================================
+BUY ME A COFFEE SIDEBAR BUTTON
+==================================================
+*/
+
+if (coffeeMenuBtn) {
+
+    coffeeMenuBtn.onclick =
+        () => {
+
+            /*
+            ========================================
+            ACTIVE CALL
+            ========================================
+            */
+
+            if (
+                callScreen &&
+                !callScreen.classList.contains(
+                    "hidden"
+                )
+            ) {
+                showLeaveCallConfirmation(
+                    "coffee"
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ========================================
+            ACTIVE SEARCH
+            ========================================
+            */
+
+            if (
+                searchScreen &&
+                !searchScreen.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                showLeaveQueueConfirmation(
+                    "coffee"
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ========================================
+            NORMAL
+            ========================================
+            */
+
+              closeSideMenu();
+
+              startCoffeePayment();
+
+        };
+
+}
 
 function startCoffeePayment() {
 
@@ -2934,18 +3498,6 @@ function startCoffeePayment() {
     document.body.classList.add(
         "coffee-modal-open"
     );
-
-}
-
-if (coffeeMenuBtn) {
-
-    coffeeMenuBtn.onclick = () => {
-
-        closeSideMenu();
-
-        startCoffeePayment();
-
-    };
 
 }
 
@@ -3452,10 +4004,10 @@ if (!reference) {
             "success"
         ) {
 
-            alert(
-                "☕ Payment successful!\n\n" +
-                "Thank you for supporting TalkNaija! ❤️"
-                );
+            showTalkNaijaInfoDialog(
+                "Payment successful",
+                "☕ Thank you for supporting TalkNaija! ❤️"
+            );
 
 	    sessionStorage.removeItem(
 	       "talknaija_paystack_active"
@@ -3463,8 +4015,8 @@ if (!reference) {
 
         } else {
 
-            alert(
-                "Payment was not completed.\n\n" +
+            showTalkNaijaInfoDialog(
+                "Payment not completed",
                 "No money was charged."
             );
 
@@ -3504,9 +4056,9 @@ if (!reference) {
             error
         );
 
-        alert(
-            "We couldn't verify the payment.\n\n" +
-            "Please try again."
+        showTalkNaijaInfoDialog(
+            "Payment verification failed",
+            "We couldn't verify the payment. Please try again."
         );
 
         window.history.replaceState(

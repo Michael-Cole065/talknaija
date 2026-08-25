@@ -4,8 +4,28 @@
     "email": "janeshelby5445@gmail.com",
     "subject": "We need interstate",
     "message": "Just want to be able to meet people in my state",
-    "status": "open",
+    "status": "replied",
     "createdAt": "2026-08-13T06:59:28.379Z",
-    "replies": []
+    "replies": [
+      {
+        "id": "R-4A5261A9",
+        "message": "Okay",
+        "sender": "admin",
+        "createdAt": "2026-08-23T16:08:41.431Z"
+      },
+      {
+        "id": "R-3BC0960E",
+        "message": "Yes",
+        "sender": "admin",
+        "createdAt": "2026-08-24T18:02:42.414Z"
+      },
+      {
+        "id": "R-A5270D9B",
+        "message": "We are working on that ma'am.",
+        "sender": "admin",
+        "createdAt": "2026-08-25T10:51:47.340Z"
+      }
+    ],
+    "lastRepliedAt": "2026-08-25T10:51:47.340Z"
   }
 ]
