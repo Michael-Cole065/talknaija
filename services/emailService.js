@@ -7,12 +7,26 @@ const gmailUser =
 const gmailPassword =
     process.env.SUPPORT_GMAIL_APP_PASSWORD;
 
+const dns = require("dns");
+
 const transporter =
     nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
         secure: true,
-        family: 4,
+
+        lookup:
+            (hostname, options, callback) => {
+                dns.lookup(
+                    hostname,
+                    {
+                        family: 4,
+                        all: false
+                    },
+                    callback
+                );
+            },
+
         auth: {
             user: gmailUser,
             pass: gmailPassword
