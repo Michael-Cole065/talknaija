@@ -15,17 +15,40 @@ const transporter =
         port: 465,
         secure: true,
 
-        lookup:
-            (hostname, options, callback) => {
-                dns.lookup(
-                    hostname,
-                    {
-                        family: 4,
-                        all: false
-                    },
-                    callback
-                );
-            },
+lookup: (hostname, options, callback) => {
+
+    console.log(
+        "🔥 SMTP LOOKUP CALLED:",
+        hostname,
+        options
+    );
+
+    dns.lookup(
+        hostname,
+        {
+            family: 4,
+            all: false
+        },
+        (error, address, family) => {
+
+            console.log(
+                "🔥 SMTP LOOKUP RESULT:",
+                error || {
+                    address,
+                    family
+                }
+            );
+
+            callback(
+                error,
+                address,
+                family
+            );
+
+        }
+    );
+
+},
 
         auth: {
             user: gmailUser,
