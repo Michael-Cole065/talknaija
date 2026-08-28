@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TalkNaija Admin - Premium</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .page {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .summary {
+            margin-bottom: 18px;
+            font-weight: bold;
+        }
+
+        .user {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .user-id {
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .user-id button {
+            border: 0;
+            background: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .status {
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: #eee;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .details {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .details strong {
+            color: #111;
+        }
+
+        .empty,
+        .error {
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            background: #f5f5f5;
+        }
+
+        .error {
+            color: #b00020;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .page {
+                padding: 15px;
+            }
+
+            .user-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <h1>
+            TalkNaija Admin
+        </h1>
+
+        <p>
+            Moderation & Support Control Center
+        </p>
+
+    </header>
+
+    <main class="page">
+
+        <a
+            href="/admin.html"
+            class="back"
+        >
+            ← Back to Dashboard
+        </a>
+
+        <h2>
+            ⭐ Premium
+        </h2>
+
+        <div
+            id="summary"
+            class="summary"
+        >
+            Loading premium...
+        </div>
+
+        <div id="users">
+            Loading premium...
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+async function loadUsers() {
+
+    const container =
+        document.getElementById("users");
+
+    const summary =
+        document.getElementById("summary");
+
+    try {
+
+        const response =
+            await fetch("/api/admin/premium");
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load premium."
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const users =
+            data.users || [];
+
+        users.sort(
+            (a, b) =>
+                new Date(b.lastActive) -
+                new Date(a.lastActive)
+        );
+
+        summary.textContent =
+            `${data.count || 0} premium`;
+
+        if (!users.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No premium recorded yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+        container.innerHTML =
+            users.map(user => `
+
+                <div class="user">
+
+                    <div class="user-header">
+
+                        <div class="user-id">
+
+                            ⭐
+
+                            <button
+                                type="button"
+                                onclick="showUserHistory('${escapeHtml(user.uuid)}')"
+                            >
+                                ${escapeHtml(user.uuid)}
+                            </button>
+
+                        </div>
+
+                        <div class="status">
+                            "Premium"
+                        </div>
+
+                    </div>
+
+                    <div class="details">
+
+                        <div>
+                            <strong>
+                                First Seen:
+                            </strong>
+
+                            ${user.firstSeen
+                                ? new Date(
+                                    user.firstSeen
+                                ).toLocaleString()
+                                : "Unknown"
+                            }
+
+                        </div>
+
+                        <div>
+                            <strong>
+                                Last Active:
+                            </strong>
+
+                            ${user.lastActive
+                                ? new Date(
+                                    user.lastActive
+                                ).toLocaleString()
+                                : "Unknown"
+                            }
+
+                        </div>
+
+                        <div>
+                            <strong>
+                                Connections:
+                            </strong>
+
+                            ${user.connectionCount || 0}
+
+                        </div>
+
+                        <div>
+                            <strong>
+                                Visits:
+                            </strong>
+
+                            ${user.visitCount || 0}
+
+                        </div>
+
+                        <div>
+                            <strong>
+                                Reports:
+                            </strong>
+
+                            ${user.reportCount || 0}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `).join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="error">
+                Unable to load premium.
+            </div>
+        `;
+
+        summary.textContent =
+            "Unable to load premium.";
+
+    }
+
+}
+
+function showUserHistory(uuid) {
+
+    /*
+     * History popup is intentionally wired in
+     * during the UUID/history pass.
+     *
+     * For this pass the UUID is clickable,
+     * but no new history implementation
+     * is introduced.
+     */
+
+    console.log(
+        "User history requested:",
+        uuid
+    );
+
+}
+
+loadUsers();
+
+</script>
+
+</body>
+
+</html>

@@ -9,23 +9,13 @@
     "visitCount": 13,
     "reportCount": 0,
     "banned": false,
-    "banHistory": [
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T21:08:39.385Z"
-      },
-      {
-        "reason": "Red Accounts test",
-        "timestamp": "2026-08-27T21:07:45.877Z"
-      }
-    ],
+    "banHistory": [],
     "ipHistory": [
       "62b31891feec87dd1817578364fafe029475ff49d693ed9d179dd14d70db1a8f"
     ],
     "userAgentHistory": [
       "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
-    ],
-    "reportCycleStartedAt": "2026-08-27T21:08:52.471Z"
+    ]
   },
   "tn-1787334183817-9p885hhm": {
     "uuid": "tn-1787334183817-9p885hhm",
@@ -122,9 +112,9 @@
     "type": "guest",
     "isPremium": false,
     "firstSeen": "2026-08-21T21:59:39.043Z",
-    "lastActive": "2026-08-26T00:47:49.540Z",
+    "lastActive": "2026-08-22T02:00:10.504Z",
     "connectionCount": 1,
-    "visitCount": 4,
+    "visitCount": 2,
     "reportCount": 0,
     "banned": false,
     "banHistory": [],
@@ -140,32 +130,12 @@
     "type": "guest",
     "isPremium": false,
     "firstSeen": "2026-08-21T22:02:29.472Z",
-    "lastActive": "2026-08-27T23:52:33.412Z",
+    "lastActive": "2026-08-25T19:57:44.639Z",
     "connectionCount": 1,
-    "visitCount": 20,
+    "visitCount": 15,
     "reportCount": 0,
     "banned": false,
     "banHistory": [
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T20:56:59.567Z"
-      },
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T20:16:21.467Z"
-      },
-      {
-        "reason": "Automatic ban after reaching 5 reports",
-        "timestamp": "2026-08-27T20:14:29.931Z"
-      },
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T20:11:18.766Z"
-      },
-      {
-        "reason": "Automatic ban after reaching 5 reports",
-        "timestamp": "2026-08-27T20:10:08.545Z"
-      },
       {
         "reason": "Automatic ban after reaching 5 reports",
         "timestamp": "2026-08-25T14:51:20.920Z"
@@ -201,75 +171,37 @@
     "userAgentHistory": [
       "5a23364114e35742a09f854229e084515ae8d0834ab71db16bf65e930fa1815f"
     ],
-    "reportCycleStartedAt": "2026-08-27T20:57:11.539Z"
+    "reportCycleStartedAt": "2026-08-25T14:53:00.723Z"
   },
   "fe59f03a-dc66-49c5-8b4a-c32c320c322f": {
     "uuid": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
     "type": "guest",
     "isPremium": false,
     "firstSeen": "2026-08-21T22:05:03.007Z",
-    "lastActive": "2026-08-28T01:02:48.250Z",
+    "lastActive": "2026-08-25T14:36:28.224Z",
     "connectionCount": 1,
-    "visitCount": 28,
-    "reportCount": 0,
+    "visitCount": 18,
+    "reportCount": 1,
     "banned": false,
-    "banHistory": [
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T23:48:18.073Z"
-      },
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T21:38:44.402Z"
-      },
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T21:38:38.201Z"
-      },
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T21:37:40.011Z"
-      },
-      {
-        "reason": "Manually banned from Action Taken",
-        "timestamp": "2026-08-27T21:37:13.145Z"
-      },
-      {
-        "reason": "Automatic ban after reaching 5 reports",
-        "timestamp": "2026-08-27T21:16:40.070Z"
-      },
-      {
-        "reason": "Automatic ban after reaching 5 reports",
-        "timestamp": "2026-08-26T19:08:52.136Z"
-      }
-    ],
+    "banHistory": [],
     "ipHistory": [
       "62b31891feec87dd1817578364fafe029475ff49d693ed9d179dd14d70db1a8f"
     ],
     "userAgentHistory": [
       "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
-    ],
-    "reportCycleStartedAt": "2026-08-27T23:48:29.250Z"
+    ]
   },
   "992e58b4-a10d-4447-a942-6d702c1bc479": {
     "uuid": "992e58b4-a10d-4447-a942-6d702c1bc479",
     "type": "guest",
     "isPremium": false,
     "firstSeen": "2026-08-21T22:38:13.353Z",
-    "lastActive": "2026-08-26T19:02:14.793Z",
+    "lastActive": "2026-08-25T22:07:53.158Z",
     "connectionCount": 1,
-    "visitCount": 68,
+    "visitCount": 45,
     "reportCount": 0,
     "banned": false,
     "banHistory": [
-      {
-        "reason": "Automatic ban after reaching 5 reports",
-        "timestamp": "2026-08-26T19:03:24.730Z"
-      },
-      {
-        "reason": "Automatic ban after reaching 5 reports",
-        "timestamp": "2026-08-26T17:53:25.194Z"
-      },
       {
         "reason": "Reached 5 reports",
         "timestamp": "2026-08-23T09:23:57.703Z"
@@ -285,78 +217,6 @@
     "userAgentHistory": [
       "05ab20a035c45ce45bc9ae24af1933aebb592d692c8d2838848cc60258e1da31"
     ],
-    "reportCycleStartedAt": "2026-08-26T19:10:30.058Z"
-  },
-  "38aab459-7151-4a53-886f-4fbcd2fe79c3": {
-    "uuid": "38aab459-7151-4a53-886f-4fbcd2fe79c3",
-    "type": "guest",
-    "isPremium": false,
-    "firstSeen": "2026-08-28T00:30:50.011Z",
-    "lastActive": "2026-08-28T00:30:50.011Z",
-    "connectionCount": 1,
-    "visitCount": 0,
-    "reportCount": 0,
-    "banned": false,
-    "banHistory": [],
-    "ipHistory": [
-      "06a1c3c21688d11910daf28d0ebf83c858b4acf1e6807cacf1b44d70af2522c3"
-    ],
-    "userAgentHistory": [
-      "5a23364114e35742a09f854229e084515ae8d0834ab71db16bf65e930fa1815f"
-    ]
-  },
-  "e91040a1-8cac-4bcb-bfb9-4ff703c137f2": {
-    "uuid": "e91040a1-8cac-4bcb-bfb9-4ff703c137f2",
-    "type": "guest",
-    "isPremium": false,
-    "firstSeen": "2026-08-28T00:33:38.205Z",
-    "lastActive": "2026-08-28T00:33:38.205Z",
-    "connectionCount": 1,
-    "visitCount": 0,
-    "reportCount": 0,
-    "banned": false,
-    "banHistory": [],
-    "ipHistory": [
-      "609796ca4fd223e471342fb4cebfbbe231560df2995c9c57e6c65d17bbaa6dc1"
-    ],
-    "userAgentHistory": [
-      "731d59edd02c9cb4cd9e30f65ced789b5b8fb438c349f95ff309f2ebf21d7696"
-    ]
-  },
-  "cb09acc1-9756-44c1-9e6a-0018cf44c0b9": {
-    "uuid": "cb09acc1-9756-44c1-9e6a-0018cf44c0b9",
-    "type": "guest",
-    "isPremium": false,
-    "firstSeen": "2026-08-28T01:04:35.107Z",
-    "lastActive": "2026-08-28T01:18:20.116Z",
-    "connectionCount": 1,
-    "visitCount": 1,
-    "reportCount": 0,
-    "banned": false,
-    "banHistory": [],
-    "ipHistory": [
-      "7db4f1b79dc62b8bb437a96ef885c47c94efe10672a17df8f872cd3c38115edd"
-    ],
-    "userAgentHistory": [
-      "731d59edd02c9cb4cd9e30f65ced789b5b8fb438c349f95ff309f2ebf21d7696"
-    ]
-  },
-  "edfa6f43-672e-4cd7-9845-92e6dbdb4e3d": {
-    "uuid": "edfa6f43-672e-4cd7-9845-92e6dbdb4e3d",
-    "type": "guest",
-    "isPremium": false,
-    "firstSeen": "2026-08-28T01:07:42.958Z",
-    "lastActive": "2026-08-28T01:07:42.958Z",
-    "connectionCount": 1,
-    "visitCount": 0,
-    "reportCount": 0,
-    "banned": false,
-    "banHistory": [],
-    "ipHistory": [
-      "06a1c3c21688d11910daf28d0ebf83c858b4acf1e6807cacf1b44d70af2522c3"
-    ],
-    "userAgentHistory": [
-      "5a23364114e35742a09f854229e084515ae8d0834ab71db16bf65e930fa1815f"
-    ]
+    "reportCycleStartedAt": "2026-08-23T09:26:22.185Z"
   }
 }

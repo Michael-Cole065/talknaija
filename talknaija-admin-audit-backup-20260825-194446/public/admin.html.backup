@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TalkNaija Admin - Reports</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .report {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .reason {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            background: #eee;
+        }
+
+        .details {
+            margin-top: 15px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reviewed {
+            background: #e8f1ff;
+        }
+
+        .action {
+            background: #ffe9e9;
+        }
+
+        .dismiss {
+            background: #eee;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .error {
+            background: #ffe5e5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>TalkNaija Reports</h1>
+
+    <div class="subtitle">
+        Moderation Dashboard
+    </div>
+
+    <div id="error"></div>
+
+    <div id="reports">
+        Loading reports...
+    </div>
+
+</div>
+
+<script>
+
+const reportsContainer =
+    document.getElementById("reports");
+
+const errorContainer =
+    document.getElementById("error");
+
+async function loadReports() {
+
+    try {
+
+        errorContainer.innerHTML = "";
+
+        const response =
+            await fetch("/api/reports");
+
+        if (!response.ok) {
+            throw new Error("Failed to load reports.");
+        }
+
+        const reports =
+            await response.json();
+
+        renderReports(reports);
+
+    } catch (error) {
+
+        console.error(error);
+
+        errorContainer.innerHTML = `
+            <div class="error">
+                Could not load reports.
+            </div>
+        `;
+
+    }
+
+}
+
+function renderReports(reports) {
+
+    if (!reports.length) {
+
+        reportsContainer.innerHTML = `
+            <div class="empty">
+                <h2>No reports</h2>
+                <p>There are currently no user reports.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+    reportsContainer.innerHTML =
+        reports
+            .slice()
+            .reverse()
+            .map(report => {
+
+                return `
+
+                    <div class="report">
+
+                        <div class="report-header">
+
+                            <div class="reason">
+                                🚨 ${escapeHtml(report.reason)}
+                            </div>
+
+                            <div class="status">
+                                ${escapeHtml(report.status)}
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>Reporter:</strong>
+                                ${escapeHtml(report.reporter)}
+                            </div>
+
+                            <div>
+                                <strong>Reported:</strong>
+                                ${escapeHtml(report.reported)}
+                            </div>
+
+                            <div>
+                                <strong>Created:</strong>
+                                ${new Date(report.createdAt).toLocaleString()}
+                            </div>
+
+                        </div>
+
+                        <div class="actions">
+
+                            <button
+                                class="reviewed"
+                                onclick="updateReport(
+                                    '${report.id}',
+                                    'reviewed'
+                                )"
+                            >
+                                Mark Reviewed
+                            </button>
+
+                            <button
+                                class="action"
+                                onclick="updateReport(
+                                    '${report.id}',
+                                    'action_taken'
+                                )"
+                            >
+                                Action Taken
+                            </button>
+
+                            <button
+                                class="block"
+                                onclick="${
+                                    report.blocked
+                                        ? `unblockPair('${report.id}')`
+                                        : `blockPair('${report.id}')`
+                                }"
+                            >
+                                ${
+                                    report.blocked
+                                        ? "🔓 Unblock Pair"
+                                        : "🚫 Block Pair"
+                                }
+                            </button>
+
+                            <button
+                                class="dismiss"
+                                onclick="updateReport(
+                                    '${report.id}',
+                                    'dismissed'
+                                )"
+                            >
+                                Dismiss
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+}
+
+async function blockPair(id) {
+
+    const confirmed = confirm(
+        "Block these two users from being matched with each other again?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/reports/${id}/block`,
+                {
+                    method: "POST"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to block pair."
+            );
+        }
+
+        alert(
+            "Pair blocked successfully."
+        );
+
+        await loadReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not block this pair."
+        );
+
+    }
+
+}
+
+async function unblockPair(id) {
+
+    const confirmed = confirm(
+        "Allow these two users to be matched with each other again?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/reports/${id}/unblock`,
+                {
+                    method: "POST"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to unblock pair."
+            );
+        }
+
+        alert(
+            "Pair unblocked successfully."
+        );
+
+        await loadReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not unblock this pair."
+        );
+
+    }
+
+}
+
+async function updateReport(id, status) {
+
+    try {
+
+        const response =
+            await fetch(`/api/reports/${id}`, {
+
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    status
+                })
+
+            });
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to update report."
+            );
+
+        }
+
+        await loadReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not update the report."
+        );
+
+    }
+
+}
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+loadReports();
+
+</script>
+
+</body>
+
+</html>
+
+<style>
+.block {
+    background: #111;
+    color: white;
+}
+</style>
