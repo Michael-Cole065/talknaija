@@ -242,6 +242,72 @@
   "fe59f03a-dc66-49c5-8b4a-c32c320c322f": [
     {
       "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:14:28.119Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:14:19.888Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:13:55.978Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:12:41.570Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:12:16.314Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:11:52.974Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:10:04.734Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:08:51.883Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:06:52.881Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:05:51.599Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-27T20:05:06.181Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
       "timestamp": "2026-08-25T07:10:06.088Z",
       "callbackStatus": "available",
       "declineCount": 0
@@ -424,6 +490,228 @@
     }
   ],
   "1d609980-51f9-4ac4-87dd-77b1529c3e91": [
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:14:28.109Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:14:19.883Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:13:55.964Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:12:41.559Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:12:16.306Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:11:52.966Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:10:04.727Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:08:51.878Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:06:52.874Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:05:51.593Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-08-27T20:05:06.163Z",
+      "callbackStatus": "accepted",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T18:47:46.614Z",
+      "callbackStatus": "calling",
+      "declineCount": 1
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T08:51:47.561Z",
+      "callbackStatus": "declined",
+      "declineCount": 3
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T08:51:27.149Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T02:39:51.471Z",
+      "callbackStatus": "accepted",
+      "declineCount": 1
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T02:39:46.910Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T02:39:03.270Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-26T02:37:27.453Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:24:47.448Z",
+      "callbackStatus": "accepted",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:23:41.276Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:23:17.928Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:22:52.773Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:21:08.383Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:20:55.000Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:20:35.474Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:20:21.484Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:20:13.692Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:20:04.737Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:19:55.237Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T15:19:26.021Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:56:45.253Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:54:52.593Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:54:43.295Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:51:07.963Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:49:05.489Z",
+      "callbackStatus": "accepted",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:48:26.630Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+      "timestamp": "2026-08-25T14:46:14.140Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
     {
       "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
       "timestamp": "2026-08-25T07:10:06.082Z",
@@ -750,6 +1038,162 @@
     }
   ],
   "992e58b4-a10d-4447-a942-6d702c1bc479": [
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T18:47:46.625Z",
+      "callbackStatus": "accepted",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T08:51:47.566Z",
+      "callbackStatus": "declined",
+      "declineCount": 3
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T08:51:27.139Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T02:39:51.480Z",
+      "callbackStatus": "declined",
+      "declineCount": 3
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T02:39:46.920Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T02:39:03.278Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-26T02:37:27.463Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:24:47.458Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:23:41.281Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:23:17.933Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:22:52.777Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:21:08.387Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:20:55.005Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:20:35.480Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:20:21.489Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:20:13.696Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:20:04.741Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:19:55.246Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T15:19:26.030Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:56:45.257Z",
+      "callbackStatus": "declined",
+      "declineCount": 1
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:54:52.600Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:54:43.300Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:51:07.967Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:49:05.493Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:48:26.637Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
+      "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+      "timestamp": "2026-08-25T14:46:14.149Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
     {
       "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
       "timestamp": "2026-08-23T09:26:33.137Z",

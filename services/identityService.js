@@ -274,6 +274,28 @@ function setBanned(
     return true;
 }
 
+function getBanEventCount() {
+
+    const registry =
+        getRegistry();
+
+    return Object.values(registry)
+        .reduce((total, user) => {
+
+            if (
+                !user ||
+                !Array.isArray(user.banHistory)
+            ) {
+                return total;
+            }
+
+            return total +
+                user.banHistory.length;
+
+        }, 0);
+}
+
+
 function resetReportCount(userId) {
 
     if (!userId) {
@@ -305,5 +327,6 @@ module.exports = {
     getUsers,
     updateReportCount,
     setBanned,
+    getBanEventCount,
     resetReportCount
 };

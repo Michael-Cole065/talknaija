@@ -279,28 +279,44 @@ function getRedAccounts() {
         identityService.getUsers();
 
     return users
-        .filter(
-            (user) =>
-                user &&
-                (
-                    user.banned === true ||
-                    (counts[user.uuid] || 0) >= 5
-                )
-        )
-        .map(
-            (user) => ({
+        .filter((user) => {
+
+            if (!user || !user.uuid) {
+                return false;
+            }
+
+            const reportCount =
+                Math.max(
+                    counts[user.uuid] || 0,
+                    Number(user.reportCount) || 0
+                );
+
+            return (
+                user.banned === true ||
+                reportCount >= 5
+            );
+
+        })
+        .map((user) => {
+
+            const reportCount =
+                Math.max(
+                    counts[user.uuid] || 0,
+                    Number(user.reportCount) || 0
+                );
+
+            return {
                 userId:
                     user.uuid,
 
                 reports:
-                    counts[user.uuid] ||
-                    Number(user.reportCount) ||
-                    0,
+                    reportCount,
 
                 banned:
                     user.banned === true
-            })
-        );
+            };
+
+        });
 
 }
 

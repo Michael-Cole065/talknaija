@@ -1,5 +1,239 @@
 [
   {
+    "id": "ACT-1787874509254-45g4kz",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T23:48:29.254Z"
+  },
+  {
+    "id": "ACT-1787874498090-9mm451",
+    "type": "BAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T23:48:18.090Z"
+  },
+  {
+    "id": "ACT-1787866726729-41pkrg",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:38:46.730Z"
+  },
+  {
+    "id": "ACT-1787866724404-wyi7uo",
+    "type": "BAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T21:38:44.404Z"
+  },
+  {
+    "id": "ACT-1787866720164-x5sohy",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:38:40.164Z"
+  },
+  {
+    "id": "ACT-1787866718205-9wgigw",
+    "type": "BAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T21:38:38.205Z"
+  },
+  {
+    "id": "ACT-1787866704210-ubrtd1",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:38:24.210Z"
+  },
+  {
+    "id": "ACT-1787866660013-p6mlh1",
+    "type": "BAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T21:37:40.013Z"
+  },
+  {
+    "id": "ACT-1787866643956-9wqswj",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:37:23.957Z"
+  },
+  {
+    "id": "ACT-1787866633149-vnkn6l",
+    "type": "BAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T21:37:13.149Z"
+  },
+  {
+    "id": "ACT-1787866623842-ede681",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:37:03.842Z"
+  },
+  {
+    "id": "ACT-1787864932473-3a0m5a",
+    "type": "UNBAN",
+    "userId": "20a3baeb-daf2-42fe-84ec-d8d00749c3fe",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:08:52.473Z"
+  },
+  {
+    "id": "ACT-1787864919390-8ypa94",
+    "type": "BAN",
+    "userId": "20a3baeb-daf2-42fe-84ec-d8d00749c3fe",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T21:08:39.390Z"
+  },
+  {
+    "id": "ACT-1787864911493-gsqa5g",
+    "type": "UNBAN",
+    "userId": "20a3baeb-daf2-42fe-84ec-d8d00749c3fe",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T21:08:31.493Z"
+  },
+  {
+    "id": "ACT-1787864231542-8a66hj",
+    "type": "UNBAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T20:57:11.542Z"
+  },
+  {
+    "id": "ACT-1787864219573-oqqlze",
+    "type": "BAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T20:56:59.573Z"
+  },
+  {
+    "id": "ACT-1787861797891-cs8sx6",
+    "type": "UNBAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T20:16:37.891Z"
+  },
+  {
+    "id": "ACT-1787861781471-8e4k9o",
+    "type": "BAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T20:16:21.471Z"
+  },
+  {
+    "id": "ACT-1787861732905-1ai2xl",
+    "type": "UNBAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T20:15:32.905Z"
+  },
+  {
+    "id": "ACT-1787861498703-h8xsu5",
+    "type": "UNBAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T20:11:38.703Z"
+  },
+  {
+    "id": "ACT-1787861478769-l18eo1",
+    "type": "BAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account manually banned from Action Taken and returned to Red Accounts.",
+    "createdAt": "2026-08-27T20:11:18.769Z"
+  },
+  {
+    "id": "ACT-1787861466219-2mobzp",
+    "type": "UNBAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-27T20:11:06.219Z"
+  },
+  {
+    "id": "ACT-1787771432383-awvkj8",
+    "type": "UNBAN",
+    "userId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-26T19:10:32.383Z"
+  },
+  {
+    "id": "ACT-1787771430074-cwbfsb",
+    "type": "UNBAN",
+    "userId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-26T19:10:30.074Z"
+  },
+  {
+    "id": "ACT-1787767008585-o5gx20",
+    "type": "UNBAN",
+    "userId": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-26T17:56:48.585Z"
+  },
+  {
+    "id": "ACT-1787669580729-u4vm4i",
+    "type": "UNBAN",
+    "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reportId": null,
+    "reason": null,
+    "details": "Account unbanned and current report count reset.",
+    "createdAt": "2026-08-25T14:53:00.730Z"
+  },
+  {
     "id": "ACT-1787641517131-1v1w14",
     "type": "UNBAN",
     "userId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",

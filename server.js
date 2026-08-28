@@ -563,6 +563,23 @@ app.get(
         const redAccounts =
             reportService.getRedAccounts();
 
+        const redAccountBanEvents =
+            identityService.getBanEventCount();
+
+        const adminActions =
+            adminActionService.getAllActions();
+
+        const actionTakenReports =
+            reports.filter(
+                (report) =>
+                    report.status ===
+                    "action_taken"
+            );
+
+        const totalActionTaken =
+            actionTakenReports.length +
+            adminActions.length;
+
         const stats = {
 
             totalReports:
@@ -583,11 +600,7 @@ app.get(
                 ).length,
 
             actionTakenReports:
-                reports.filter(
-                    (report) =>
-                        report.status ===
-                        "action_taken"
-                ).length,
+                totalActionTaken,
 
             dismissedReports:
                 reports.filter(
@@ -597,7 +610,7 @@ app.get(
                 ).length,
 
             redAccounts:
-                redAccounts.length
+                redAccountBanEvents
 
         };
 

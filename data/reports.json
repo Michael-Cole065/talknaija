@@ -318,5 +318,335 @@
     "blocked": false,
     "createdAt": "2026-08-25T07:10:12.383Z",
     "updatedAt": "2026-08-25T11:04:13.570Z"
+  },
+  {
+    "id": "1787669273450",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Harassment",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-25T14:47:53.451Z",
+    "updatedAt": "2026-08-25T14:48:19.639Z"
+  },
+  {
+    "id": "1787669314228",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-25T14:48:34.229Z",
+    "updatedAt": "2026-08-25T14:48:59.157Z"
+  },
+  {
+    "id": "1787669356232",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-25T14:49:16.232Z",
+    "updatedAt": "2026-08-25T14:49:59.365Z"
+  },
+  {
+    "id": "1787669480842",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-25T14:51:20.842Z",
+    "updatedAt": "2026-08-25T14:54:29.296Z"
+  },
+  {
+    "id": "1787711999280",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T02:39:59.281Z",
+    "updatedAt": "2026-08-26T02:40:32.570Z"
+  },
+  {
+    "id": "1787712096791",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Sexual or inappropriate behavior",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T02:41:36.791Z",
+    "updatedAt": "2026-08-26T02:41:52.224Z"
+  },
+  {
+    "id": "1787740314665",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T10:31:54.665Z",
+    "updatedAt": "2026-08-26T17:32:30.706Z"
+  },
+  {
+    "id": "1787765617374",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:33:37.377Z",
+    "updatedAt": "2026-08-26T17:34:11.572Z"
+  },
+  {
+    "id": "1787765663609",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:34:23.609Z",
+    "updatedAt": "2026-08-26T17:34:45.869Z"
+  },
+  {
+    "id": "1787765839857",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:37:19.861Z",
+    "updatedAt": "2026-08-26T17:38:21.134Z"
+  },
+  {
+    "id": "1787766461030",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "bad man",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:47:41.033Z",
+    "updatedAt": "2026-08-26T17:51:41.191Z"
+  },
+  {
+    "id": "1787766743789",
+    "reporter": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:52:23.793Z",
+    "updatedAt": "2026-08-26T17:52:59.632Z"
+  },
+  {
+    "id": "1787766805135",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:53:25.135Z",
+    "updatedAt": "2026-08-26T17:56:40.798Z"
+  },
+  {
+    "id": "1787767115242",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Hate or abusive speech",
+    "status": "action_taken",
+    "blocked": false,
+    "createdAt": "2026-08-26T17:58:35.242Z",
+    "updatedAt": "2026-08-26T18:07:15.627Z"
+  },
+  {
+    "id": "1787767683677",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T18:08:03.678Z",
+    "updatedAt": "2026-08-26T18:08:51.840Z"
+  },
+  {
+    "id": "1787770965719",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:02:45.720Z",
+    "updatedAt": "2026-08-26T19:02:53.140Z"
+  },
+  {
+    "id": "1787770981762",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Sexual or inappropriate behavior",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:03:01.763Z",
+    "updatedAt": "2026-08-26T19:03:10.121Z"
+  },
+  {
+    "id": "1787771004661",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "992e58b4-a10d-4447-a942-6d702c1bc479",
+    "reason": "Harassment",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:03:24.661Z",
+    "updatedAt": "2026-08-26T19:03:33.747Z"
+  },
+  {
+    "id": "1787771272293",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:07:52.294Z",
+    "updatedAt": "2026-08-26T19:08:02.005Z"
+  },
+  {
+    "id": "1787771291736",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:08:11.736Z",
+    "updatedAt": "2026-08-26T19:08:22.032Z"
+  },
+  {
+    "id": "1787771315526",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:08:35.526Z",
+    "updatedAt": "2026-08-26T19:08:43.233Z"
+  },
+  {
+    "id": "1787771332074",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-26T19:08:52.075Z",
+    "updatedAt": "2026-08-26T19:12:58.512Z"
+  },
+  {
+    "id": "1787861408480",
+    "reporter": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Harassment",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T20:10:08.482Z",
+    "updatedAt": "2026-08-27T20:10:24.314Z"
+  },
+  {
+    "id": "1787861521244",
+    "reporter": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T20:12:01.244Z",
+    "updatedAt": "2026-08-27T20:12:09.499Z"
+  },
+  {
+    "id": "1787861540148",
+    "reporter": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Sexual or inappropriate behavior",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T20:12:20.148Z",
+    "updatedAt": "2026-08-27T20:12:25.478Z"
+  },
+  {
+    "id": "1787861563699",
+    "reporter": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T20:12:43.699Z",
+    "updatedAt": "2026-08-27T20:13:01.006Z"
+  },
+  {
+    "id": "1787861637586",
+    "reporter": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Spam or scam",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T20:13:57.586Z",
+    "updatedAt": "2026-08-27T20:14:12.380Z"
+  },
+  {
+    "id": "1787861669870",
+    "reporter": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reported": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T20:14:29.870Z",
+    "updatedAt": "2026-08-27T20:15:20.688Z"
+  },
+  {
+    "id": "1787865318754",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T21:15:18.754Z",
+    "updatedAt": "2026-08-27T21:15:28.462Z"
+  },
+  {
+    "id": "1787865343012",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T21:15:43.012Z",
+    "updatedAt": "2026-08-27T21:15:50.883Z"
+  },
+  {
+    "id": "1787865357837",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Sexual or inappropriate behavior",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T21:15:57.838Z",
+    "updatedAt": "2026-08-27T21:16:05.526Z"
+  },
+  {
+    "id": "1787865375841",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Harassment",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T21:16:15.841Z",
+    "updatedAt": "2026-08-27T21:16:24.470Z"
+  },
+  {
+    "id": "1787865399981",
+    "reporter": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
+    "reported": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+    "reason": "Hate or abusive speech",
+    "status": "pending",
+    "blocked": false,
+    "createdAt": "2026-08-27T21:16:39.981Z",
+    "updatedAt": "2026-08-27T21:44:47.462Z"
   }
 ]

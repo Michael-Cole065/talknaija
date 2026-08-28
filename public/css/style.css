@@ -1757,3 +1757,127 @@ body.coffee-modal-open {
     margin-top: 14px;
 }
 
+/* ========================================
+   DIALOG SCROLL LOCK
+======================================== */
+
+/* Report submitted dialog */
+body:has(#reportThankYouDialog) {
+    overflow: hidden !important;
+}
+
+body:has(#reportThankYouDialog) #homeScreen {
+    overflow: hidden !important;
+}
+
+/* Call ended / other user dialog */
+body:has(#callbackDialog) {
+    overflow: hidden !important;
+}
+
+body:has(#callbackDialog) #homeScreen {
+    overflow: hidden !important;
+}
+
+/* ========================================
+   DONATION SUCCESS
+======================================== */
+
+.donation-success-box {
+    width: 100%;
+    max-width: 380px;
+
+    box-sizing: border-box;
+
+    padding: 30px 24px;
+
+    background: #12203c;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+.donation-success-icon {
+    width: 68px;
+    height: 68px;
+
+    margin: 0 auto 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 102, 255, 0.12);
+
+    border: 1px solid rgba(0, 102, 255, 0.25);
+
+    border-radius: 50%;
+
+    font-size: 34px;
+}
+
+.donation-success-box h2 {
+    margin: 0;
+
+    font-size: 23px;
+
+    font-weight: 700;
+}
+
+.donation-success-message {
+    margin: 12px 0 0;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    color: #ffffff;
+}
+
+.donation-success-note {
+    margin: 10px 0 0;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    color: #aebbd0;
+}
+
+.donation-success-btn {
+    width: 100%;
+
+    margin-top: 22px;
+
+    padding: 13px 18px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #202f80;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.donation-success-btn:hover {
+    opacity: 0.92;
+}
+
+.donation-success-btn:active {
+    transform: scale(0.98);
+}

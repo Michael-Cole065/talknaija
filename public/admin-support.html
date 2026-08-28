@@ -68,7 +68,7 @@ h1 {
 
 
 <style>
-.support-mail-modal {
+.mail-modal {
     position: fixed;
     inset: 0;
     display: none;
@@ -80,11 +80,11 @@ h1 {
     overflow: hidden;
 }
 
-.support-mail-modal.open {
+.mail-modal.open {
     display: flex;
 }
 
-.support-mail-modal-card {
+.mail-modal-card {
     width: min(700px, 100%);
     max-height: 90vh;
     overflow-y: auto;
@@ -95,7 +95,7 @@ h1 {
     box-sizing: border-box;
 }
 
-.support-mail-modal-close {
+.mail-modal-close {
     position: absolute;
     top: 14px;
     right: 14px;
@@ -114,17 +114,17 @@ h1 {
     cursor: pointer;
 }
 
-.support-mail-meta {
+.mail-meta {
     padding-right: 45px;
     margin-bottom: 18px;
 }
 
-.support-mail-meta strong {
+.mail-meta strong {
     display: block;
     margin-bottom: 5px;
 }
 
-.support-mail-message {
+.mail-modal-message {
     padding: 15px;
     background: #f5f5f5;
     border-radius: 10px;
@@ -133,11 +133,11 @@ h1 {
     line-height: 1.6;
 }
 
-.support-mail-replies {
+.replies {
     margin-top: 20px;
 }
 
-.support-mail-reply {
+.reply {
     border-left: 4px solid #174ea6;
     background: #f5f5f5;
     padding: 12px 14px;
@@ -145,26 +145,26 @@ h1 {
     border-radius: 0 10px 10px 0;
 }
 
-.support-mail-reply-meta {
+.reply-meta {
     font-size: 12px;
     color: #777;
     margin-bottom: 7px;
 }
 
-.support-mail-reply-message {
+.reply-message {
     white-space: pre-wrap;
     word-break: break-word;
     line-height: 1.5;
 }
 
-.support-mail-actions {
+.modal-actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     margin-top: 18px;
 }
 
-.support-mail-reply-area {
+.reply-area {
     display: none;
     margin-top: 18px;
     padding: 15px;
@@ -172,7 +172,7 @@ h1 {
     border-radius: 10px;
 }
 
-.support-mail-reply-area textarea {
+.reply-area textarea {
     display: block;
     width: 100%;
     min-height: 130px;
@@ -186,13 +186,13 @@ h1 {
     box-sizing: border-box;
 }
 
-.support-mail-reply-actions {
+.reply-actions {
     display: flex;
     gap: 8px;
     margin-top: 10px;
 }
 
-body.support-mail-modal-open {
+body.modal-open {
     overflow: hidden !important;
 }
 </style>
@@ -207,40 +207,40 @@ body.support-mail-modal-open {
 <!-- SUPPORT PREVIEW MAIL MODAL -->
 
 <div
-    id="supportMailModal"
-    class="support-mail-modal"
+    id="mailModal"
+    class="mail-modal"
 >
 
-    <div class="support-mail-modal-card">
+    <div class="mail-modal-card">
 
         <button
-            class="support-mail-modal-close"
-            onclick="closeSupportMailModal()"
+            class="mail-modal-close"
+            onclick="closeMailModal()"
             aria-label="Close"
         >
             ×
         </button>
 
         <div
-            id="supportMailModalMeta"
-            class="support-mail-meta"
+            id="mailModalMeta"
+            class="mail-meta"
         ></div>
 
         <div
-            id="supportMailModalMessage"
-            class="support-mail-message"
+            id="mailModalMessage"
+            class="mail-modal-message"
         ></div>
 
         <div
-            id="supportMailModalReplies"
-            class="support-mail-replies"
+            id="mailModalReplies"
+            class="replies"
         ></div>
 
-        <div class="support-mail-actions">
+        <div class="modal-actions">
 
             <button
                 class="primary"
-                onclick="showSupportMailReplyBox()"
+                onclick="showReplyBox()"
             >
                 Reply
             </button>
@@ -248,29 +248,29 @@ body.support-mail-modal-open {
         </div>
 
         <div
-            id="supportMailReplyArea"
-            class="support-mail-reply-area"
+            id="mailReplyArea"
+            class="reply-area"
         >
 
             <strong>Reply</strong>
 
             <textarea
-                id="supportMailReplyInput"
+                id="mailReplyInput"
                 placeholder="Write your reply..."
             ></textarea>
 
-            <div class="support-mail-reply-actions">
+            <div class="reply-actions">
 
                 <button
                     class="primary"
-                    onclick="sendSupportMailReply()"
+                    onclick="sendMailReply()"
                 >
                     Send Reply
                 </button>
 
                 <button
                     class="blue"
-                    onclick="hideSupportMailReplyBox()"
+                    onclick="hideReplyBox()"
                 >
                     Cancel
                 </button>
@@ -429,23 +429,61 @@ async function loadTickets() {
                 actions.style.flexWrap = "wrap";
                 actions.style.marginTop = "16px";
 
-                actions.innerHTML = `
-                    <button
-                        type="button"
-                        style="background:#111;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;"
-                        onclick="openSupportMail('${ticket.id}', false)"
-                    >
-                        Open
-                    </button>
+                const openButton =
+                    document.createElement("button");
 
-                    <button
-                        type="button"
-                        style="background:#174ea6;color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;"
-                        onclick="openSupportMail('${ticket.id}', true)"
-                    >
-                        Reply
-                    </button>
-                `;
+                openButton.type = "button";
+                openButton.textContent = "Open";
+
+                openButton.style.background = "#111";
+                openButton.style.color = "#fff";
+                openButton.style.border = "0";
+                openButton.style.borderRadius = "8px";
+                openButton.style.padding = "10px 16px";
+                openButton.style.cursor = "pointer";
+
+                openButton.addEventListener(
+                    "click",
+                    () => {
+                        openSupportMail(
+                            ticket,
+                            false
+                        );
+                    }
+                );
+
+
+                const replyButton =
+                    document.createElement("button");
+
+                replyButton.type = "button";
+                replyButton.textContent = "Reply";
+
+                replyButton.style.background = "#174ea6";
+                replyButton.style.color = "#fff";
+                replyButton.style.border = "0";
+                replyButton.style.borderRadius = "8px";
+                replyButton.style.padding = "10px 16px";
+                replyButton.style.cursor = "pointer";
+
+                replyButton.addEventListener(
+                    "click",
+                    () => {
+                        openSupportMail(
+                            ticket,
+                            true
+                        );
+                    }
+                );
+
+
+                actions.appendChild(
+                    openButton
+                );
+
+                actions.appendChild(
+                    replyButton
+                );
 
                 box.appendChild(
                     actions
@@ -495,61 +533,63 @@ function escapeSupportMailHtml(value) {
 }
 
 
-async function openSupportMail(ticketId, replyMode) {
+async function openSupportMail(mail, replyMode) {
 
     try {
 
-        const response =
-            await fetch(
-                "/api/support/" +
-                encodeURIComponent(ticketId),
-                {
-                    credentials: "same-origin"
-                }
-            );
-
-        const data =
-            await response.json();
+        /*
+        ========================================
+        USE THE ACTUAL TICKET OBJECT DIRECTLY
+        SAME DATA FLOW AS ADMIN MAIL PREVIEW
+        ========================================
+        */
 
         if (
-            !response.ok ||
-            !data.success ||
-            !data.ticket
+            !mail ||
+            typeof mail !== "object" ||
+            !mail.id
         ) {
 
             throw new Error(
-                data.message ||
-                "Unable to load support message."
+                "Support message not found."
             );
 
         }
 
         currentSupportMail =
-            data.ticket;
+            mail;
 
-        renderSupportMailModal(
+        renderMailModal(
             currentSupportMail
         );
 
         const modal =
             document.getElementById(
-                "supportMailModal"
+                "mailModal"
             );
 
         modal.classList.add("open");
 
         document.body.classList.add(
-            "support-mail-modal-open"
+            "modal-open"
         );
 
+        /*
+        ========================================
+        OPEN REPLY WHEN REQUESTED
+        ========================================
+        */
+
         if (replyMode) {
-            showSupportMailReplyBox();
+
+            showReplyBox();
+
         }
 
     } catch (error) {
 
         console.error(
-            "Support preview error:",
+            "Support mail open error:",
             error
         );
 
@@ -563,21 +603,21 @@ async function openSupportMail(ticketId, replyMode) {
 }
 
 
-function renderSupportMailModal(mail) {
+function renderMailModal(mail) {
 
     const meta =
         document.getElementById(
-            "supportMailModalMeta"
+            "mailModalMeta"
         );
 
     const message =
         document.getElementById(
-            "supportMailModalMessage"
+            "mailModalMessage"
         );
 
     const replies =
         document.getElementById(
-            "supportMailModalReplies"
+            "mailModalReplies"
         );
 
     meta.innerHTML = `
@@ -633,9 +673,9 @@ function renderSupportMailModal(mail) {
             ${replyList.map(
                 (reply) => `
 
-                    <div class="support-mail-reply">
+                    <div class="reply">
 
-                        <div class="support-mail-reply-meta">
+                        <div class="reply-meta">
                             ${
                                 reply.from === "admin"
                                     ? "Admin"
@@ -652,7 +692,7 @@ function renderSupportMailModal(mail) {
                             }
                         </div>
 
-                        <div class="support-mail-reply-message">
+                        <div class="reply-message">
                             ${escapeSupportMailHtml(
                                 reply.message
                             )}
@@ -667,26 +707,26 @@ function renderSupportMailModal(mail) {
     }
 
     document.getElementById(
-        "supportMailReplyArea"
+        "mailReplyArea"
     ).style.display = "none";
 
     document.getElementById(
-        "supportMailReplyInput"
+        "mailReplyInput"
     ).value = "";
 
 }
 
 
-function showSupportMailReplyBox() {
+function showReplyBox() {
 
     const area =
         document.getElementById(
-            "supportMailReplyArea"
+            "mailReplyArea"
         );
 
     const input =
         document.getElementById(
-            "supportMailReplyInput"
+            "mailReplyInput"
         );
 
     area.style.display =
@@ -703,31 +743,31 @@ function showSupportMailReplyBox() {
 }
 
 
-function hideSupportMailReplyBox() {
+function hideReplyBox() {
 
     document.getElementById(
-        "supportMailReplyArea"
+        "mailReplyArea"
     ).style.display =
         "none";
 
     document.getElementById(
-        "supportMailReplyInput"
+        "mailReplyInput"
     ).value = "";
 
 }
 
 
-function closeSupportMailModal() {
+function closeMailModal() {
 
     const modal =
         document.getElementById(
-            "supportMailModal"
+            "mailModal"
         );
 
     modal.classList.remove("open");
 
     document.body.classList.remove(
-        "support-mail-modal-open"
+        "modal-open"
     );
 
     currentSupportMail =
@@ -736,7 +776,7 @@ function closeSupportMailModal() {
 }
 
 
-async function sendSupportMailReply() {
+async function sendMailReply() {
 
     if (!currentSupportMail) {
         return;
@@ -744,7 +784,7 @@ async function sendSupportMailReply() {
 
     const input =
         document.getElementById(
-            "supportMailReplyInput"
+            "mailReplyInput"
         );
 
     const message =
@@ -809,7 +849,7 @@ async function sendSupportMailReply() {
             data.reply
         );
 
-        renderSupportMailModal(
+        renderMailModal(
             currentSupportMail
         );
 
@@ -838,7 +878,7 @@ document.addEventListener(
 
         const modal =
             document.getElementById(
-                "supportMailModal"
+                "mailModal"
             );
 
         if (
@@ -846,7 +886,7 @@ document.addEventListener(
             event.target === modal
         ) {
 
-            closeSupportMailModal();
+            closeMailModal();
 
         }
 
@@ -863,7 +903,7 @@ document.addEventListener(
             currentSupportMail
         ) {
 
-            closeSupportMailModal();
+            closeMailModal();
 
         }
 

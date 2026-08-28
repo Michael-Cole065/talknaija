@@ -329,7 +329,33 @@ if (
                         pair.user2,
                         pair.user1
                     );
-		// Reset call recording state for the new call
+
+// Reset callback relationship for a fresh random match
+const matchedUser1 =
+    io.sockets.sockets.get(
+        pair.user1
+    );
+
+const matchedUser2 =
+    io.sockets.sockets.get(
+        pair.user2
+    );
+
+if (
+    matchedUser1 &&
+    matchedUser2 &&
+    matchedUser1.userId &&
+    matchedUser2.userId
+) {
+
+    historyService.resetCallbackRelationship(
+        matchedUser1.userId,
+        matchedUser2.userId
+    );
+
+}
+
+// Reset call recording state for the new call
 const user1Socket =
     io.sockets.sockets.get(
         pair.user1
@@ -996,6 +1022,13 @@ socket.on(
             "accepted"
         );
 
+        // Successful callback acceptance resets
+        // the decline count for both users.
+        historyService.resetCallbackRelationship(
+            incoming.callerId,
+            socket.userId
+        );
+
         caller.callbackOutgoing =
             null;
 
@@ -1108,101 +1141,6 @@ socket.on(
 CALL BACK RESPONSE
 ================================================
 */
-
-socket.on(
-    "callbackResponse",
-    (response) => {
-
-        const incoming =
-            socket.callbackIncoming;
-
-        if (!incoming) {
-            return;
-        }
-
-        const caller =
-            io.sockets.sockets.get(
-                incoming.callerSocketId
-            );
-
-        clearTimeout(
-            incoming.timer
-        );
-
-        socket.callbackIncoming =
-            null;
-
-        if (!caller) {
-            return;
-        }
-
-        if (response === "decline") {
-
-            const result =
-                historyService.recordCallbackDecline(
-                    incoming.callerId,
-                    socket.userId
-                );
-
-            caller.callbackOutgoing =
-                null;
-
-            caller.emit(
-                "callbackDeclined",
-                {
-                    declineCount:
-                        result
-                            ? result.declineCount
-                            : 1,
-
-                    maxDeclines:
-                        3
-                }
-            );
-
-            return;
-        }
-
-        if (response !== "accept") {
-            return;
-        }
-
-        historyService.updateCallbackStatus(
-            incoming.callerId,
-            socket.userId,
-            "accepted"
-        );
-
-        caller.callbackOutgoing =
-            null;
-
-        activePairs.set(
-            caller.id,
-            socket.id
-        );
-
-        activePairs.set(
-            socket.id,
-            caller.id
-        );
-
-        caller.emit(
-            "matched",
-            {
-                initiator: true
-            }
-        );
-
-        socket.emit(
-            "matched",
-            {
-                initiator: false
-            }
-        );
-
-    }
-);
-
 
 /*
 ================================================
@@ -1370,18 +1308,20 @@ if (
         End the banned user's active call
         */
 
-        if (bannedPartner) {
+	        if (bannedPartner) {
 
-            io.to(
-                bannedPartner
-            ).emit(
-                "callEnded"
-            );
+            /*
+            ================================================
+            THE REPORTER MUST NOT RECEIVE "callEnded"
+            WHEN THEIR REPORT CAUSES THE 5TH REPORT BAN.
+            THEIR CLIENT WILL RECEIVE reportSubmitted BELOW
+            AND SHOW ONLY THE THANK-YOU DIALOG.
+            ================================================
+            */
 
             activePairs.delete(
                 bannedPartner
             );
-
             queue.removeUser(
                 bannedPartner
             );
@@ -1447,17 +1387,35 @@ if (
                 );
 
 
-                io.to(
-                    partner
-                ).emit(
-                    "callEnded"
-                );
+		                /*
+                ================================================
+                END REPORTER'S CALL WITHOUT TRIGGERING
+                CALL ENDED DIALOG ON REPORTER
+                ================================================
+                */
+
+                if (
+                    !(
+                        reportedUser &&
+                        reportedUser.banned === true &&
+                        Number(
+                            reportedUser.reportCount
+                        ) >= 5
+                    )
+                ) {
+
+                    io.to(
+                        partner
+                    ).emit(
+                        "callEnded"
+                    );
+
+                }
 
 
                 socket.emit(
                     "reportSubmitted"
                 );
-
 
                 io.emit(
                     "queueCount",

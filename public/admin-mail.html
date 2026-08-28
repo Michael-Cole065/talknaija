@@ -539,6 +539,12 @@ async function loadMail() {
                 ? data.tickets
                 : [];
 
+        window.supportTicketsById = {};
+
+        tickets.forEach((ticket) => {
+            window.supportTicketsById[ticket.id] = ticket;
+        });
+
         if (!tickets.length) {
 
             container.innerHTML = `
@@ -606,22 +612,23 @@ async function loadMail() {
                                 )}
                             </div>
 
-                            <div class="mail-actions">
+                            <div
+                                class="mail-actions"
+                                data-ticket-id="${escapeHtml(mail.id)}"
+                            >
 
                                 <button
-                                    class="blue"
-                                    onclick='openMail(${JSON.stringify(
-                                        mail
-                                    )})'
+                                    type="button"
+                                    class="blue mail-open-button"
+                                    data-ticket-id="${escapeHtml(mail.id)}"
                                 >
                                     Open
                                 </button>
 
                                 <button
-                                    class="primary"
-                                    onclick='openMailAndReply(${JSON.stringify(
-                                        mail
-                                    )})'
+                                    type="button"
+                                    class="primary mail-reply-button"
+                                    data-ticket-id="${escapeHtml(mail.id)}"
                                 >
                                     Reply
                                 </button>
@@ -650,6 +657,62 @@ async function loadMail() {
     }
 
 }
+
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        const openButton =
+            event.target.closest(
+                ".mail-open-button"
+            );
+
+        const replyButton =
+            event.target.closest(
+                ".mail-reply-button"
+            );
+
+        const button =
+            openButton ||
+            replyButton;
+
+        if (!button) {
+            return;
+        }
+
+        const ticketId =
+            button.getAttribute(
+                "data-ticket-id"
+            );
+
+        if (!ticketId) {
+            return;
+        }
+
+        const ticket =
+            window.supportTicketsById
+                ? window.supportTicketsById[ticketId]
+                : null;
+
+        if (!ticket) {
+
+            console.error(
+                "Support ticket not found:",
+                ticketId
+            );
+
+            return;
+        }
+
+        if (replyButton) {
+            openMailAndReply(ticket);
+        } else {
+            openMail(ticket);
+        }
+
+    }
+);
 
 
 async function openMailFromQuery() {
@@ -802,7 +865,7 @@ function renderMailModal(mail) {
 
                             <div class="reply-meta">
                                 ${
-                                    reply.from === "admin"
+                                    reply.sender === "admin"
                                         ? "Admin"
                                         : "Reply"
                                 }

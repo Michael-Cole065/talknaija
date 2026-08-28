@@ -212,6 +212,66 @@ UPDATE CALLBACK STATUS
 ==================================================
 */
 
+function resetCallbackRelationship(
+    userId,
+    partnerId
+) {
+
+    if (!userId || !partnerId) {
+        return false;
+    }
+
+    const history =
+        getHistory();
+
+    let changed = false;
+
+    const reset = (
+        ownerId,
+        targetId
+    ) => {
+
+        const calls =
+            history[ownerId] || [];
+
+        const call =
+            calls.find(
+                (item) =>
+                    item.partnerId === targetId
+            );
+
+        if (!call) {
+            return;
+        }
+
+        call.callbackStatus =
+            "available";
+
+        call.declineCount =
+            0;
+
+        changed = true;
+
+    };
+
+    reset(
+        userId,
+        partnerId
+    );
+
+    reset(
+        partnerId,
+        userId
+    );
+
+    if (changed) {
+        saveHistory(history);
+    }
+
+    return changed;
+
+}
+
 function updateCallbackStatus(
     userId,
     partnerId,
@@ -303,6 +363,8 @@ module.exports = {
     findCall,
 
     updateCallbackStatus,
+
+    resetCallbackRelationship,
 
     recordCallbackDecline
 

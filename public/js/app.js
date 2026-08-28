@@ -1056,18 +1056,13 @@ socket.on(
             "📞 CALLBACK: Calling..."
         );
 
-
         stopCallbackCountdown();
 
-
-        let secondsLeft =
-            30;
-
+        let secondsLeft = 30;
 
         const partnerId =
             data &&
             data.partnerId;
-
 
         const button =
             partnerId
@@ -1075,7 +1070,6 @@ socket.on(
                     `.callback-btn[data-partner-id="${partnerId}"]`
                 )
                 : null;
-
 
         if (button) {
 
@@ -1087,13 +1081,11 @@ socket.on(
 
         }
 
-
         callbackCountdownTimer =
             setInterval(
                 () => {
 
                     secondsLeft--;
-
 
                     if (button) {
 
@@ -1101,7 +1093,6 @@ socket.on(
                             `Calling ${secondsLeft}s`;
 
                     }
-
 
                     if (
                         secondsLeft <=
@@ -1119,11 +1110,208 @@ socket.on(
     }
 );
 
+
+/*
+==================================================
+CALLBACK MESSAGE DIALOG
+==================================================
+*/
+
+function showCallbackDialog(
+    title,
+    message,
+    buttonText = "OK"
+) {
+
+    const existing =
+        document.getElementById(
+            "callbackDialog"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "callbackDialog";
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+        z-index:10000;
+        background:rgba(0,0,0,0.65);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+        overflow:hidden;
+        touch-action:none;
+    `;
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.style.cssText = `
+        background:#111;
+        color:#fff;
+        width:100%;
+        max-width:360px;
+        box-sizing:border-box;
+        padding:25px;
+        border-radius:15px;
+        text-align:center;
+        box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    `;
+
+
+    const heading =
+        document.createElement(
+            "h2"
+        );
+
+    heading.textContent =
+        title;
+
+    heading.style.cssText = `
+        margin:0 0 12px;
+        font-size:21px;
+    `;
+
+
+    const text =
+        document.createElement(
+            "p"
+        );
+
+    text.textContent =
+        message;
+
+    text.style.cssText = `
+        margin:0 0 20px;
+        line-height:1.5;
+        color:#ddd;
+    `;
+
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.textContent =
+        buttonText;
+
+    button.type =
+        "button";
+
+    button.style.cssText = `
+        background:#2563eb;
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        padding:12px 20px;
+        width:115px;
+        min-width:115px;
+        box-sizing:border-box;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+    `;
+
+
+    box.appendChild(
+        heading
+    );
+
+    box.appendChild(
+        text
+    );
+
+    box.appendChild(
+        button
+    );
+
+    overlay.appendChild(
+        box
+    );
+
+    const savedScrollY =
+        window.scrollY ||
+        window.pageYOffset ||
+        0;
+
+    document.body.dataset.dialogScrollY =
+        String(savedScrollY);
+
+    document.documentElement.style.overflow =
+        "hidden";
+
+    document.body.style.overflow =
+        "hidden";
+
+    document.body.style.position =
+        "fixed";
+
+    document.body.style.top =
+        `-${savedScrollY}px`;
+
+    document.body.style.left =
+        "0";
+
+    document.body.style.right =
+        "0";
+
+    document.body.style.width =
+        "100%";
+
+    document.body.appendChild(
+        overlay
+    );
+
+    document.body.style.overflow =
+	"hidden";
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    button.onclick =
+        () => {
+
+            overlay.remove();
+
+            document.body.style.overflow =
+                "";
+
+        };
+
+}
+
+
+/*
+==================================================
+CALLBACK UNAVAILABLE
+==================================================
+*/
+
 socket.on(
     "callbackUnavailable",
     () => {
-	stopCallbackCountdown();
-        alert(
+
+        stopCallbackCountdown();
+
+        showCallbackDialog(
+            "Call Back Unavailable",
             "This person is currently unavailable."
         );
 
@@ -1133,23 +1321,33 @@ socket.on(
 );
 
 
+/*
+==================================================
+CALLBACK DECLINED
+==================================================
+*/
+
 socket.on(
     "callbackDeclined",
     (data) => {
-	stopCallbackCountdown();
+
+        stopCallbackCountdown();
+
         if (
             data &&
             data.declineCount >=
             data.maxDeclines
         ) {
 
-            alert(
-                "Call back stopped after 3 declines."
+            showCallbackDialog(
+                "Call Back Disabled",
+                "Call back is disabled after 3 declines."
             );
 
         } else {
 
-            alert(
+            showCallbackDialog(
+                "Call Back Declined",
                 "Your call back was declined."
             );
 
@@ -1161,11 +1359,20 @@ socket.on(
 );
 
 
+/*
+==================================================
+CALLBACK IGNORED
+==================================================
+*/
+
 socket.on(
     "callbackIgnored",
     () => {
-	stopCallbackCountdown();
-        alert(
+
+        stopCallbackCountdown();
+
+        showCallbackDialog(
+            "No Response",
             "They did not answer within 30 seconds."
         );
 
@@ -1175,11 +1382,20 @@ socket.on(
 );
 
 
+/*
+==================================================
+CALLBACK LIMIT
+==================================================
+*/
+
 socket.on(
     "callbackLimitReached",
     () => {
-	stopCallbackCountdown();
-        alert(
+
+        stopCallbackCountdown();
+
+        showCallbackDialog(
+            "Call Back Disabled",
             "Call back is disabled after 3 declines."
         );
 
@@ -1189,19 +1405,42 @@ socket.on(
 );
 
 
+/*
+==================================================
+CALLBACK EXPIRED
+==================================================
+*/
+
 socket.on(
     "callbackExpired",
     () => {
-	stopCallbackCountdown();
+
+        stopCallbackCountdown();
+
         loadCallHistory();
 
     }
 );
 
 
+/*
+==================================================
+INCOMING CALLBACK
+==================================================
+*/
+
 socket.on(
     "callbackIncoming",
     (data) => {
+
+        const oldDialog =
+            document.getElementById(
+                "callbackDialog"
+            );
+
+        if (oldDialog) {
+            oldDialog.remove();
+        }
 
         let secondsLeft =
             30;
@@ -1211,64 +1450,54 @@ socket.on(
                 "div"
             );
 
-        overlay.style.position =
-            "fixed";
+        overlay.id =
+            "callbackDialog";
 
-        overlay.style.inset =
-            "0";
-
-        overlay.style.background =
-            "rgba(0,0,0,0.65)";
-
-        overlay.style.display =
-            "flex";
-
-        overlay.style.alignItems =
-            "center";
-
-        overlay.style.justifyContent =
-            "center";
-
-        overlay.style.zIndex =
-            "9999";
-
+        overlay.style.cssText = `
+            position:fixed;
+            inset:0;
+            z-index:10000;
+            background:rgba(0,0,0,0.65);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            box-sizing:border-box;
+        `;
 
         const box =
             document.createElement(
                 "div"
             );
 
-	box.style.background =
-	    "#111";
+        box.style.cssText = `
+            background:#111;
+            color:#fff;
+            width:100%;
+            max-width:360px;
+            box-sizing:border-box;
+            padding:25px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 10px 30px rgba(0,0,0,0.35);
+        `;
 
-	box.style.color =
-	    "#fff";
+        const heading =
+            document.createElement(
+                "h2"
+            );
 
-	box.style.boxSizing =
-	    "border-box";
+        heading.textContent =
+            "Incoming Call Back";
 
-	box.style.boxShadow =
-	    "0 10px 30px rgba(0,0,0,0.35)";
-
-        box.style.padding =
-            "25px";
-
-        box.style.borderRadius =
-            "15px";
-
-        box.style.textAlign =
-            "center";
-
-        box.style.maxWidth =
-            "320px";
-
-        box.style.width =
-            "85%";
-
+        heading.style.cssText = `
+            margin:0 0 12px;
+            font-size:21px;
+        `;
 
         const message =
             document.createElement(
-                "div"
+                "p"
             );
 
         message.textContent =
@@ -1277,141 +1506,99 @@ socket.on(
                 ? data.message
                 : "Anonymous Nigerian is calling you back...";
 
+        message.style.cssText = `
+            margin:0;
+            line-height:1.5;
+            color:#ddd;
+        `;
 
         const countdown =
             document.createElement(
                 "div"
             );
 
-        countdown.style.fontSize =
-            "22px";
-
-        countdown.style.fontWeight =
-            "bold";
-
-        countdown.style.margin =
-            "15px 0";
+        countdown.style.cssText = `
+            font-size:22px;
+            font-weight:bold;
+            margin:15px 0 20px;
+        `;
 
         countdown.textContent =
             `${secondsLeft}s`;
 
+        const buttonRow =
+            document.createElement(
+                "div"
+            );
 
-	const buttonRow =
-	document.createElement(
-	        "div"
-	    );
+        buttonRow.style.cssText = `
+            display:flex;
+            justify-content:center;
+            gap:12px;
+            margin-top:10px;
+        `;
 
-	buttonRow.style.display =
-	    "flex";
+        const acceptBtn =
+            document.createElement(
+                "button"
+            );
 
-	buttonRow.style.justifyContent =
-	    "center";
+        acceptBtn.textContent =
+            "Accept";
 
-	buttonRow.style.gap =
-	    "28px";
+        acceptBtn.type =
+            "button";
 
-	buttonRow.style.marginTop =
-	    "20px";
+        acceptBtn.style.cssText = `
+            background:#2563eb;
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:12px 20px;
+            width:115px;
+            min-width:115px;
+            box-sizing:border-box;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+        `;
 
-const acceptBtn =
-    document.createElement(
-        "button"
-    );
+        const declineBtn =
+            document.createElement(
+                "button"
+            );
 
-acceptBtn.textContent =
-    "Accept";
+        declineBtn.textContent =
+            "Decline";
 
-acceptBtn.style.background =
-    "#22c55e";
+        declineBtn.type =
+            "button";
 
-acceptBtn.style.color =
-    "#fff";
+        declineBtn.style.cssText = `
+            background:#444;
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:12px 20px;
+            width:115px;
+            min-width:115px;
+            box-sizing:border-box;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+        `;
 
-acceptBtn.style.border =
-    "none";
+        buttonRow.appendChild(
+            acceptBtn
+        );
 
-acceptBtn.style.borderRadius =
-    "10px";
+        buttonRow.appendChild(
+            declineBtn
+        );
 
-acceptBtn.style.padding =
-    "12px 20px";
-
-acceptBtn.style.width =
-    "115px";
-
-acceptBtn.style.boxSizing =
-    "border-box";
-
-acceptBtn.style.minWidth =
-    "115px";
-
-acceptBtn.style.fontSize =
-    "15px";
-
-acceptBtn.style.fontWeight =
-    "600";
-
-acceptBtn.style.cursor =
-    "pointer";
-
-acceptBtn.style.margin =
-    "0 8px";
-
-const declineBtn =
-    document.createElement(
-        "button"
-    );
-
-declineBtn.textContent =
-    "Decline";
-
-declineBtn.style.background =
-    "#ef4444";
-
-declineBtn.style.color =
-    "#fff";
-
-declineBtn.style.border =
-    "none";
-
-declineBtn.style.borderRadius =
-    "10px";
-
-declineBtn.style.padding =
-    "12px 20px";
-
-declineBtn.style.width =
-    "115px";
-
-declineBtn.style.boxSizing =
-    "border-box";
-
-declineBtn.style.minWidth =
-    "115px";
-
-declineBtn.style.fontSize =
-    "15px";
-
-declineBtn.style.fontWeight =
-    "600";
-
-declineBtn.style.cursor =
-    "pointer";
-
-declineBtn.style.margin =
-    "0 8px";
-
-buttonRow.appendChild(
-    acceptBtn
-);
-
-buttonRow.appendChild(
-    declineBtn
-);
-
-	box.appendChild(
-	    buttonRow
-	);
+        box.appendChild(
+            heading
+        );
 
         box.appendChild(
             message
@@ -1422,11 +1609,7 @@ buttonRow.appendChild(
         );
 
         box.appendChild(
-            acceptBtn
-        );
-
-        box.appendChild(
-            declineBtn
+            buttonRow
         );
 
         overlay.appendChild(
@@ -1437,10 +1620,8 @@ buttonRow.appendChild(
             overlay
         );
 
-
         let finished =
             false;
-
 
         const timer =
             setInterval(
@@ -1450,7 +1631,6 @@ buttonRow.appendChild(
 
                     countdown.textContent =
                         `${secondsLeft}s`;
-
 
                     if (
                         secondsLeft <=
@@ -1467,7 +1647,6 @@ buttonRow.appendChild(
                 1000
             );
 
-
         function finish(
             response
         ) {
@@ -1479,14 +1658,11 @@ buttonRow.appendChild(
             finished =
                 true;
 
-
             clearInterval(
                 timer
             );
 
-
             overlay.remove();
-
 
             socket.emit(
                 "callbackResponse",
@@ -1494,7 +1670,6 @@ buttonRow.appendChild(
             );
 
         }
-
 
         acceptBtn.onclick =
             () => {
@@ -1504,7 +1679,6 @@ buttonRow.appendChild(
                 );
 
             };
-
 
         declineBtn.onclick =
             () => {
@@ -1517,7 +1691,6 @@ buttonRow.appendChild(
 
     }
 );
-
 
 /*
 ==================================================
@@ -1883,8 +2056,8 @@ socket.on(
         loadCallHistory();
 
         showTalkNaijaInfoDialog(
-            "Call ended",
-            "The other user ended this call."
+            "Call Ended",
+            "The other user ended the call."
         );
 
         if (
@@ -2004,107 +2177,451 @@ REPORT
 reportBtn.onclick =
     () => {
 
-        const choice =
-            prompt(
-                "WHY ARE YOU REPORTING THIS USER?\n\n" +
-                "1. Harassment\n" +
-                "2. Sexual or inappropriate behavior\n" +
-                "3. Hate or abusive speech\n" +
-                "4. Spam or scam\n" +
-                "5. Other"
+        const existing =
+            document.getElementById(
+                "reportReasonDialog"
             );
 
-
-        if (choice === null) {
-            return;
+        if (existing) {
+            existing.remove();
         }
 
+        const overlay =
+            document.createElement(
+                "div"
+            );
 
-        const selected =
-            choice.trim();
+        overlay.id =
+            "reportReasonDialog";
 
+        overlay.style.cssText = `
+            position:fixed;
+            inset:0;
+            z-index:10000;
+            background:rgba(0,0,0,0.65);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            box-sizing:border-box;
+        `;
 
-        const reasons = {
+        const box =
+            document.createElement(
+                "div"
+            );
 
-            "1":
-                "Harassment",
+        box.style.cssText = `
+            background:#0d1730;
+            color:#fff;
+            width:100%;
+            max-width:360px;
+            box-sizing:border-box;
+            padding:25px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 10px 30px rgba(0,0,0,0.35);
+        `;
 
-            "2":
-                "Sexual or inappropriate behavior",
+        const heading =
+            document.createElement(
+                "h2"
+            );
 
-            "3":
-                "Hate or abusive speech",
+        heading.textContent =
+            "Report User";
 
-            "4":
+        heading.style.cssText = `
+            margin:0 0 10px;
+            font-size:21px;
+        `;
+
+        const description =
+            document.createElement(
+                "p"
+            );
+
+        description.textContent =
+            "Why are you reporting this user?";
+
+        description.style.cssText = `
+            margin:0 0 18px;
+            color:#ddd;
+            line-height:1.5;
+            font-size:14px;
+        `;
+
+        const reasons = [
+            [
+                "1",
+                "Harassment"
+            ],
+            [
+                "2",
+                "Sexual or inappropriate behavior"
+            ],
+            [
+                "3",
+                "Hate or abusive speech"
+            ],
+            [
+                "4",
                 "Spam or scam"
+            ],
+            [
+                "5",
+                "Other"
+            ]
+        ];
 
-        };
-
-
-        let reason;
-
-
-        if (
-            selected ===
-            "5"
-        ) {
-
-            const customReason =
-                prompt(
-                    "Please describe the reason for your report:"
-                );
-
-
-            if (
-                customReason ===
-                null
-            ) {
-
-                return;
-
-            }
-
-
-            reason =
-                customReason.trim();
-
-
-            if (!reason) {
-
-                alert(
-                    "Please provide a reason for the report."
-                );
-
-                return;
-
-            }
-
-        } else if (
-            reasons[selected]
-        ) {
-
-            reason =
-                reasons[selected];
-
-        } else {
-
-            alert(
-                "Please enter a number from 1 to 5."
+        const list =
+            document.createElement(
+                "div"
             );
 
-            return;
+        list.style.cssText = `
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        `;
 
-        }
+        const submitReport =
+            (reason) => {
 
+                reportBtn.disabled =
+                    true;
 
-        reportBtn.disabled =
-            true;
+                socket.emit(
+                    "reportUser",
+                    reason
+                );
 
+            };
 
-        socket.emit(
-            "reportUser",
-            reason
+        reasons.forEach(
+            ([number, label]) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type =
+                    "button";
+
+                button.textContent =
+                    `${number}. ${label}`;
+
+                button.style.cssText = `
+                    width:100%;
+                    box-sizing:border-box;
+                    background:#111827;
+                    color:#fff;
+                    border:1px solid #263656;
+                    border-radius:10px;
+                    padding:12px 14px;
+                    font-size:14px;
+                    font-weight:600;
+                    text-align:left;
+                    cursor:pointer;
+                `;
+
+                button.onclick =
+                    () => {
+
+                        if (
+                            number ===
+                            "5"
+                        ) {
+
+                            const customOverlay =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            customOverlay.id =
+                                "reportCustomReasonDialog";
+
+                            customOverlay.style.cssText = `
+                                position:fixed;
+                                inset:0;
+                                z-index:10001;
+                                background:rgba(0,0,0,0.7);
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                padding:20px;
+                                box-sizing:border-box;
+                            `;
+
+                            const customBox =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            customBox.style.cssText = `
+                                background:#0d1730;
+                                color:#fff;
+                                width:100%;
+                                max-width:360px;
+                                box-sizing:border-box;
+                                padding:25px;
+                                border-radius:15px;
+                                text-align:center;
+                                box-shadow:0 10px 30px rgba(0,0,0,0.35);
+                            `;
+
+                            const customHeading =
+                                document.createElement(
+                                    "h2"
+                                );
+
+                            customHeading.textContent =
+                                "Other";
+
+                            customHeading.style.cssText = `
+                                margin:0 0 10px;
+                                font-size:21px;
+                            `;
+
+                            const customDescription =
+                                document.createElement(
+                                    "p"
+                                );
+
+                            customDescription.textContent =
+                                "Please describe the reason for your report.";
+
+                            customDescription.style.cssText = `
+                                margin:0 0 15px;
+                                color:#ddd;
+                                line-height:1.5;
+                                font-size:14px;
+                            `;
+
+                            const input =
+                                document.createElement(
+                                    "textarea"
+                                );
+
+                            input.placeholder =
+                                "Enter your reason...";
+
+                            input.rows =
+                                4;
+
+                            input.style.cssText = `
+                                width:100%;
+                                box-sizing:border-box;
+                                resize:none;
+                                background:#111827;
+                                color:#fff;
+                                border:1px solid #263656;
+                                border-radius:10px;
+                                padding:12px;
+                                font-size:14px;
+                                outline:none;
+                            `;
+
+                            const buttons =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            buttons.style.cssText = `
+                                display:flex;
+                                justify-content:center;
+                                gap:12px;
+                                margin-top:18px;
+                            `;
+
+                            const cancelBtn =
+                                document.createElement(
+                                    "button"
+                                );
+
+                            cancelBtn.type =
+                                "button";
+
+                            cancelBtn.textContent =
+                                "Cancel";
+
+                            cancelBtn.style.cssText = `
+                                background:#374151;
+                                color:#fff;
+                                border:none;
+                                border-radius:10px;
+                                padding:12px 18px;
+                                min-width:105px;
+                                font-size:14px;
+                                font-weight:600;
+                                cursor:pointer;
+                            `;
+
+                            const submitBtn =
+                                document.createElement(
+                                    "button"
+                                );
+
+                            submitBtn.type =
+                                "button";
+
+                            submitBtn.textContent =
+                                "Submit Report";
+
+                            submitBtn.style.cssText = `
+                                background:#2563eb;
+                                color:#fff;
+                                border:none;
+                                border-radius:10px;
+                                padding:12px 18px;
+                                min-width:125px;
+                                font-size:14px;
+                                font-weight:600;
+                                cursor:pointer;
+                            `;
+
+                            cancelBtn.onclick =
+                                () => {
+
+                                    customOverlay.remove();
+
+                                };
+
+                            submitBtn.onclick =
+                                () => {
+
+                                    const reason =
+                                        input.value.trim();
+
+                                    if (!reason) {
+
+                                        input.focus();
+
+                                        return;
+
+                                    }
+
+                                    customOverlay.remove();
+                                    overlay.remove();
+
+                                    submitReport(
+                                        reason
+                                    );
+
+                                };
+
+                            buttons.appendChild(
+                                cancelBtn
+                            );
+
+                            buttons.appendChild(
+                                submitBtn
+                            );
+
+                            customBox.appendChild(
+                                customHeading
+                            );
+
+                            customBox.appendChild(
+                                customDescription
+                            );
+
+                            customBox.appendChild(
+                                input
+                            );
+
+                            customBox.appendChild(
+                                buttons
+                            );
+
+                            customOverlay.appendChild(
+                                customBox
+                            );
+
+                            document.body.appendChild(
+                                customOverlay
+                            );
+
+                            input.focus();
+
+                            return;
+
+                        }
+
+                        overlay.remove();
+
+                        submitReport(
+                            label
+                        );
+
+                    };
+
+                list.appendChild(
+                    button
+                );
+
+            }
         );
+
+        const cancelBtn =
+            document.createElement(
+                "button"
+            );
+
+        cancelBtn.type =
+            "button";
+
+        cancelBtn.textContent =
+            "Cancel";
+
+        cancelBtn.style.cssText = `
+            width:100%;
+            box-sizing:border-box;
+            margin-top:16px;
+            background:#374151;
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:12px 20px;
+            font-size:14px;
+            font-weight:600;
+            cursor:pointer;
+        `;
+
+        cancelBtn.onclick =
+            () => {
+
+                overlay.remove();
+
+            };
+
+        box.appendChild(
+            heading
+        );
+
+        box.appendChild(
+            description
+        );
+
+        box.appendChild(
+            list
+        );
+
+        box.appendChild(
+            cancelBtn
+        );
+
+        overlay.appendChild(
+            box
+        );
+
+        document.body.appendChild(
+            overlay
+        );
+
+        document.body.style.overflow =
+            "hidden";
 
     };
 
@@ -2137,18 +2654,136 @@ socket.on(
         loadCallHistory();
 
 
-        showTalkNaijaInfoDialog(
-            "Report submitted",
-            "Thank you for helping keep TalkNaija safe."
+        const thankYouOverlay =
+            document.createElement(
+                "div"
+            );
+
+        thankYouOverlay.id =
+            "reportThankYouDialog";
+
+        thankYouOverlay.style.cssText = `
+            position:fixed;
+            inset:0;
+            z-index:10000;
+            background:rgba(0,0,0,0.65);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            box-sizing:border-box;
+        `;
+
+        const thankYouBox =
+            document.createElement(
+                "div"
+            );
+
+        thankYouBox.style.cssText = `
+            background:#0d1730;
+            color:#fff;
+            width:100%;
+            max-width:360px;
+            box-sizing:border-box;
+            padding:25px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 10px 30px rgba(0,0,0,0.35);
+        `;
+
+        const thankYouHeading =
+            document.createElement(
+                "h2"
+            );
+
+        thankYouHeading.textContent =
+            "Report Submitted";
+
+        thankYouHeading.style.cssText = `
+            margin:0 0 12px;
+            font-size:21px;
+        `;
+
+        const thankYouMessage =
+            document.createElement(
+                "p"
+            );
+
+        thankYouMessage.textContent =
+            "Thank you for helping keep TalkNaija safe.";
+
+        thankYouMessage.style.cssText = `
+            margin:0 0 20px;
+            line-height:1.5;
+            color:#ddd;
+            font-size:14px;
+        `;
+
+        const thankYouButton =
+            document.createElement(
+                "button"
+            );
+
+        thankYouButton.type =
+            "button";
+
+        thankYouButton.textContent =
+            "OK";
+
+        thankYouButton.style.cssText = `
+            background:#2563eb;
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:12px 20px;
+            width:115px;
+            min-width:115px;
+            box-sizing:border-box;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+        `;
+
+        thankYouBox.appendChild(
+            thankYouHeading
         );
 
-
-        showScreen(
-            homeScreen
+        thankYouBox.appendChild(
+            thankYouMessage
         );
+
+        thankYouBox.appendChild(
+            thankYouButton
+        );
+
+        thankYouOverlay.appendChild(
+            thankYouBox
+        );
+
+        document.body.appendChild(
+            thankYouOverlay
+        );
+
+        document.body.style.overflow =
+            "hidden";
+
+        thankYouButton.onclick =
+            () => {
+
+                thankYouOverlay.remove();
+
+                document.body.style.overflow =
+                    "";
+
+                showScreen(
+                    homeScreen
+                );
+
+            };
 
     }
 );
+
 
 
 /*
@@ -2387,71 +3022,89 @@ function showTalkNaijaInfoDialog(
     buttonText = "OK"
 ) {
 
+    const existingDialog =
+        document.getElementById(
+            "talkNaijaInfoDialog"
+        );
+
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    const scrollY =
+        window.scrollY ||
+        window.pageYOffset ||
+        0;
+
+    document.body.dataset.infoDialogScrollY =
+        String(scrollY);
+
+    document.documentElement.style.overflow =
+        "hidden";
+
+    document.body.style.position =
+        "fixed";
+
+    document.body.style.top =
+        `-${scrollY}px`;
+
+    document.body.style.left =
+        "0";
+
+    document.body.style.right =
+        "0";
+
+    document.body.style.width =
+        "100%";
+
+    document.body.style.overflow =
+        "hidden";
+
     const overlay =
         document.createElement(
             "div"
         );
 
-    overlay.style.position =
-        "fixed";
+    overlay.id =
+        "talkNaijaInfoDialog";
 
-    overlay.style.top =
-        "0";
-
-    overlay.style.left =
-        "0";
-
-    overlay.style.right =
-        "0";
-
-    overlay.style.bottom =
-        "0";
-
-    overlay.style.background =
-        "rgba(0,0,0,0.65)";
-
-    overlay.style.display =
-        "flex";
-
-    overlay.style.alignItems =
-        "center";
-
-    overlay.style.justifyContent =
-        "center";
-
-    overlay.style.zIndex =
-        "99999";
-
+    Object.assign(
+        overlay.style,
+        {
+            position: "fixed",
+            inset: "0",
+            width: "100vw",
+            height: "100vh",
+            minHeight: "100dvh",
+            background: "rgba(0,0,0,0.65)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "99999",
+            overflow: "hidden",
+            touchAction: "none",
+            overscrollBehavior: "none"
+        }
+    );
 
     const box =
         document.createElement(
             "div"
         );
 
-    box.style.background =
-        "#0d1730";
-
-    box.style.boxSizing =
-        "border-box";
-
-    box.style.boxShadow =
-        "0 10px 30px rgba(0,0,0,0.35)";
-
-    box.style.padding =
-        "25px";
-
-    box.style.borderRadius =
-        "15px";
-
-    box.style.textAlign =
-        "center";
-
-    box.style.maxWidth =
-        "320px";
-
-    box.style.width =
-        "85%";
-
+    Object.assign(
+        box.style,
+        {
+            background: "#0d1730",
+            boxSizing: "border-box",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
+            padding: "25px",
+            borderRadius: "15px",
+            textAlign: "center",
+            maxWidth: "320px",
+            width: "85%"
+        }
+    );
 
     const message =
         document.createElement(
@@ -2461,12 +3114,13 @@ function showTalkNaijaInfoDialog(
     message.textContent =
         title;
 
-    message.style.fontSize =
-        "16px";
-
-    message.style.fontWeight =
-        "600";
-
+    Object.assign(
+        message.style,
+        {
+            fontSize: "16px",
+            fontWeight: "600"
+        }
+    );
 
     const details =
         document.createElement(
@@ -2476,33 +3130,29 @@ function showTalkNaijaInfoDialog(
     details.textContent =
         description;
 
-    details.style.fontSize =
-        "13px";
-
-    details.style.opacity =
-        "0.8";
-
-    details.style.marginTop =
-        "10px";
-
-    details.style.lineHeight =
-        "1.5";
-
+    Object.assign(
+        details.style,
+        {
+            fontSize: "13px",
+            opacity: "0.8",
+            marginTop: "10px",
+            lineHeight: "1.5"
+        }
+    );
 
     const buttonRow =
         document.createElement(
             "div"
         );
 
-    buttonRow.style.display =
-        "flex";
-
-    buttonRow.style.justifyContent =
-        "center";
-
-    buttonRow.style.marginTop =
-        "20px";
-
+    Object.assign(
+        buttonRow.style,
+        {
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "20px"
+        }
+    );
 
     const okBtn =
         document.createElement(
@@ -2512,36 +3162,21 @@ function showTalkNaijaInfoDialog(
     okBtn.textContent =
         buttonText;
 
-    okBtn.style.background =
-        "#0d6efd";
-
-    okBtn.style.color =
-        "#fff";
-
-    okBtn.style.border =
-        "none";
-
-    okBtn.style.borderRadius =
-        "10px";
-
-    okBtn.style.padding =
-        "12px 20px";
-
-    okBtn.style.width =
-        "115px";
-
-    okBtn.style.minWidth =
-        "115px";
-
-    okBtn.style.fontSize =
-        "15px";
-
-    okBtn.style.fontWeight =
-        "600";
-
-    okBtn.style.cursor =
-        "pointer";
-
+    Object.assign(
+        okBtn.style,
+        {
+            background: "#0d6efd",
+            color: "#fff",
+            border: "none",
+            borderRadius: "10px",
+            padding: "12px 20px",
+            width: "115px",
+            minWidth: "115px",
+            fontSize: "15px",
+            fontWeight: "600",
+            cursor: "pointer"
+        }
+    );
 
     buttonRow.appendChild(
         okBtn
@@ -2567,17 +3202,46 @@ function showTalkNaijaInfoDialog(
         overlay
     );
 
-
     okBtn.onclick =
         () => {
 
             overlay.remove();
 
+            const previousScrollY =
+                Number(
+                    document.body.dataset.infoDialogScrollY ||
+                    0
+                );
+
+            document.documentElement.style.overflow =
+                "";
+
+            document.body.style.position =
+                "";
+
+            document.body.style.top =
+                "";
+
+            document.body.style.left =
+                "";
+
+            document.body.style.right =
+                "";
+
+            document.body.style.width =
+                "";
+
+            document.body.style.overflow =
+                "";
+
+            delete document.body.dataset.infoDialogScrollY;
+
+            window.scrollTo(
+                0,
+                previousScrollY
+            );
         };
-
 }
-
-
 
 /*
 ==================================================
@@ -3999,19 +4663,234 @@ if (!reference) {
             data.payment;
 
 
-        if (
-            payment.status ===
-            "success"
-        ) {
+	if (
+    payment.status ===
+    "success"
+) {
 
-            showTalkNaijaInfoDialog(
-                "Payment successful",
-                "☕ Thank you for supporting TalkNaija! ❤️"
+        const scrollY =
+        window.scrollY ||
+        window.pageYOffset ||
+        0;
+
+    document.body.dataset.dialogScrollY =
+        String(scrollY);
+
+    document.documentElement.style.overflow =
+        "hidden";
+
+    document.body.style.position =
+        "fixed";
+
+    document.body.style.top =
+        `-${scrollY}px`;
+
+    document.body.style.left =
+        "0";
+
+    document.body.style.right =
+        "0";
+
+    document.body.style.width =
+        "100%";
+
+    document.body.style.overflow =
+        "hidden";
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "donationSuccessDialog";
+
+    overlay.style.position =
+        "fixed";
+
+    overlay.style.inset =
+        "0";
+
+    overlay.style.background =
+        "rgba(0, 0, 0, 0.72)";
+
+    overlay.style.display =
+        "flex";
+
+    overlay.style.alignItems =
+        "center";
+
+    overlay.style.justifyContent =
+        "center";
+
+    overlay.style.padding =
+        "20px";
+
+    overlay.style.boxSizing =
+        "border-box";
+
+    overlay.style.zIndex =
+        "99999";
+
+        overlay.style.width =
+        "100vw";
+
+    overlay.style.height =
+        "100vh";
+
+    overlay.style.overflow =
+        "hidden";
+
+    overlay.style.touchAction =
+        "none";
+
+    overlay.style.overscrollBehavior =
+        "none";
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.className =
+        "donation-success-box";
+
+
+    const icon =
+        document.createElement(
+            "div"
+        );
+
+    icon.className =
+        "donation-success-icon";
+
+    icon.textContent =
+        "☕";
+
+
+    const title =
+        document.createElement(
+            "h2"
+        );
+
+    title.textContent =
+        "Thank You!";
+
+
+    const message =
+        document.createElement(
+            "p"
+        );
+
+    message.className =
+        "donation-success-message";
+
+    message.textContent =
+        "Thank you for supporting TalkNaija. ❤️";
+
+
+    const note =
+        document.createElement(
+            "p"
+        );
+
+    note.className =
+        "donation-success-note";
+
+    note.textContent =
+        "Your contribution helps keep TalkNaija running and growing.";
+
+
+    const doneBtn =
+        document.createElement(
+            "button"
+        );
+
+    doneBtn.className =
+        "donation-success-btn";
+
+    doneBtn.type =
+        "button";
+
+    doneBtn.textContent =
+        "Done";
+
+
+    doneBtn.onclick =
+    () => {
+
+        const savedScrollY =
+            Number(
+                document.body.dataset.dialogScrollY ||
+                0
             );
 
-	    sessionStorage.removeItem(
-	       "talknaija_paystack_active"
-		);
+        overlay.remove();
+
+        document.documentElement.style.overflow =
+            "";
+
+        document.body.style.overflow =
+            "";
+
+        document.body.style.position =
+            "";
+
+        document.body.style.top =
+            "";
+
+        document.body.style.left =
+            "";
+
+        document.body.style.right =
+            "";
+
+        document.body.style.width =
+            "";
+
+        delete document.body.dataset.dialogScrollY;
+
+        window.scrollTo(
+            0,
+            savedScrollY
+        );
+
+    };
+
+    box.appendChild(
+        icon
+    );
+
+    box.appendChild(
+        title
+    );
+
+    box.appendChild(
+        message
+    );
+
+    box.appendChild(
+        note
+    );
+
+    box.appendChild(
+        doneBtn
+    );
+
+
+    overlay.appendChild(
+        box
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    sessionStorage.removeItem(
+        "talknaija_paystack_active"
+    );
+
 
         } else {
 
