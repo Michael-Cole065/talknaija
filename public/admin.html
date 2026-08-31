@@ -1118,17 +1118,25 @@ async function loadStats() {
 
         const red =
             document.getElementById("miniRed");
+        
+        const guests =
+	    document.getElementById("miniGuests");
 
+	const members =
+	    document.getElementById("miniMembers");
 
-	if (reports) {
+	const premium =
+	    document.getElementById("miniPremium");
 
-	    updateMiniBannerCount(
-	        "miniReports",
-	        stats.totalReports || 0,
-	        "reports"
-	    );
+        if (reports) {
 
-	}
+    updateMiniBannerCount(
+        "miniReports",
+        stats.totalReports || 0,
+        "reports"
+    );
+
+}
 
         if (mail) {
 
@@ -1160,6 +1168,36 @@ async function loadStats() {
 
 	}
 
+
+        if (guests) {
+
+    updateMiniBannerCount(
+        "miniGuests",
+        stats.guests || 0,
+        "guests"
+    );
+
+}
+
+if (members) {
+
+    updateMiniBannerCount(
+        "miniMembers",
+        stats.members || 0,
+        "members"
+    );
+
+}
+
+if (premium) {
+
+    updateMiniBannerCount(
+        "miniPremium",
+        stats.premiumUsers || 0,
+        "premium"
+    );
+
+}
 
     } catch (error) {
 

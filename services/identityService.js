@@ -1,55 +1,33 @@
-const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
+const database = require("./database");
 
-const identityFile =
-    path.join(__dirname, "../data/userRegistry.json");
+/*
+==================================================
+IDENTITY SERVICE — POSTGRESQL
+==================================================
 
-function ensureFile() {
-    const directory = path.dirname(identityFile);
+PostgreSQL is now the persistent source of truth.
 
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
-    }
+Legacy:
+    data/userRegistry.json
 
-    if (
-        !fs.existsSync(identityFile) ||
-        fs.statSync(identityFile).size === 0
-    ) {
-        fs.writeFileSync(identityFile, "{}");
-    }
-}
+is intentionally NOT deleted.
 
-function getRegistry() {
-    ensureFile();
+The existing JSON registry remains available as
+a rollback/reference copy until the entire
+persistence migration is verified.
+==================================================
+*/
 
-    try {
-        const data = fs.readFileSync(
-            identityFile,
-            "utf8"
-        ).trim();
 
-        return data ? JSON.parse(data) : {};
-    } catch (error) {
-        console.error(
-            "❌ Could not read user registry:",
-            error
-        );
-
-        return {};
-    }
-}
-
-function saveRegistry(registry) {
-    ensureFile();
-
-    fs.writeFileSync(
-        identityFile,
-        JSON.stringify(registry, null, 2)
-    );
-}
+/*
+==================================================
+HASH VALUE
+==================================================
+*/
 
 function hashValue(value) {
+
     if (!value) {
         return null;
     }
@@ -59,274 +37,784 @@ function hashValue(value) {
         "talknaija-identity";
 
     return crypto
-        .createHmac("sha256", secret)
+        .createHmac(
+            "sha256",
+            secret
+        )
         .update(String(value))
         .digest("hex");
+
 }
 
+
+/*
+==================================================
+CLIENT IP
+==================================================
+*/
+
 function getClientIp(socket) {
+
     const forwarded =
-        socket.handshake?.headers?.["x-forwarded-for"];
+        socket?.handshake?.headers?.["x-forwarded-for"];
 
     if (forwarded) {
+
         return String(forwarded)
             .split(",")[0]
             .trim();
+
     }
 
     return (
-        socket.handshake?.address ||
+        socket?.handshake?.address ||
         null
     );
+
 }
+
+
+/*
+==================================================
+USER AGENT
+==================================================
+*/
 
 function getUserAgent(socket) {
+
     return (
-        socket.handshake?.headers?.["user-agent"] ||
+        socket?.handshake?.headers?.["user-agent"] ||
         null
     );
+
 }
 
-function registerUser(
+
+/*
+==================================================
+REGISTER USER
+==================================================
+*/
+
+async function registerUser(
     userId,
     isPremium = false,
     socket = null
 ) {
+
     if (!userId) {
         return null;
     }
 
-    const registry = getRegistry();
-    const now = new Date().toISOString();
+    const now =
+        new Date();
 
-    let user = registry[userId];
+    const premium =
+        isPremium === true;
 
-    if (!user) {
-        user = {
-            uuid: userId,
-            type: isPremium
-                ? "premium"
-                : "guest",
-            isPremium: isPremium === true,
-            firstSeen: now,
-            lastActive: now,
-            connectionCount: 0,
-            visitCount: 0,
-            reportCount: 0,
-            banned: false,
-            banHistory: [],
-            ipHistory: [],
-            userAgentHistory: []
-        };
-    }
+    /*
+    --------------------------------------------------
+    CREATE / UPDATE USER
+    --------------------------------------------------
+    */
 
-    user.lastActive = now;
+    const result =
+        await database.query(
+            `
+            INSERT INTO users (
+                uuid,
+                type,
+                is_premium,
+                first_seen,
+                last_active,
+                connection_count
+            )
+            VALUES (
+                $1,
+                $2,
+                $3,
+                $4,
+                $4,
+                1
+            )
+            ON CONFLICT (uuid)
+            DO UPDATE SET
 
-    user.connectionCount =
-        (user.connectionCount || 0) + 1;
+                last_active =
+                    EXCLUDED.last_active,
 
-    if (isPremium === true) {
-        user.isPremium = true;
-        user.type = "premium";
-    }
+                connection_count =
+                    users.connection_count + 1,
+
+                is_premium =
+                    CASE
+                        WHEN EXCLUDED.is_premium
+                        THEN TRUE
+                        ELSE users.is_premium
+                    END,
+
+                type =
+                    CASE
+                        WHEN EXCLUDED.is_premium
+                        THEN 'premium'
+                        ELSE users.type
+                    END,
+
+                updated_at =
+                    NOW()
+
+            RETURNING *
+            `,
+            [
+                userId,
+                premium
+                    ? "premium"
+                    : "guest",
+                premium,
+                now
+            ]
+        );
+
+    const user =
+        result.rows[0];
+
+    /*
+    --------------------------------------------------
+    IP / USER AGENT HISTORY
+    --------------------------------------------------
+    */
 
     if (socket) {
-        const ip = getClientIp(socket);
-        const userAgent = getUserAgent(socket);
 
-        const hashedIp = hashValue(ip);
-        const hashedUserAgent =
-            hashValue(userAgent);
-
-        if (
-            hashedIp &&
-            !user.ipHistory.includes(hashedIp)
-        ) {
-            user.ipHistory.push(hashedIp);
-        }
-
-        if (
-            hashedUserAgent &&
-            !user.userAgentHistory.includes(
-                hashedUserAgent
-            )
-        ) {
-            user.userAgentHistory.push(
-                hashedUserAgent
+        const ip =
+            hashValue(
+                getClientIp(socket)
             );
+
+        const userAgent =
+            hashValue(
+                getUserAgent(socket)
+            );
+
+        if (ip) {
+
+            await database.query(
+                `
+                INSERT INTO user_ip_history (
+                    user_uuid,
+                    ip_hash
+                )
+                VALUES ($1,$2)
+                ON CONFLICT (
+                    user_uuid,
+                    ip_hash
+                )
+                DO NOTHING
+                `,
+                [
+                    userId,
+                    ip
+                ]
+            );
+
         }
+
+        if (userAgent) {
+
+            await database.query(
+                `
+                INSERT INTO user_agent_history (
+                    user_uuid,
+                    user_agent_hash
+                )
+                VALUES ($1,$2)
+                ON CONFLICT (
+                    user_uuid,
+                    user_agent_hash
+                )
+                DO NOTHING
+                `,
+                [
+                    userId,
+                    userAgent
+                ]
+            );
+
+        }
+
     }
 
-    registry[userId] = user;
+    return formatUser(user);
 
-    saveRegistry(registry);
-
-    return user;
 }
 
-function recordVisit(
+
+/*
+==================================================
+RECORD VISIT
+==================================================
+*/
+
+async function recordVisit(
     userId,
     isPremium = false,
     socket = null
 ) {
+
     if (!userId) {
         return null;
     }
 
-    const registry = getRegistry();
+    /*
+    --------------------------------------------------
+    ENSURE USER EXISTS
+    --------------------------------------------------
+    */
 
-    if (!registry[userId]) {
-        registerUser(
-            userId,
-            isPremium,
-            socket
+    let user =
+        await getUser(userId);
+
+    if (!user) {
+
+        user =
+            await registerUser(
+                userId,
+                isPremium,
+                socket
+            );
+
+    }
+
+    /*
+    --------------------------------------------------
+    UPDATE VISIT
+    --------------------------------------------------
+    */
+
+    const result =
+        await database.query(
+            `
+            UPDATE users
+
+            SET
+                visit_count =
+                    visit_count + 1,
+
+                last_active =
+                    NOW(),
+
+                is_premium =
+                    CASE
+                        WHEN $2 = TRUE
+                        THEN TRUE
+                        ELSE is_premium
+                    END,
+
+                type =
+                    CASE
+                        WHEN $2 = TRUE
+                        THEN 'premium'
+                        ELSE type
+                    END,
+
+                updated_at =
+                    NOW()
+
+            WHERE uuid = $1
+
+            RETURNING *
+            `,
+            [
+                userId,
+                isPremium === true
+            ]
         );
+
+    user =
+        result.rows[0] || null;
+
+    /*
+    --------------------------------------------------
+    RECORD NEW IP / USER AGENT
+    --------------------------------------------------
+    */
+
+    if (user && socket) {
+
+        const ip =
+            hashValue(
+                getClientIp(socket)
+            );
+
+        const userAgent =
+            hashValue(
+                getUserAgent(socket)
+            );
+
+        if (ip) {
+
+            await database.query(
+                `
+                INSERT INTO user_ip_history (
+                    user_uuid,
+                    ip_hash
+                )
+                VALUES ($1,$2)
+                ON CONFLICT (
+                    user_uuid,
+                    ip_hash
+                )
+                DO NOTHING
+                `,
+                [
+                    userId,
+                    ip
+                ]
+            );
+
+        }
+
+        if (userAgent) {
+
+            await database.query(
+                `
+                INSERT INTO user_agent_history (
+                    user_uuid,
+                    user_agent_hash
+                )
+                VALUES ($1,$2)
+                ON CONFLICT (
+                    user_uuid,
+                    user_agent_hash
+                )
+                DO NOTHING
+                `,
+                [
+                    userId,
+                    userAgent
+                ]
+            );
+
+        }
+
     }
 
-    const user = registry[userId];
+    return formatUser(user);
 
-    user.lastActive =
-        new Date().toISOString();
-
-    user.visitCount =
-        (user.visitCount || 0) + 1;
-
-    if (isPremium === true) {
-        user.isPremium = true;
-        user.type = "premium";
-    }
-
-    saveRegistry(registry);
-
-    return user;
 }
 
-function getUser(userId) {
+
+/*
+==================================================
+GET USER
+==================================================
+*/
+
+async function getUser(userId) {
+
     if (!userId) {
         return null;
     }
 
-    const registry = getRegistry();
+    const result =
+        await database.query(
+            `
+            SELECT *
+            FROM users
+            WHERE uuid = $1
+            LIMIT 1
+            `,
+            [
+                userId
+            ]
+        );
 
-    return registry[userId] || null;
-}
+    if (!result.rows.length) {
+        return null;
+    }
 
-function getUsers() {
-    return Object.values(
-        getRegistry()
+    return formatUser(
+        result.rows[0]
     );
+
 }
 
-function updateReportCount(
+
+/*
+==================================================
+GET USERS
+==================================================
+*/
+
+async function getUsers() {
+
+    const result =
+        await database.query(
+            `
+            SELECT *
+            FROM users
+            ORDER BY created_at ASC
+            `
+        );
+
+    return Promise.all(
+        result.rows.map(
+            row =>
+                formatUserWithHistory(
+                    row
+                )
+        )
+    );
+
+}
+
+
+/*
+==================================================
+UPDATE REPORT COUNT
+==================================================
+*/
+
+async function updateReportCount(
     userId,
     count
 ) {
+
     if (!userId) {
         return false;
     }
 
-    const registry = getRegistry();
+    const result =
+        await database.query(
+            `
+            UPDATE users
 
-    if (!registry[userId]) {
-        return false;
-    }
+            SET
+                report_count = $2,
+                updated_at = NOW()
 
-    registry[userId].reportCount =
-        Number(count) || 0;
+            WHERE uuid = $1
 
-    saveRegistry(registry);
+            RETURNING uuid
+            `,
+            [
+                userId,
+                Number(count) || 0
+            ]
+        );
 
-    return true;
+    return result.rowCount > 0;
+
 }
 
-function setBanned(
+
+/*
+==================================================
+SET BANNED
+==================================================
+*/
+
+async function setBanned(
     userId,
     banned,
     reason = "system"
 ) {
+
     if (!userId) {
         return false;
     }
 
-    const registry = getRegistry();
+    const result =
+        await database.query(
+            `
+            UPDATE users
 
-    if (!registry[userId]) {
+            SET
+                banned = $2,
+                updated_at = NOW()
+
+            WHERE uuid = $1
+
+            RETURNING uuid
+            `,
+            [
+                userId,
+                banned === true
+            ]
+        );
+
+    if (!result.rowCount) {
         return false;
     }
 
-    const user = registry[userId];
-
-    user.banned = banned === true;
+    /*
+    --------------------------------------------------
+    BAN HISTORY
+    --------------------------------------------------
+    */
 
     if (banned === true) {
-        user.banHistory =
-            user.banHistory || [];
 
-        user.banHistory.unshift({
-            reason,
-            timestamp:
-                new Date().toISOString()
-        });
+        await database.query(
+            `
+            INSERT INTO ban_history (
+                user_uuid,
+                reason
+            )
+            VALUES ($1,$2)
+            `,
+            [
+                userId,
+                reason
+            ]
+        );
+
     }
 
-    saveRegistry(registry);
-
     return true;
-}
 
-function getBanEventCount() {
-
-    const registry =
-        getRegistry();
-
-    return Object.values(registry)
-        .reduce((total, user) => {
-
-            if (
-                !user ||
-                !Array.isArray(user.banHistory)
-            ) {
-                return total;
-            }
-
-            return total +
-                user.banHistory.length;
-
-        }, 0);
 }
 
 
-function resetReportCount(userId) {
+/*
+==================================================
+GET BAN EVENT COUNT
+==================================================
+*/
+
+async function getBanEventCount() {
+
+    const result =
+        await database.query(
+            `
+            SELECT COUNT(*)::int AS count
+            FROM ban_history
+            `
+        );
+
+    return result.rows[0].count;
+
+}
+
+
+/*
+==================================================
+RESET REPORT COUNT
+==================================================
+*/
+
+async function resetReportCount(
+    userId
+) {
 
     if (!userId) {
         return false;
     }
 
-    const registry =
-        getRegistry();
+    const result =
+        await database.query(
+            `
+            UPDATE users
 
-    if (!registry[userId]) {
-        return false;
-    }
+            SET
+                report_count = 0,
+                banned = FALSE,
+                report_cycle_started_at = NOW(),
+                updated_at = NOW()
 
-    registry[userId].reportCount = 0;
-    registry[userId].banned = false;
+            WHERE uuid = $1
 
-    registry[userId].reportCycleStartedAt =
-        new Date().toISOString();
+            RETURNING uuid
+            `,
+            [
+                userId
+            ]
+        );
 
-    saveRegistry(registry);
+    return result.rowCount > 0;
 
-    return true;
 }
 
+
+/*
+==================================================
+FORMAT USER
+==================================================
+*/
+
+function formatUser(row) {
+
+    if (!row) {
+        return null;
+    }
+
+    return {
+
+        uuid:
+            row.uuid,
+
+        type:
+            row.type,
+
+        isPremium:
+            row.is_premium === true,
+
+        firstSeen:
+            row.first_seen
+                ? new Date(row.first_seen)
+                    .toISOString()
+                : null,
+
+        lastActive:
+            row.last_active
+                ? new Date(row.last_active)
+                    .toISOString()
+                : null,
+
+        connectionCount:
+            Number(
+                row.connection_count || 0
+            ),
+
+        visitCount:
+            Number(
+                row.visit_count || 0
+            ),
+
+        reportCount:
+            Number(
+                row.report_count || 0
+            ),
+
+        banned:
+            row.banned === true,
+
+        reportCycleStartedAt:
+            row.report_cycle_started_at
+                ? new Date(
+                    row.report_cycle_started_at
+                ).toISOString()
+                : null,
+
+        banHistory: [],
+
+        ipHistory: [],
+
+        userAgentHistory: []
+
+    };
+
+}
+
+
+/*
+==================================================
+FORMAT USER + HISTORY
+==================================================
+*/
+
+async function formatUserWithHistory(row) {
+
+    const user =
+        formatUser(row);
+
+    const [
+        bans,
+        ips,
+        agents
+    ] =
+        await Promise.all([
+
+            database.query(
+                `
+                SELECT
+                    reason,
+                    created_at
+                FROM ban_history
+                WHERE user_uuid = $1
+                ORDER BY created_at DESC
+                `,
+                [row.uuid]
+            ),
+
+            database.query(
+                `
+                SELECT
+                    ip_hash
+                FROM user_ip_history
+                WHERE user_uuid = $1
+                ORDER BY created_at ASC
+                `,
+                [row.uuid]
+            ),
+
+            database.query(
+                `
+                SELECT
+                    user_agent_hash
+                FROM user_agent_history
+                WHERE user_uuid = $1
+                ORDER BY created_at ASC
+                `,
+                [row.uuid]
+            )
+
+        ]);
+
+    user.banHistory =
+        bans.rows.map(
+            item => ({
+                reason:
+                    item.reason,
+
+                timestamp:
+                    item.created_at
+                        ? new Date(
+                            item.created_at
+                        ).toISOString()
+                        : null
+            })
+        );
+
+    user.ipHistory =
+        ips.rows.map(
+            item =>
+                item.ip_hash
+        );
+
+    user.userAgentHistory =
+        agents.rows.map(
+            item =>
+                item.user_agent_hash
+        );
+
+    return user;
+
+}
+
+
+/*
+==================================================
+EXPORTS
+==================================================
+*/
+
 module.exports = {
+
     registerUser,
+
     recordVisit,
+
     getUser,
+
     getUsers,
+
     updateReportCount,
+
     setBanned,
+
     getBanEventCount,
+
     resetReportCount
+
 };

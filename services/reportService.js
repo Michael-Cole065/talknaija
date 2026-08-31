@@ -1,151 +1,247 @@
-const fs = require("fs");
-const path = require("path");
+const database =
+    require("./database");
+
 const identityService =
     require("./identityService");
 
-const reportsFile =
-    path.join(__dirname, "../data/reports.json");
 
-function ensureFile() {
+/*
+==================================================
+FORMAT REPORT
+==================================================
+*/
 
-    const directory =
-        path.dirname(reportsFile);
+function formatReport(row) {
 
-    if (!fs.existsSync(directory)) {
-
-        fs.mkdirSync(
-            directory,
-            { recursive: true }
-        );
-
+    if (!row) {
+        return null;
     }
 
-    if (!fs.existsSync(reportsFile)) {
+    return {
 
-        fs.writeFileSync(
-            reportsFile,
-            "[]"
-        );
+        id:
+            row.id,
 
-    }
-
-}
-
-function getReports() {
-
-    ensureFile();
-
-    try {
-
-        return JSON.parse(
-            fs.readFileSync(
-                reportsFile,
-                "utf8"
-            )
-        );
-
-    } catch (error) {
-
-        console.error(
-            "❌ Could not read reports:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-function saveReports(reports) {
-
-    ensureFile();
-
-    fs.writeFileSync(
-        reportsFile,
-        JSON.stringify(
-            reports,
+        reporter:
+            row.reporter_uuid ||
+            row.reporter_legacy_id ||
             null,
-            2
-        )
+
+        reported:
+            row.reported_uuid,
+
+        reason:
+            row.reason ||
+            "Unspecified",
+
+        status:
+            row.status ||
+            "pending",
+
+        blocked:
+            row.blocked === true,
+
+        createdAt:
+            row.created_at
+                ? new Date(
+                    row.created_at
+                ).toISOString()
+                : null,
+
+        updatedAt:
+            row.updated_at
+                ? new Date(
+                    row.updated_at
+                ).toISOString()
+                : null
+
+    };
+
+}
+
+
+/*
+==================================================
+GET REPORTS
+==================================================
+*/
+
+async function getReports() {
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                id,
+                reporter_uuid,
+                reported_uuid,
+                reporter_legacy_id,
+                reason,
+                status,
+                blocked,
+                created_at,
+                updated_at
+
+            FROM reports
+
+            ORDER BY created_at ASC
+            `
+        );
+
+    return result.rows.map(
+        formatReport
     );
 
 }
 
-function addReport(report) {
 
-    const reports =
-        getReports();
+/*
+==================================================
+ADD REPORT
+==================================================
+*/
 
-    const newReport = {
+async function addReport(report) {
 
-        id: Date.now().toString(),
+    if (!report || !report.reported) {
+        return null;
+    }
 
-        ...report,
+    const reporter =
+        report.reporter || null;
 
-        status: "pending",
-
-        blocked: true,
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-    reports.push(newReport);
-
-    saveReports(reports);
+    const reported =
+        report.reported;
 
     /*
-    ========================================
-    AUTOMATIC 5-REPORT BAN
-    ========================================
+    --------------------------------------------------
+    DETERMINE WHETHER REPORTER IS A UUID
+    --------------------------------------------------
     */
 
-    const reportedUserId =
-        newReport.reported;
+    let reporterUuid = null;
+    let reporterLegacyId = null;
 
-    if (reportedUserId) {
+    if (reporter) {
 
-        const user =
-            identityService.getUser(
-                reportedUserId
+        const reporterUser =
+            await identityService.getUser(
+                reporter
             );
 
-        if (user) {
+        if (reporterUser) {
 
-            const counts =
-                getReportCountsByUser();
+            reporterUuid =
+                reporter;
 
-            const currentCount =
-                counts[reportedUserId] || 0;
+        } else {
 
-            identityService.updateReportCount(
-                reportedUserId,
-                currentCount
-            );
-
-            if (
-                currentCount >= 5 &&
-                user.banned !== true
-            ) {
-
-                identityService.setBanned(
-                    reportedUserId,
-                    true,
-                    "Automatic ban after reaching 5 reports"
-                );
-
-                console.log(
-                    "🔴 AUTOMATIC USER BAN:",
-                    reportedUserId,
-                    "Reports:",
-                    currentCount
-                );
-
-            }
+            reporterLegacyId =
+                reporter;
 
         }
+
+    }
+
+    const result =
+        await database.query(
+            `
+            INSERT INTO reports (
+                id,
+                reporter_uuid,
+                reported_uuid,
+                reporter_legacy_id,
+                reason,
+                status,
+                blocked,
+                created_at,
+                updated_at
+            )
+
+            VALUES (
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                'pending',
+                TRUE,
+                NOW(),
+                NULL
+            )
+
+            RETURNING
+                id,
+                reporter_uuid,
+                reported_uuid,
+                reporter_legacy_id,
+                reason,
+                status,
+                blocked,
+                created_at,
+                updated_at
+            `,
+            [
+                Date.now().toString(),
+                reporterUuid,
+                reported,
+                reporterLegacyId,
+                report.reason ||
+                "Unspecified"
+            ]
+        );
+
+    const newReport =
+        formatReport(
+            result.rows[0]
+        );
+
+    /*
+    --------------------------------------------------
+    UPDATE REPORT COUNT
+    --------------------------------------------------
+    */
+
+    const counts =
+        await getReportCountsByUser();
+
+    const currentCount =
+        counts[reported] || 0;
+
+    await identityService.updateReportCount(
+        reported,
+        currentCount
+    );
+
+    /*
+    --------------------------------------------------
+    AUTOMATIC 5-REPORT BAN
+    --------------------------------------------------
+    */
+
+    const user =
+        await identityService.getUser(
+            reported
+        );
+
+    if (
+        user &&
+        currentCount >= 5 &&
+        user.banned !== true
+    ) {
+
+        await identityService.setBanned(
+            reported,
+            true,
+            "Automatic ban after reaching 5 reports"
+        );
+
+        console.log(
+            "🔴 AUTOMATIC USER BAN:",
+            reported,
+            "Reports:",
+            currentCount
+        );
 
     }
 
@@ -153,181 +249,445 @@ function addReport(report) {
 
 }
 
-function updateReportStatus(
+
+/*
+==================================================
+UPDATE REPORT STATUS
+==================================================
+*/
+
+async function updateReportsStatusByUUID(
+    reportedUuid,
+    status
+) {
+
+    if (!reportedUuid) {
+        return [];
+    }
+
+    const result =
+        await database.query(
+            `
+            UPDATE reports
+
+            SET
+                status = $2,
+                updated_at = NOW()
+
+            WHERE reported_uuid = $1
+
+            RETURNING
+                id,
+                reporter_uuid,
+                reported_uuid,
+                reporter_legacy_id,
+                reason,
+                status,
+                blocked,
+                created_at,
+                updated_at
+            `,
+            [
+                reportedUuid,
+                status
+            ]
+        );
+
+    return result.rows.map(
+        formatReport
+    );
+
+}
+
+
+async function updateReportStatus(
     id,
     status
 ) {
 
-    const reports =
-        getReports();
+    const result =
+        await database.query(
+            `
+            UPDATE reports
 
-    const report =
-        reports.find(
-            (item) =>
-                item.id === id
+            SET
+                status = $2,
+                updated_at = NOW()
+
+            WHERE id = $1
+
+            RETURNING
+                id,
+                reporter_uuid,
+                reported_uuid,
+                reporter_legacy_id,
+                reason,
+                status,
+                blocked,
+                created_at,
+                updated_at
+            `,
+            [
+                id,
+                status
+            ]
         );
 
-    if (!report) {
+    if (!result.rowCount) {
         return null;
     }
 
-    report.status = status;
-
-    report.updatedAt =
-        new Date().toISOString();
-
-    saveReports(reports);
-
-    return report;
+    return formatReport(
+        result.rows[0]
+    );
 
 }
 
-function setReportBlocked(
+
+/*
+==================================================
+SET REPORT BLOCKED
+==================================================
+*/
+
+async function setReportBlocked(
     id,
     blocked
 ) {
 
-    const reports =
-        getReports();
+    const result =
+        await database.query(
+            `
+            UPDATE reports
 
-    const report =
-        reports.find(
-            (item) =>
-                item.id === id
+            SET
+                blocked = $2,
+                updated_at = NOW()
+
+            WHERE id = $1
+
+            RETURNING
+                id,
+                reporter_uuid,
+                reported_uuid,
+                reporter_legacy_id,
+                reason,
+                status,
+                blocked,
+                created_at,
+                updated_at
+            `,
+            [
+                id,
+                blocked === true
+            ]
         );
 
-    if (!report) {
+    if (!result.rowCount) {
         return null;
     }
 
-    report.blocked = blocked;
-
-    report.updatedAt =
-        new Date().toISOString();
-
-    saveReports(reports);
-
-    return report;
+    return formatReport(
+        result.rows[0]
+    );
 
 }
 
-function getBlockedPairs() {
+/*
+==================================================
+SET PAIR BLOCKED
+==================================================
+*/
 
-    const reports =
-        getReports();
+async function setPairBlocked(
+    user1,
+    user2,
+    blocked
+) {
 
-    return reports
+    if (!user1 || !user2) {
+        return false;
+    }
+
+    const result =
+        await database.query(
+            `
+            UPDATE reports
+
+            SET
+                blocked = $3,
+                updated_at = NOW()
+
+            WHERE
+                (
+                    reporter_uuid = $1
+                    AND
+                    reported_uuid = $2
+                )
+                OR
+                (
+                    reporter_uuid = $2
+                    AND
+                    reported_uuid = $1
+                )
+            `,
+            [
+                user1,
+                user2,
+                blocked === true
+            ]
+        );
+
+    return result.rowCount > 0;
+
+}
+
+/*
+==================================================
+GET BLOCKED PAIRS
+==================================================
+*/
+
+async function getBlockedPairs() {
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                reporter_uuid,
+                reporter_legacy_id,
+                reported_uuid
+
+            FROM reports
+
+            WHERE blocked = TRUE
+              AND reported_uuid IS NOT NULL
+            `
+        );
+
+    return result.rows
+        .map((row) => ({
+
+            user1:
+                row.reporter_uuid ||
+                row.reporter_legacy_id ||
+                null,
+
+            user2:
+                row.reported_uuid
+
+        }))
         .filter(
-            (report) =>
-                report.blocked === true &&
-                report.reporter &&
-                report.reported
-        )
-        .map(
-            (report) => ({
-                user1:
-                    report.reporter,
-                user2:
-                    report.reported
-            })
+            (pair) =>
+                pair.user1 &&
+                pair.user2
         );
 
 }
 
-function getReportCountsByUser() {
 
-    const reports =
-        getReports();
+/*
+==================================================
+GET REPORT COUNTS BY USER
+==================================================
+*/
+
+async function getReportCountsByUser() {
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                r.reported_uuid,
+                COUNT(*)::int AS count,
+                u.report_cycle_started_at
+
+            FROM reports r
+
+            LEFT JOIN users u
+                ON u.uuid = r.reported_uuid
+
+            GROUP BY
+                r.reported_uuid,
+                u.report_cycle_started_at
+            `
+        );
 
     const counts = {};
 
-    reports.forEach((report) => {
+    result.rows.forEach(
+        (row) => {
 
-        if (!report.reported) {
-            return;
+            counts[row.reported_uuid] =
+                Number(row.count) || 0;
+
         }
+    );
 
-        const user =
-            identityService.getUser(
-                report.reported
-            );
+    /*
+    --------------------------------------------------
+    EXCLUDE REPORTS FROM PREVIOUS REPORT CYCLE
+    --------------------------------------------------
+    */
 
-        if (
-            user &&
-            user.reportCycleStartedAt &&
-            report.createdAt &&
-            new Date(report.createdAt) <
-            new Date(user.reportCycleStartedAt)
-        ) {
-            return;
-        }
+    const reports =
+        await database.query(
+            `
+            SELECT
+                id,
+                reported_uuid,
+                created_at
 
-        counts[report.reported] =
-            (counts[report.reported] || 0) + 1;
+            FROM reports
 
-    });
+            ORDER BY created_at ASC
+            `
+        );
 
-    return counts;
-}
+    const recalculated = {};
 
-function getRedAccounts() {
+    reports.rows.forEach(
+        (report) => {
 
-    const counts =
-        getReportCountsByUser();
-
-    const users =
-        identityService.getUsers();
-
-    return users
-        .filter((user) => {
-
-            if (!user || !user.uuid) {
-                return false;
+            if (!report.reported_uuid) {
+                return;
             }
 
-            const reportCount =
-                Math.max(
-                    counts[user.uuid] || 0,
-                    Number(user.reportCount) || 0
+            const userResult =
+                result.rows.find(
+                    (row) =>
+                        row.reported_uuid ===
+                        report.reported_uuid
                 );
 
-            return (
-                user.banned === true ||
-                reportCount >= 5
-            );
+            const cycleStart =
+                userResult
+                    ?.report_cycle_started_at;
 
-        })
-        .map((user) => {
+            if (
+                cycleStart &&
+                report.created_at &&
+                new Date(
+                    report.created_at
+                ) <
+                new Date(
+                    cycleStart
+                )
+            ) {
+                return;
+            }
 
-            const reportCount =
-                Math.max(
-                    counts[user.uuid] || 0,
-                    Number(user.reportCount) || 0
-                );
+            recalculated[
+                report.reported_uuid
+            ] =
+                (
+                    recalculated[
+                        report.reported_uuid
+                    ] || 0
+                ) + 1;
 
-            return {
-                userId:
-                    user.uuid,
+        }
+    );
 
-                reports:
-                    reportCount,
-
-                banned:
-                    user.banned === true
-            };
-
-        });
+    return recalculated;
 
 }
+
+
+/*
+==================================================
+GET RED ACCOUNTS
+==================================================
+*/
+
+async function getRedAccounts() {
+
+    const counts =
+        await getReportCountsByUser();
+
+    const users =
+        await identityService.getUsers();
+
+    return users
+        .filter(
+            (user) => {
+
+                if (
+                    !user ||
+                    !user.uuid
+                ) {
+                    return false;
+                }
+
+                const reportCount =
+                    Math.max(
+                        counts[user.uuid] || 0,
+                        Number(
+                            user.reportCount
+                        ) || 0
+                    );
+
+                return (
+                    user.banned === true ||
+                    reportCount >= 5
+                );
+
+            }
+        )
+        .map(
+            (user) => {
+
+                const reportCount =
+                    Math.max(
+                        counts[user.uuid] || 0,
+                        Number(
+                            user.reportCount
+                        ) || 0
+                    );
+
+                return {
+
+                    userId:
+                        user.uuid,
+
+                    reports:
+                        reportCount,
+
+                    banned:
+                        user.banned === true
+
+                };
+
+            }
+        );
+
+}
+
+
+/*
+==================================================
+EXPORTS
+==================================================
+*/
 
 module.exports = {
 
     getReports,
+
     addReport,
+
     updateReportStatus,
+
+    updateReportsStatusByUUID,
+
     setReportBlocked,
+
+    setPairBlocked,
+
     getBlockedPairs,
+
     getReportCountsByUser,
+
     getRedAccounts
 
 };

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TalkNaija Admin - Donations</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #0d1730;
+            color: white;
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.75;
+        }
+
+        .page {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .back,
+        .refresh {
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .back {
+            background: #111;
+        }
+
+        .refresh {
+            background: #0d6efd;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            padding: 16px;
+            border-radius: 12px;
+            background: #f1f3f5;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .donation {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            background: #fafafa;
+        }
+
+        .donation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .reference {
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #e4f7ec;
+            color: #198754;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .details {
+            line-height: 1.8;
+        }
+
+        .empty {
+            padding: 30px 10px;
+            text-align: center;
+            color: #666;
+        }
+
+        .error {
+            padding: 15px;
+            border-radius: 10px;
+            background: #ffe8e8;
+            color: #b00020;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            .page {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <h1>
+            TalkNaija Admin
+        </h1>
+
+        <p>
+            Moderation & Support Control Center
+        </p>
+
+    </header>
+
+    <main class="page">
+
+        <div class="top">
+
+            <a
+                href="/admin.html"
+                class="back"
+            >
+                ← Back to Dashboard
+            </a>
+
+            <button
+                class="refresh"
+                onclick="loadDonations()"
+            >
+                Refresh
+            </button>
+
+        </div>
+
+        <h2>
+            💰 Donations
+        </h2>
+
+        <p>
+            Complete record of TalkNaija support contributions.
+        </p>
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Total Donations
+                </div>
+
+                <div
+                    id="donationCount"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Total Amount
+                </div>
+
+                <div
+                    id="donationAmount"
+                    class="stat-value"
+                >
+                    ₦0
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="donations">
+            Loading donations...
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+async function loadDonations() {
+
+    const container =
+        document.getElementById(
+            "donations"
+        );
+
+    try {
+
+        const summaryResponse =
+            await fetch(
+                "/api/admin/donations"
+            );
+
+        const historyResponse =
+            await fetch(
+                "/api/admin/donations/history"
+            );
+
+        if (
+            !summaryResponse.ok ||
+            !historyResponse.ok
+        ) {
+
+            throw new Error(
+                "Failed to load donations."
+            );
+
+        }
+
+        const summary =
+            await summaryResponse.json();
+
+        const history =
+            await historyResponse.json();
+
+        document.getElementById(
+            "donationCount"
+        ).textContent =
+            summary.totalDonations || 0;
+
+        document.getElementById(
+            "donationAmount"
+        ).textContent =
+            "₦" +
+            Number(
+                summary.totalAmount || 0
+            ).toLocaleString();
+
+        const donations =
+            Array.isArray(history)
+                ? history
+                : (
+                    history.donations ||
+                    []
+                );
+
+        if (!donations.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No donations recorded yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML =
+            donations.map(
+                (donation) => {
+
+                    const amount =
+                        Number(
+                            donation.amount || 0
+                        );
+
+                    return `
+
+                        <div class="donation">
+
+                            <div class="donation-header">
+
+                                <div class="reference">
+
+                                    💰
+                                    ${escapeHtml(
+                                        donation.reference ||
+                                        donation.id ||
+                                        "Donation"
+                                    )}
+
+                                </div>
+
+                                <span class="status">
+
+                                    ${escapeHtml(
+                                        donation.status ||
+                                        "successful"
+                                    )}
+
+                                </span>
+
+                            </div>
+
+                            <div class="details">
+
+                                <div>
+
+                                    <strong>
+                                        Email:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        donation.email ||
+                                        "Not provided"
+                                    )}
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Amount:
+                                    </strong>
+
+                                    ₦${amount.toLocaleString()}
+
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Currency:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        donation.currency ||
+                                        "NGN"
+                                    )}
+
+                                </div>
+
+                                ${
+                                    donation.channel
+                                    ? `
+                                        <div>
+
+                                            <strong>
+                                                Payment Channel:
+                                            </strong>
+
+                                            ${escapeHtml(
+                                                donation.channel
+                                            )}
+
+                                        </div>
+                                    `
+                                    : ""
+                                }
+
+                                ${
+                                    donation.paidAt
+                                    ? `
+                                        <div>
+
+                                            <strong>
+                                                Paid At:
+                                            </strong>
+
+                                            ${escapeHtml(
+                                                new Date(
+                                                    donation.paidAt
+                                                ).toLocaleString()
+                                            )}
+
+                                        </div>
+                                    `
+                                    : ""
+                                }
+
+                                <div>
+
+                                    <strong>
+                                        Recorded:
+                                    </strong>
+
+                                    ${
+                                        donation.createdAt
+                                        ? new Date(
+                                            donation.createdAt
+                                          ).toLocaleString()
+                                        : "Unknown"
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            ).join("");
+
+    } catch (error) {
+
+        console.error(
+            "Donations error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="error">
+                Could not load donations.
+            </div>
+        `;
+
+    }
+
+}
+
+
+loadDonations();
+
+</script>
+
+</body>
+
+</html>

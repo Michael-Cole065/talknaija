@@ -555,19 +555,19 @@ app.get(
 app.get(
     "/api/admin/stats",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const reports =
-            reportService.getReports();
+            await reportService.getReports();
 
         const redAccounts =
-            reportService.getRedAccounts();
+            await reportService.getRedAccounts();
 
         const redAccountBanEvents =
-            identityService.getBanEventCount();
+            await identityService.getBanEventCount();
 
         const adminActions =
-            adminActionService.getAllActions();
+            await adminActionService.getAllActions();
 
         const actionTakenReports =
             reports.filter(
@@ -580,40 +580,70 @@ app.get(
             actionTakenReports.length +
             adminActions.length;
 
-        const stats = {
+        const users =
+    await identityService.getUsers();
 
-            totalReports:
-                reports.length,
+const guests =
+    users.filter(
+        (user) =>
+            user.type === "guest"
+    ).length;
 
-            pendingReports:
-                reports.filter(
-                    (report) =>
-                        report.status ===
-                        "pending"
-                ).length,
+const members =
+    users.filter(
+        (user) =>
+            user.type === "member"
+    ).length;
 
-            reviewedReports:
-                reports.filter(
-                    (report) =>
-                        report.status ===
-                        "reviewed"
-                ).length,
+const premiumUsers =
+    users.filter(
+        (user) =>
+            user.isPremium === true
+    ).length;
 
-            actionTakenReports:
-                totalActionTaken,
 
-            dismissedReports:
-                reports.filter(
-                    (report) =>
-                        report.status ===
-                        "dismissed"
-                ).length,
+const stats = {
 
-            redAccounts:
-                redAccountBanEvents
+    totalReports:
+        reports.length,
 
-        };
+    pendingReports:
+        reports.filter(
+            (report) =>
+                report.status ===
+                "pending"
+        ).length,
 
+    reviewedReports:
+        reports.filter(
+            (report) =>
+                report.status ===
+                "reviewed"
+        ).length,
+
+    actionTakenReports:
+        totalActionTaken,
+
+    dismissedReports:
+        reports.filter(
+            (report) =>
+                report.status ===
+                "dismissed"
+        ).length,
+
+    redAccounts:
+        redAccountBanEvents,
+
+    guests:
+        guests,
+
+    members:
+        members,
+
+    premiumUsers:
+        premiumUsers
+
+};
         res.json(stats);
 
     }
@@ -623,10 +653,10 @@ app.get(
 app.get(
     "/api/admin/red-accounts",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         res.json(
-            reportService.getRedAccounts()
+            await reportService.getRedAccounts()
         );
 
     }
@@ -635,47 +665,70 @@ app.get(
 app.get(
     "/api/admin/action-taken",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const reports =
-            reportService
-                .getReports()
+            (await reportService
+                .getReports())
                 .filter(
                     (report) =>
                         report.status ===
                         "action_taken"
-                )
-                .map(
-                    (report) => ({
-
-                        type:
-                            "REPORT",
-
-                        id:
-                            report.id,
-
-                        userId:
-                            report.reported,
-
-                        reporter:
-                            report.reporter,
-
-                        reason:
-                            report.reason,
-
-                        createdAt:
-                            report.updatedAt ||
-                            report.createdAt
-
-                    })
                 );
 
+        /*
+        ================================================
+        ACTION TAKEN REPORTS
+        RESOLVE CURRENT USER STATE BY UUID
+        ================================================
+        */
+
+        const reportActions =
+            await Promise.all(
+                reports.map(
+                    async (report) => {
+
+                        const user =
+                            await identityService.getUser(
+                                report.reported
+                            );
+
+                        return {
+
+                            type:
+                                "REPORT",
+
+                            id:
+                                report.id,
+
+                            userId:
+                                report.reported,
+
+                            reporter:
+                                report.reporter,
+
+                            reason:
+                                report.reason,
+
+                            banned:
+                                user?.banned === true,
+
+                            createdAt:
+                                report.updatedAt ||
+                                report.createdAt
+
+                        };
+
+                    }
+                )
+            );
+
         const adminActions =
-            adminActionService
+            await adminActionService
                 .getAllActions();
 
         const actions = [
-            ...reports,
+            ...reportActions,
             ...adminActions
         ];
 
@@ -698,15 +751,15 @@ app.get(
 app.post(
     "/api/admin/action-taken/:uuid/ban",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const uuid =
             req.params.uuid;
 
         const user =
-            identityService.getUser(
-                uuid
-            );
+	    await identityService.getUser(
+        	uuid
+    );
 
         if (!user) {
 
@@ -718,7 +771,8 @@ app.post(
         }
 
         const success =
-            identityService.setBanned(
+	    await identityService.setBanned(
+
                 uuid,
                 true,
                 "Manually banned from Action Taken"
@@ -872,15 +926,16 @@ app.get(
 app.get(
     "/api/admin/guests",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
+
+        const allUsers =
+            await identityService.getUsers();
 
         const users =
-            identityService
-                .getUsers()
-                .filter(
-                    (user) =>
-                        user.type === "guest"
-                );
+            allUsers.filter(
+                (user) =>
+                    user.type === "guest"
+            );
 
         users.sort(
             (a, b) =>
@@ -905,15 +960,16 @@ app.get(
 app.get(
     "/api/admin/members",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
+
+        const allUsers =
+            await identityService.getUsers();
 
         const users =
-            identityService
-                .getUsers()
-                .filter(
-                    (user) =>
-                        user.type !== "guest"
-                );
+            allUsers.filter(
+                (user) =>
+                    user.type !== "guest"
+            );
 
         users.sort(
             (a, b) =>
@@ -938,15 +994,16 @@ app.get(
 app.get(
     "/api/admin/premium",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
+
+        const allUsers =
+            await identityService.getUsers();
 
         const users =
-            identityService
-                .getUsers()
-                .filter(
-                    (user) =>
-                        user.isPremium === true
-                );
+            allUsers.filter(
+                (user) =>
+                    user.isPremium === true
+            );
 
         users.sort(
             (a, b) =>
@@ -971,13 +1028,13 @@ app.get(
 app.get(
     "/api/admin/users/:uuid/history",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const uuid =
             req.params.uuid;
 
         const user =
-            identityService.getUser(
+           await identityService.getUser(
                 uuid
             );
 
@@ -995,14 +1052,15 @@ app.get(
                 uuid
             );
 
+        const allReports =
+            await reportService.getReports();
+
         const reports =
-            reportService
-                .getReports()
-                .filter(
-                    (report) =>
-                        report.reporter === uuid ||
-                        report.reported === uuid
-                );
+            allReports.filter(
+                (report) =>
+                    report.reporter === uuid ||
+                    report.reported === uuid
+            );
 
         res.json({
 
@@ -1027,7 +1085,7 @@ app.get(
 app.get(
     "/api/admin/system-health",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const memory =
             process.memoryUsage();
@@ -1036,7 +1094,7 @@ app.get(
             process.uptime();
 
         const users =
-            identityService.getUsers();
+           await identityService.getUsers();
 
         const traffic =
             trafficService.getVisitCount();
@@ -1103,10 +1161,10 @@ app.get(
 app.get(
     "/api/admin/engagement",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const users =
-            identityService.getUsers();
+            await identityService.getUsers();
 
         const traffic =
             trafficService.getRecentVisits(
@@ -1114,7 +1172,7 @@ app.get(
             );
 
         const reports =
-            reportService.getReports();
+            await reportService.getReports();
 
 	let totalCalls = 0;
 
@@ -1198,16 +1256,18 @@ res.json({
 // REPORT API
 // ========================================
 
-app.get("/api/reports", adminAuth, (req, res) => {
+app.get("/api/reports", adminAuth, async (req, res) => {
 
-    res.json(reportService.getReports());
+    res.json(
+        await reportService.getReports()
+    );
 
 });
 
-app.post("/api/reports/:id/block", adminAuth, (req, res) => {
+app.post("/api/reports/:id/block", adminAuth, async (req, res) => {
 
     const reports =
-        reportService.getReports();
+        await reportService.getReports();
 
     const report =
         reports.find(
@@ -1221,6 +1281,12 @@ app.post("/api/reports/:id/block", adminAuth, (req, res) => {
         });
 
     }
+
+    /*
+    ================================================
+    ADD LIVE PAIR BLOCK
+    ================================================
+    */
 
     const blocked =
         registerSocketHandlers.blockPair(
@@ -1236,10 +1302,31 @@ app.post("/api/reports/:id/block", adminAuth, (req, res) => {
 
     }
 
+    /*
+    ================================================
+    BLOCK ALL REPORTS
+    BELONGING TO THIS PAIR
+    ================================================
+    */
+
+    await reportService.setPairBlocked(
+        report.reporter,
+        report.reported,
+        true
+    );
+
+    /*
+    ================================================
+    RETURN SELECTED REPORT
+    ================================================
+    */
+
+    const updatedReports =
+        await reportService.getReports();
+
     const updatedReport =
-        reportService.setReportBlocked(
-            req.params.id,
-            true
+        updatedReports.find(
+            (item) => item.id === req.params.id
         );
 
     res.json({
@@ -1249,10 +1336,11 @@ app.post("/api/reports/:id/block", adminAuth, (req, res) => {
 
 });
 
-app.post("/api/reports/:id/unblock", adminAuth, (req, res) => {
+
+app.post("/api/reports/:id/unblock", adminAuth, async (req, res) => {
 
     const reports =
-        reportService.getReports();
+        await reportService.getReports();
 
     const report =
         reports.find(
@@ -1267,15 +1355,42 @@ app.post("/api/reports/:id/unblock", adminAuth, (req, res) => {
 
     }
 
+    /*
+    ================================================
+    REMOVE LIVE PAIR BLOCK
+    ================================================
+    */
+
     registerSocketHandlers.unblockPair(
         report.reporter,
         report.reported
     );
 
+    /*
+    ================================================
+    CLEAR BLOCK FROM ALL REPORTS
+    BELONGING TO THIS PAIR
+    ================================================
+    */
+
+    await reportService.setPairBlocked(
+        report.reporter,
+        report.reported,
+        false
+    );
+
+    /*
+    ================================================
+    RETURN SELECTED REPORT
+    ================================================
+    */
+
+    const updatedReports =
+        await reportService.getReports();
+
     const updatedReport =
-        reportService.setReportBlocked(
-            req.params.id,
-            false
+        updatedReports.find(
+            (item) => item.id === req.params.id
         );
 
     res.json({
@@ -1285,7 +1400,8 @@ app.post("/api/reports/:id/unblock", adminAuth, (req, res) => {
 
 });
 
-app.put("/api/reports/:id", adminAuth, (req, res) => {
+
+app.put("/api/reports/:id", adminAuth, async (req, res) => {
 
     const { status } = req.body;
 
@@ -1304,10 +1420,21 @@ app.put("/api/reports/:id", adminAuth, (req, res) => {
 
     }
 
-    const report = reportService.updateReportStatus(
-        req.params.id,
-        status
-    );
+    /*
+    ================================================
+    FIND SELECTED REPORT
+    ================================================
+    */
+
+    const reports =
+        await reportService.getReports();
+
+    const report =
+        reports.find(
+            (item) =>
+                String(item.id) ===
+                String(req.params.id)
+        );
 
     if (!report) {
 
@@ -1317,7 +1444,41 @@ app.put("/api/reports/:id", adminAuth, (req, res) => {
 
     }
 
-    res.json(report);
+    /*
+    ================================================
+    UPDATE ALL REPORTS FOR SAME REPORTED UUID
+    ================================================
+    */
+
+    const updatedReports =
+        await reportService.updateReportsStatusByUUID(
+            report.reported,
+            status
+        );
+
+    if (!updatedReports.length) {
+
+        return res.status(404).json({
+            error: "Report status could not be updated."
+        });
+
+    }
+
+    /*
+    ================================================
+    RETURN SELECTED REPORT
+    ================================================
+    */
+
+    const updatedReport =
+        updatedReports.find(
+            (item) =>
+                String(item.id) ===
+                String(req.params.id)
+        ) ||
+        updatedReports[0];
+
+    res.json(updatedReport);
 
 });
 
@@ -1333,11 +1494,32 @@ app.use(express.static(
 // SOCKET.IO
 // ========================================
 
-registerSocketHandlers(
-    io,
-    activePairs,
-    queue
-);
+async function startServer() {
+
+    await registerSocketHandlers(
+        io,
+        activePairs,
+        queue
+    );
+
+    const PORT =
+        process.env.PORT || 4000;
+
+    server.listen(
+        PORT,
+        "0.0.0.0",
+        () => {
+
+            console.log(
+                `🚀 TalkNaija running on port ${PORT}`
+            );
+
+        }
+    );
+
+}
+
+startServer();
 
 // ========================================
 // PAYSTACK SUPPORT PAYMENT
@@ -1512,17 +1694,3 @@ app.get(
 
     }
 );
-
-// ========================================
-// SERVER
-// ========================================
-
-const PORT = process.env.PORT || 4000;
-
-server.listen(PORT, "0.0.0.0", () => {
-
-    console.log(
-        `🚀 TalkNaija running on port ${PORT}`
-    );
-
-});

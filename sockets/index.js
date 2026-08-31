@@ -31,10 +31,10 @@ function getPairKey(user1, user2) {
 }
 
 
-function loadBlockedPairs() {
+async function loadBlockedPairs() {
 
     const pairs =
-        reportService.getBlockedPairs();
+        await reportService.getBlockedPairs();
 
     pairs.forEach((pair) => {
 
@@ -88,13 +88,13 @@ function unblockPair(user1, user2) {
 }
 
 
-function registerSocketHandlers(
+async function registerSocketHandlers(
     io,
     activePairs,
     queue
 ) {
 
-    loadBlockedPairs();
+    await loadBlockedPairs();
 
     io.on("connection", (socket) => {
 
@@ -130,7 +130,8 @@ function registerSocketHandlers(
 
 	socket.on(
     "registerUser",
-    (data) => {
+
+   async (data) => {
 
         if (!data) {
             return;
@@ -155,7 +156,7 @@ function registerSocketHandlers(
 
         const currentUser =
             socket.userId
-                ? identityService.getUser(
+                ? await identityService.getUser(
                     socket.userId
                 )
                 : null;
@@ -224,7 +225,7 @@ function registerSocketHandlers(
 
 		const currentUser =
     socket.userId
-        ? identityService.getUser(
+        ? await identityService.getUser(
             socket.userId
         )
         : null;
@@ -1186,7 +1187,7 @@ socket.on(
 
         socket.on(
             "reportUser",
-            (reason) => {
+           async (reason) => {
 
                 const partner =
                     activePairs.get(
@@ -1234,7 +1235,7 @@ const reportedId =
     partnerSocket?.userId ||
     partner;
 
-reportService.addReport({
+await reportService.addReport({
 
         reporter:
             reporterId,
@@ -1256,7 +1257,7 @@ HANDLE AUTOMATICALLY BANNED USER
 */
 
 const reportedUser =
-    identityService.getUser(
+   await identityService.getUser(
         reportedId
     );
 

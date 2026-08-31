@@ -436,10 +436,7 @@ function escapeHtml(value) {
 }
 
 
-async function updateReport(
-    id,
-    status
-) {
+async function updateReport(id, status) {
 
     try {
 
@@ -455,28 +452,46 @@ async function updateReport(
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-                        status
-                    })
+                    body:
+                        JSON.stringify({
+                            status
+                        })
                 }
             );
+
+        const data =
+            await response.json();
 
         if (!response.ok) {
 
             throw new Error(
+                data.error ||
                 "Failed to update report."
             );
 
         }
 
+        /*
+        ================================================
+        UUID-WIDE STATUS UPDATE
+
+        The server updates every report belonging
+        to the same reported UUID.
+        ================================================
+        */
+
         await loadReports();
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Report status update error:",
+            error
+        );
 
         alert(
-            "Could not update the report."
+            error.message ||
+            "Could not update report."
         );
 
     }

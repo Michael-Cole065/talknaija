@@ -379,6 +379,17 @@ async function loadActions() {
                         action.type ===
                         "BAN";
 
+                    /*
+                    ================================================
+                    REPORT ACTION INHERITS CURRENT UUID BAN STATE
+                    ================================================
+                    */
+
+                    const isReportBanned =
+                        action.type ===
+                        "REPORT" &&
+                        action.banned === true;
+
                     return `
 
                         <div class="action">
@@ -389,7 +400,7 @@ async function loadActions() {
                                     ${
                                         isUnban
                                             ? "🟢 Account Unbanned"
-                                            : isBan
+                                            : (isBan || isReportBanned)
                                                 ? "🔴 Account Banned"
                                                 : "⚡ Report Action Taken"
                                     }
@@ -399,7 +410,7 @@ async function loadActions() {
                                     class="badge ${
                                         isUnban
                                             ? "unban-badge"
-                                            : isBan
+                                            : (isBan || isReportBanned)
                                                 ? "ban-badge"
                                                 : "report-badge"
                                     }"
@@ -407,7 +418,7 @@ async function loadActions() {
                                     ${
                                         isUnban
                                             ? "UNBAN"
-                                            : isBan
+                                            : (isBan || isReportBanned)
                                                 ? "BAN"
                                                 : "REPORT"
                                     }
@@ -525,7 +536,7 @@ async function loadActions() {
                                 </div>
 
                                 ${
-                                    !isBan && action.userId
+                                    !isBan && !isReportBanned && action.userId
                                         ? `
                                             <button
                                                 class="danger"

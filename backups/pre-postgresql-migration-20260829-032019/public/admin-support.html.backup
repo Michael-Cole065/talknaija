@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>TalkNaija Support</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f4f7fb;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.ticket {
+    background: white;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.08);
+}
+
+.ticket h2 {
+    margin-top: 0;
+}
+
+.ticket-meta {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.ticket-message {
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    font-size: 13px;
+}
+
+.empty {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+</style>
+
+
+<style>
+.mail-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,0.55);
+    z-index: 99999;
+    overflow: hidden;
+}
+
+.mail-modal.open {
+    display: flex;
+}
+
+.mail-modal-card {
+    width: min(700px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.mail-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: #eee;
+    color: #111;
+    font-size: 22px;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.mail-meta {
+    padding-right: 45px;
+    margin-bottom: 18px;
+}
+
+.mail-meta strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.mail-modal-message {
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+}
+
+.replies {
+    margin-top: 20px;
+}
+
+.reply {
+    border-left: 4px solid #174ea6;
+    background: #f5f5f5;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 0 10px 10px 0;
+}
+
+.reply-meta {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 7px;
+}
+
+.reply-message {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.reply-area {
+    display: none;
+    margin-top: 18px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.reply-area textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    font: inherit;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.reply-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+body.modal-open {
+    overflow: hidden !important;
+}
+</style>
+</head>
+
+<body>
+
+<h1>
+    📩 TalkNaija Support Inbox
+</h1>
+
+<!-- SUPPORT PREVIEW MAIL MODAL -->
+
+<div
+    id="mailModal"
+    class="mail-modal"
+>
+
+    <div class="mail-modal-card">
+
+        <button
+            class="mail-modal-close"
+            onclick="closeMailModal()"
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+        <div
+            id="mailModalMeta"
+            class="mail-meta"
+        ></div>
+
+        <div
+            id="mailModalMessage"
+            class="mail-modal-message"
+        ></div>
+
+        <div
+            id="mailModalReplies"
+            class="replies"
+        ></div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary"
+                onclick="showReplyBox()"
+            >
+                Reply
+            </button>
+
+        </div>
+
+        <div
+            id="mailReplyArea"
+            class="reply-area"
+        >
+
+            <strong>Reply</strong>
+
+            <textarea
+                id="mailReplyInput"
+                placeholder="Write your reply..."
+            ></textarea>
+
+            <div class="reply-actions">
+
+                <button
+                    class="primary"
+                    onclick="sendMailReply()"
+                >
+                    Send Reply
+                </button>
+
+                <button
+                    class="blue"
+                    onclick="hideReplyBox()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="tickets">
+    Loading support tickets...
+</div>
+
+
+<script>
+
+async function loadTickets() {
+
+    const container =
+        document.getElementById(
+            "tickets"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/support"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load support tickets."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        container.innerHTML = "";
+
+
+        if (
+            !data.tickets ||
+            data.tickets.length === 0
+        ) {
+
+            container.innerHTML =
+                '<div class="empty">No support tickets yet.</div>';
+
+            return;
+
+        }
+
+
+        data.tickets.forEach(
+            (ticket) => {
+
+                const box =
+                    document.createElement(
+                        "div"
+                    );
+
+                box.className =
+                    "ticket";
+
+
+                const title =
+                    document.createElement(
+                        "h2"
+                    );
+
+                title.textContent =
+                    ticket.subject;
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "ticket-meta";
+
+                meta.textContent =
+                    `${ticket.id} • ${ticket.email} • ${new Date(ticket.createdAt).toLocaleString()}`;
+
+
+                const status =
+                    document.createElement(
+                        "span"
+                    );
+
+                status.className =
+                    "status";
+
+                status.textContent =
+                    ticket.status;
+
+
+                const message =
+                    document.createElement(
+                        "div"
+                    );
+
+                message.className =
+                    "ticket-message";
+
+                message.textContent =
+                    ticket.message;
+
+
+                box.appendChild(
+                    title
+                );
+
+                box.appendChild(
+                    meta
+                );
+
+                box.appendChild(
+                    status
+                );
+
+                box.appendChild(
+                    document.createElement(
+                        "br"
+                    )
+                );
+
+                box.appendChild(
+                    document.createElement(
+                        "br"
+                    )
+                );
+
+                box.appendChild(
+                    message
+                );
+
+                const actions =
+                    document.createElement(
+                        "div"
+                    );
+
+                actions.style.display = "flex";
+                actions.style.gap = "8px";
+                actions.style.flexWrap = "wrap";
+                actions.style.marginTop = "16px";
+
+                const openButton =
+                    document.createElement("button");
+
+                openButton.type = "button";
+                openButton.textContent = "Open";
+
+                openButton.style.background = "#111";
+                openButton.style.color = "#fff";
+                openButton.style.border = "0";
+                openButton.style.borderRadius = "8px";
+                openButton.style.padding = "10px 16px";
+                openButton.style.cursor = "pointer";
+
+                openButton.addEventListener(
+                    "click",
+                    () => {
+                        openSupportMail(
+                            ticket,
+                            false
+                        );
+                    }
+                );
+
+
+                const replyButton =
+                    document.createElement("button");
+
+                replyButton.type = "button";
+                replyButton.textContent = "Reply";
+
+                replyButton.style.background = "#174ea6";
+                replyButton.style.color = "#fff";
+                replyButton.style.border = "0";
+                replyButton.style.borderRadius = "8px";
+                replyButton.style.padding = "10px 16px";
+                replyButton.style.cursor = "pointer";
+
+                replyButton.addEventListener(
+                    "click",
+                    () => {
+                        openSupportMail(
+                            ticket,
+                            true
+                        );
+                    }
+                );
+
+
+                actions.appendChild(
+                    openButton
+                );
+
+                actions.appendChild(
+                    replyButton
+                );
+
+                box.appendChild(
+                    actions
+                );
+
+
+                container.appendChild(
+                    box
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+        container.textContent =
+            "Unable to load support tickets.";
+
+    }
+
+}
+
+
+/* ========================================
+   SUPPORT PREVIEW MAIL MODAL
+======================================== */
+
+let currentSupportMail = null;
+
+function escapeSupportMailHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value == null
+            ? ""
+            : String(value);
+
+    return div.innerHTML;
+
+}
+
+
+async function openSupportMail(mail, replyMode) {
+
+    try {
+
+        /*
+        ========================================
+        USE THE ACTUAL TICKET OBJECT DIRECTLY
+        SAME DATA FLOW AS ADMIN MAIL PREVIEW
+        ========================================
+        */
+
+        if (
+            !mail ||
+            typeof mail !== "object" ||
+            !mail.id
+        ) {
+
+            throw new Error(
+                "Support message not found."
+            );
+
+        }
+
+        currentSupportMail =
+            mail;
+
+        renderMailModal(
+            currentSupportMail
+        );
+
+        const modal =
+            document.getElementById(
+                "mailModal"
+            );
+
+        modal.classList.add("open");
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+        /*
+        ========================================
+        OPEN REPLY WHEN REQUESTED
+        ========================================
+        */
+
+        if (replyMode) {
+
+            showReplyBox();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Support mail open error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to load support message."
+        );
+
+    }
+
+}
+
+
+function renderMailModal(mail) {
+
+    const meta =
+        document.getElementById(
+            "mailModalMeta"
+        );
+
+    const message =
+        document.getElementById(
+            "mailModalMessage"
+        );
+
+    const replies =
+        document.getElementById(
+            "mailModalReplies"
+        );
+
+    meta.innerHTML = `
+        <strong>
+            ${escapeSupportMailHtml(mail.email)}
+        </strong>
+
+        <div>
+            ${escapeSupportMailHtml(mail.subject)}
+        </div>
+
+        <div>
+            ID: ${escapeSupportMailHtml(mail.id)}
+        </div>
+
+        <div>
+            Status: ${escapeSupportMailHtml(mail.status)}
+        </div>
+
+        ${
+            mail.createdAt
+                ? `<div>
+                    ${new Date(
+                        mail.createdAt
+                    ).toLocaleString()}
+                </div>`
+                : ""
+        }
+    `;
+
+    message.textContent =
+        mail.message || "";
+
+    const replyList =
+        Array.isArray(mail.replies)
+            ? mail.replies
+            : [];
+
+    if (!replyList.length) {
+
+        replies.innerHTML = `
+            <h3>Replies</h3>
+            <div class="empty">
+                No replies yet.
+            </div>
+        `;
+
+    } else {
+
+        replies.innerHTML = `
+            <h3>Replies</h3>
+
+            ${replyList.map(
+                (reply) => `
+
+                    <div class="reply">
+
+                        <div class="reply-meta">
+                            ${
+                                reply.from === "admin"
+                                    ? "Admin"
+                                    : "Reply"
+                            }
+
+                            ${
+                                reply.createdAt
+                                    ? " • " +
+                                      new Date(
+                                          reply.createdAt
+                                      ).toLocaleString()
+                                    : ""
+                            }
+                        </div>
+
+                        <div class="reply-message">
+                            ${escapeSupportMailHtml(
+                                reply.message
+                            )}
+                        </div>
+
+                    </div>
+
+                `
+            ).join("")}
+        `;
+
+    }
+
+    document.getElementById(
+        "mailReplyArea"
+    ).style.display = "none";
+
+    document.getElementById(
+        "mailReplyInput"
+    ).value = "";
+
+}
+
+
+function showReplyBox() {
+
+    const area =
+        document.getElementById(
+            "mailReplyArea"
+        );
+
+    const input =
+        document.getElementById(
+            "mailReplyInput"
+        );
+
+    area.style.display =
+        "block";
+
+    setTimeout(() => {
+
+        input.focus({
+            preventScroll: true
+        });
+
+    }, 50);
+
+}
+
+
+function hideReplyBox() {
+
+    document.getElementById(
+        "mailReplyArea"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "mailReplyInput"
+    ).value = "";
+
+}
+
+
+function closeMailModal() {
+
+    const modal =
+        document.getElementById(
+            "mailModal"
+        );
+
+    modal.classList.remove("open");
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+    currentSupportMail =
+        null;
+
+}
+
+
+async function sendMailReply() {
+
+    if (!currentSupportMail) {
+        return;
+    }
+
+    const input =
+        document.getElementById(
+            "mailReplyInput"
+        );
+
+    const message =
+        input.value.trim();
+
+    if (!message) {
+
+        alert(
+            "Please write a reply."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/support/" +
+                encodeURIComponent(
+                    currentSupportMail.id
+                ) +
+                "/reply",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to send reply."
+            );
+
+        }
+
+        currentSupportMail.replies =
+            Array.isArray(
+                currentSupportMail.replies
+            )
+                ? currentSupportMail.replies
+                : [];
+
+        currentSupportMail.replies.push(
+            data.reply
+        );
+
+        renderMailModal(
+            currentSupportMail
+        );
+
+        await loadTickets();
+
+    } catch (error) {
+
+        console.error(
+            "Support reply error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to send reply."
+        );
+
+    }
+
+}
+
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        const modal =
+            document.getElementById(
+                "mailModal"
+            );
+
+        if (
+            modal &&
+            event.target === modal
+        ) {
+
+            closeMailModal();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            currentSupportMail
+        ) {
+
+            closeMailModal();
+
+        }
+
+    }
+);
+
+loadTickets();
+
+</script>
+
+</body>
+
+</html>
