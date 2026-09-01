@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const database = require("./database");
+const database = require("./db/postgres");
 
 /*
 ==================================================

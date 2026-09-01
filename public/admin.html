@@ -218,6 +218,92 @@
 
         }
 
+
+        /* ========================================
+           ADMIN DIALOG
+           ======================================== */
+
+        .admin-dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            padding: 20px;
+        }
+
+        .admin-dialog {
+            width: 100%;
+            max-width: 360px;
+            background: #0d1730;
+            color: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        .admin-dialog-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .admin-dialog-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .admin-dialog-message {
+            font-size: 13px;
+            line-height: 1.5;
+            opacity: 0.82;
+        }
+
+        .admin-dialog-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .admin-dialog-buttons button {
+            width: 115px;
+            min-width: 115px;
+            padding: 11px 15px;
+            border: 0;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .admin-dialog-cancel {
+            background: #555;
+        }
+
+        .admin-dialog-danger {
+            background: #ef4444;
+        }
+
+        .admin-dialog-success {
+            background: #198754;
+        }
+
+        @media (max-width: 480px) {
+            .admin-dialog {
+                max-width: 330px;
+                padding: 22px;
+            }
+
+            .admin-dialog-buttons {
+                gap: 10px;
+            }
+        }
+
 </style>
 
 
@@ -1480,28 +1566,191 @@ BLOCK PAIR
 ==================================================
 */
 
+
+function showAdminConfirm(
+    icon,
+    title,
+    message,
+    confirmText,
+    confirmClass
+) {
+    return new Promise((resolve) => {
+
+        const overlay =
+            document.createElement("div");
+
+        overlay.className =
+            "admin-dialog-overlay";
+
+        overlay.innerHTML = `
+            <div class="admin-dialog">
+
+                <div class="admin-dialog-icon">
+                    ${icon}
+                </div>
+
+                <div class="admin-dialog-title">
+                    ${title}
+                </div>
+
+                <div class="admin-dialog-message">
+                    ${message}
+                </div>
+
+                <div class="admin-dialog-buttons">
+
+                    <button
+                        type="button"
+                        class="admin-dialog-cancel"
+                        id="adminDialogCancel"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-dialog-${confirmClass}"
+                        id="adminDialogConfirm"
+                    >
+                        ${confirmText}
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const close = (result) => {
+            overlay.remove();
+            resolve(result);
+        };
+
+        overlay.querySelector(
+            "#adminDialogCancel"
+        ).onclick = () => close(false);
+
+        overlay.querySelector(
+            "#adminDialogConfirm"
+        ).onclick = () => close(true);
+
+        overlay.onclick = (event) => {
+            if (event.target === overlay) {
+                close(false);
+            }
+        };
+
+    });
+}
+
+
+function showAdminMessage(
+    icon,
+    title,
+    message
+) {
+    return new Promise((resolve) => {
+
+        const overlay =
+            document.createElement("div");
+
+        overlay.className =
+            "admin-dialog-overlay";
+
+        overlay.innerHTML = `
+            <div class="admin-dialog">
+
+                <div class="admin-dialog-icon">
+                    ${icon}
+                </div>
+
+                <div class="admin-dialog-title">
+                    ${title}
+                </div>
+
+                <div class="admin-dialog-message">
+                    ${message}
+                </div>
+
+                <div class="admin-dialog-buttons">
+
+                    <button
+                        type="button"
+                        class="admin-dialog-success"
+                        id="adminDialogOk"
+                    >
+                        OK
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const close = () => {
+            overlay.remove();
+            resolve();
+        };
+
+        overlay.querySelector(
+            "#adminDialogOk"
+        ).onclick = close;
+
+        overlay.onclick = (event) => {
+            if (event.target === overlay) {
+                close();
+            }
+        };
+
+    });
+}
+
+
 async function blockPair(id) {
 
-    if (!confirm(
-        "Block these two users from being matched with each other again?"
-    )) {
+    const confirmed =
+        await showAdminConfirm(
+            "🔴",
+            "Block Pair?",
+            "These two users will no longer be matched with each other.",
+            "Block Pair",
+            "danger"
+        );
+
+    if (!confirmed) {
         return;
     }
 
     try {
 
-        const response = await fetch(
-            `/api/reports/${id}/block`,
-            {
-                method: "POST"
-            }
-        );
+        const response =
+            await fetch(
+                `/api/reports/${id}/block`,
+                {
+                    method: "POST"
+                }
+            );
+
+        const data =
+            await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error("Failed to block pair.");
+
+            throw new Error(
+                data.error ||
+                "Failed to block pair."
+            );
+
         }
 
-        alert("Pair blocked successfully.");
+        await showAdminMessage(
+            "🔴",
+            "Pair Blocked",
+            "These two users have been blocked from being matched with each other again."
+        );
 
         await loadReports();
         await loadStats();
@@ -1511,11 +1760,17 @@ async function blockPair(id) {
 
         console.error(error);
 
-        alert("Could not block this pair.");
+        await showAdminMessage(
+            "⚠️",
+            "Action Failed",
+            error.message ||
+            "Could not block this pair."
+        );
 
     }
 
 }
+
 
 /*
 ==================================================
@@ -1525,29 +1780,45 @@ UNBLOCK PAIR
 
 async function unblockPair(id) {
 
-    if (!confirm(
-        "Allow these two users to be matched with each other again?"
-    )) {
+    const confirmed =
+        await showAdminConfirm(
+            "🟢",
+            "Unblock Pair?",
+            "These two users will be allowed to match with each other again.",
+            "Unblock",
+            "success"
+        );
+
+    if (!confirmed) {
         return;
     }
 
     try {
 
-        const response = await fetch(
-            `/api/reports/${id}/unblock`,
-            {
-                method: "POST"
-            }
-        );
+        const response =
+            await fetch(
+                `/api/reports/${id}/unblock`,
+                {
+                    method: "POST"
+                }
+            );
+
+        const data =
+            await response.json().catch(() => ({}));
 
         if (!response.ok) {
+
             throw new Error(
+                data.error ||
                 "Failed to unblock pair."
             );
+
         }
 
-        alert(
-            "Pair unblocked successfully."
+        await showAdminMessage(
+            "🟢",
+            "Pair Unblocked",
+            "These two users can now be matched with each other again."
         );
 
         await loadReports();
@@ -1557,7 +1828,10 @@ async function unblockPair(id) {
 
         console.error(error);
 
-        alert(
+        await showAdminMessage(
+            "⚠️",
+            "Action Failed",
+            error.message ||
             "Could not unblock this pair."
         );
 
@@ -1567,8 +1841,6 @@ async function unblockPair(id) {
 
 
 /*
-==================================================
-UPDATE REPORT
 ==================================================
 */
 
@@ -1602,7 +1874,9 @@ async function updateReport(id, status) {
 
         console.error(error);
 
-        alert(
+        await showAdminMessage(
+            "⚠️",
+            "Action Failed",
             "Could not update the report."
         );
 
@@ -3121,7 +3395,9 @@ async function openSupportMail(ticketId, replyMode) {
             error
         );
 
-        alert(
+        await showAdminMessage(
+            "⚠️",
+            "Support Message Error",
             error.message ||
             "Unable to load support message."
         );
@@ -3320,7 +3596,9 @@ async function sendSupportMailReply() {
 
     if (!message) {
 
-        alert(
+        await showAdminMessage(
+            "⚠️",
+            "Reply Required",
             "Please write a reply."
         );
 
@@ -3390,7 +3668,9 @@ async function sendSupportMailReply() {
             error
         );
 
-        alert(
+        await showAdminMessage(
+            "⚠️",
+            "Reply Failed",
             error.message ||
             "Unable to send reply."
         );

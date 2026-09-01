@@ -1,5 +1,5 @@
 const database =
-    require("./database");
+    require("./db/postgres");
 
 const identityService =
     require("./identityService");

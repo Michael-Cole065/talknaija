@@ -896,7 +896,7 @@ app.get(
 app.get(
     "/api/admin/traffic",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const limit =
             Math.min(
@@ -905,14 +905,15 @@ app.get(
             );
 
         const visits =
-            trafficService.getRecentVisits(
+            await trafficService.getRecentVisits(
                 limit
             );
 
-        res.json({
-            totalVisits:
-                trafficService.getVisitCount(),
+        const totalVisits =
+            await trafficService.getVisitCount();
 
+        res.json({
+            totalVisits,
             visits
         });
 
@@ -1097,7 +1098,7 @@ app.get(
            await identityService.getUsers();
 
         const traffic =
-            trafficService.getVisitCount();
+           await trafficService.getVisitCount();
 
         res.json({
 
@@ -1167,7 +1168,7 @@ app.get(
             await identityService.getUsers();
 
         const traffic =
-            trafficService.getRecentVisits(
+           await trafficService.getRecentVisits(
                 1000
             );
 
