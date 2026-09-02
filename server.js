@@ -146,7 +146,7 @@ function adminAuth(req, res, next) {
 
 app.post(
     "/api/support",
-    (req, res) => {
+    async (req, res) => {
 
         try {
 
@@ -226,7 +226,7 @@ app.post(
 
 
             const ticket =
-                createSupportTicket(
+                await createSupportTicket(
                     cleanEmail,
                     cleanSubject,
                     cleanMessage
@@ -307,7 +307,7 @@ if (
     result.status === "success"
 ) {
 
-    donationService.recordDonation(
+    await donationService.recordDonation(
         result
     );
 
@@ -349,12 +349,12 @@ return res.json({
 app.get(
     "/api/support",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         try {
 
             const tickets =
-                getAllSupportTickets();
+                await getAllSupportTickets();
 
             res.json({
                 success: true,
@@ -382,12 +382,12 @@ app.get(
 app.get(
     "/api/support/:id",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         try {
 
             const ticket =
-                getSupportTicket(
+                await getSupportTicket(
                     req.params.id
                 );
 
@@ -446,7 +446,7 @@ app.post(
             }
 
             const ticket =
-                getSupportTicket(
+                await getSupportTicket(
                     req.params.id
                 );
 
@@ -461,7 +461,7 @@ app.post(
             }
 
             const reply =
-                addReply(
+                await addReply(
                     req.params.id,
                     message
                 );
@@ -787,7 +787,7 @@ app.post(
 
         }
 
-        adminActionService.recordAction({
+        await adminActionService.recordAction({
 
             type:
                 "BAN",
@@ -818,36 +818,50 @@ app.post(
 app.post(
     "/api/admin/red-accounts/:uuid/unban",
     adminAuth,
-    (req, res) => {
-
+    async (req, res) => {
         const uuid =
             req.params.uuid;
 
         const success =
-            identityService.resetReportCount(
+            await identityService.resetReportCount(
                 uuid
             );
 
         if (!success) {
-
             return res.status(404).json({
                 error:
                     "User not found."
             });
-
         }
 
-        adminActionService.recordAction({
+        const blockedPairs =
+            await reportService.getBlockedPairs();
 
+        for (const pair of blockedPairs) {
+            if (
+                pair.user1 === uuid ||
+                pair.user2 === uuid
+            ) {
+                await reportService.setPairBlocked(
+                    pair.user1,
+                    pair.user2,
+                    false
+                );
+
+                registerSocketHandlers.unblockPair(
+                    pair.user1,
+                    pair.user2
+                );
+            }
+        }
+
+        await adminActionService.recordAction({
             type:
                 "UNBAN",
-
             userId:
                 uuid,
-
             details:
-                "Account unbanned and current report count reset."
-
+                "Account unbanned, current report cycle reset, and blocked pairs released."
         });
 
         console.log(
@@ -860,17 +874,16 @@ app.post(
             message:
                 "User unbanned successfully."
         });
-
     }
 );
 
 app.get(
     "/api/admin/donations",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         const stats =
-            donationService.getDonationStats();
+            await donationService.getDonationStats();
 
         res.json(stats);
 
@@ -880,10 +893,10 @@ app.get(
 app.get(
     "/api/admin/donations/history",
     adminAuth,
-    (req, res) => {
+    async (req, res) => {
 
         res.json(
-            donationService.getAllDonations()
+            await donationService.getAllDonations()
         );
 
     }
@@ -1049,7 +1062,7 @@ app.get(
         }
 
         const visits =
-            trafficService.getUserVisits(
+            await trafficService.getUserVisits(
                 uuid
             );
 
@@ -1072,7 +1085,7 @@ app.get(
             reports,
 
             callHistory:
-                historyService.getAllHistory()[uuid] || []
+                (await historyService.getAllHistory())[uuid] || []
 
         });
 
@@ -1180,7 +1193,7 @@ app.get(
 let totalCallRecords = 0;
 
 const allHistory =
-    historyService.getAllHistory();
+    await historyService.getAllHistory();
 
 Object.values(allHistory).forEach(
     (history) => {

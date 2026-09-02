@@ -1,371 +1,374 @@
-const fs = require("fs");
-const path = require("path");
-
-const historyFile =
-    path.join(__dirname, "../data/callHistory.json");
+const database =
+    require("./db/postgres");
 
 
-function ensureFile() {
-
-    const directory =
-        path.dirname(historyFile);
-
-    if (!fs.existsSync(directory)) {
-
-        fs.mkdirSync(
-            directory,
-            { recursive: true }
-        );
-
-    }
-
-    if (
-        !fs.existsSync(historyFile) ||
-        fs.statSync(historyFile).size === 0
-    ) {
-
-        fs.writeFileSync(
-            historyFile,
-            "{}"
-        );
-
-    }
-
+function formatCall(row) {
+    return {
+        partnerId: row.partner_uuid,
+        timestamp: new Date(row.timestamp).toISOString(),
+        callbackStatus: row.callback_status,
+        declineCount: row.decline_count
+    };
 }
 
 
-function getHistory() {
-
-    ensureFile();
+/* ADD CALL */
+async function addCall(
+    userId,
+    partnerId,
+    isPremium = false
+) {
+    if (!userId || !partnerId) return;
 
     try {
+        await database.query(
+            `
+            INSERT INTO call_history (
+                user_uuid,
+                partner_uuid,
+                timestamp,
+                callback_status,
+                decline_count
+            )
+            VALUES ($1, $2, $3, $4, $5)
+            `,
+            [
+                userId,
+                partnerId,
+                new Date().toISOString(),
+                "available",
+                0
+            ]
+        );
+    } catch (error) {
+        console.error(
+            "❌ Could not record call history:",
+            error
+        );
+    }
+}
 
-        const data =
-            fs.readFileSync(
-                historyFile,
-                "utf8"
-            ).trim();
 
-        if (!data) {
-            return {};
-        }
+/* GET USER HISTORY */
+async function getUserHistory(
+    userId,
+    isPremium = false
+) {
+    if (!userId) return [];
 
-        return JSON.parse(data);
+    try {
+        const limit =
+            isPremium ? 15 : 5;
+
+        const result =
+            await database.query(
+                `
+                SELECT
+                    partner_uuid,
+                    timestamp,
+                    callback_status,
+                    decline_count
+                FROM call_history
+                WHERE user_uuid = $1
+                ORDER BY timestamp DESC
+                LIMIT $2
+                `,
+                [
+                    userId,
+                    limit
+                ]
+            );
+
+        return result.rows.map(
+            formatCall
+        );
 
     } catch (error) {
-
         console.error(
             "❌ Could not read call history:",
             error
         );
 
-        return {};
-
-    }
-
-}
-
-
-function saveHistory(history) {
-
-    ensureFile();
-
-    fs.writeFileSync(
-        historyFile,
-        JSON.stringify(
-            history,
-            null,
-            2
-        )
-    );
-
-}
-
-
-/*
-==================================================
-ADD CALL
-==================================================
-*/
-
-function addCall(
-    userId,
-    partnerId,
-    isPremium = false
-) {
-
-    if (!userId || !partnerId) {
-        return;
-    }
-
-    const history =
-        getHistory();
-
-    if (!history[userId]) {
-
-        history[userId] = [];
-
-    }
-
-    history[userId].unshift({
-
-        partnerId,
-
-        timestamp:
-            new Date().toISOString(),
-
-        callbackStatus:
-            "available",
-
-        declineCount:
-            0
-
-    });
-
-    // Store the complete call history.
-    // The 5/15 viewing limit is applied
-    // inside getUserHistory(), not here.
-    saveHistory(history);
-
-}
-
-
-/*
-==================================================
-GET USER HISTORY
-==================================================
-*/
-
-function getUserHistory(
-    userId,
-    isPremium = false
-) {
-
-    if (!userId) {
         return [];
     }
-
-    const history =
-        getHistory();
-
-    const limit =
-        isPremium
-            ? 15
-            : 5;
-
-    return (
-        history[userId] || []
-    ).slice(
-        0,
-        limit
-    );
-
 }
 
 
-/*
-==================================================
-GET ALL HISTORY
-==================================================
-*/
+/* GET ALL HISTORY */
+async function getAllHistory() {
+    try {
+        const result =
+            await database.query(
+                `
+                SELECT
+                    user_uuid,
+                    partner_uuid,
+                    timestamp,
+                    callback_status,
+                    decline_count
+                FROM call_history
+                ORDER BY timestamp DESC
+                `
+            );
 
-function getAllHistory() {
+        const history = {};
 
-    return getHistory();
+        for (const row of result.rows) {
 
+            if (!history[row.user_uuid]) {
+                history[row.user_uuid] = [];
+            }
+
+            history[row.user_uuid].push(
+                formatCall(row)
+            );
+        }
+
+        return history;
+
+    } catch (error) {
+        console.error(
+            "❌ Could not read all call history:",
+            error
+        );
+
+        return {};
+    }
 }
 
-/*
-==================================================
-FIND SPECIFIC CALL
-==================================================
-*/
 
-function findCall(
+/* FIND SPECIFIC CALL */
+async function findCall(
     userId,
     partnerId
 ) {
-
     if (!userId || !partnerId) {
         return null;
     }
 
-    const history =
-        getHistory();
-
-    const calls =
-        history[userId] || [];
-
-    return (
-        calls.find(
-            (call) =>
-                call.partnerId === partnerId
-        ) || null
-    );
-
-}
-
-
-/*
-==================================================
-UPDATE CALLBACK STATUS
-==================================================
-*/
-
-function resetCallbackRelationship(
-    userId,
-    partnerId
-) {
-
-    if (!userId || !partnerId) {
-        return false;
-    }
-
-    const history =
-        getHistory();
-
-    let changed = false;
-
-    const reset = (
-        ownerId,
-        targetId
-    ) => {
-
-        const calls =
-            history[ownerId] || [];
-
-        const call =
-            calls.find(
-                (item) =>
-                    item.partnerId === targetId
+    try {
+        const result =
+            await database.query(
+                `
+                SELECT
+                    partner_uuid,
+                    timestamp,
+                    callback_status,
+                    decline_count
+                FROM call_history
+                WHERE user_uuid = $1
+                  AND partner_uuid = $2
+                ORDER BY timestamp DESC
+                LIMIT 1
+                `,
+                [
+                    userId,
+                    partnerId
+                ]
             );
 
-        if (!call) {
-            return;
+        if (result.rows.length === 0) {
+            return null;
         }
 
-        call.callbackStatus =
-            "available";
+        return formatCall(
+            result.rows[0]
+        );
 
-        call.declineCount =
-            0;
+    } catch (error) {
+        console.error(
+            "❌ Could not find call history:",
+            error
+        );
 
-        changed = true;
-
-    };
-
-    reset(
-        userId,
-        partnerId
-    );
-
-    reset(
-        partnerId,
-        userId
-    );
-
-    if (changed) {
-        saveHistory(history);
+        return null;
     }
-
-    return changed;
-
 }
 
-function updateCallbackStatus(
+
+/* UPDATE CALLBACK STATUS */
+async function updateCallbackStatus(
     userId,
     partnerId,
     status
 ) {
-
-    const history =
-        getHistory();
-
-    const calls =
-        history[userId] || [];
-
-    const call =
-        calls.find(
-            (item) =>
-                item.partnerId === partnerId
-        );
-
-    if (!call) {
+    if (!userId || !partnerId) {
         return false;
     }
 
-    call.callbackStatus =
-        status;
+    try {
+        const result =
+            await database.query(
+                `
+                UPDATE call_history
+                SET callback_status = $3
+                WHERE id = (
+                    SELECT id
+                    FROM call_history
+                    WHERE user_uuid = $1
+                      AND partner_uuid = $2
+                    ORDER BY timestamp DESC, id DESC
+                    LIMIT 1
+                )
+                `,
+                [
+                    userId,
+                    partnerId,
+                    status
+                ]
+            );
 
-    saveHistory(history);
+        return result.rowCount > 0;
 
-    return true;
+    } catch (error) {
+        console.error(
+            "❌ Could not update callback status:",
+            error
+        );
 
+        return false;
+    }
 }
 
 
-/*
-==================================================
-RECORD CALLBACK DECLINE
-==================================================
-*/
-
-function recordCallbackDecline(
+/* RESET CALLBACK RELATIONSHIP */
+async function resetCallbackRelationship(
     userId,
     partnerId
 ) {
+    if (!userId || !partnerId) {
+        return false;
+    }
 
-    const history =
-        getHistory();
+    try {
+        return await database.transaction(
+            async (client) => {
 
-    const calls =
-        history[userId] || [];
+                const first =
+                    await client.query(
+                        `
+                        UPDATE call_history
+                        SET
+                            callback_status = 'available',
+                            decline_count = 0
+                        WHERE id = (
+                            SELECT id
+                            FROM call_history
+                            WHERE user_uuid = $1
+                              AND partner_uuid = $2
+                            ORDER BY timestamp DESC, id DESC
+                            LIMIT 1
+                        )
+                        `,
+                        [
+                            userId,
+                            partnerId
+                        ]
+                    );
 
-    const call =
-        calls.find(
-            (item) =>
-                item.partnerId === partnerId
+                const second =
+                    await client.query(
+                        `
+                        UPDATE call_history
+                        SET
+                            callback_status = 'available',
+                            decline_count = 0
+                        WHERE id = (
+                            SELECT id
+                            FROM call_history
+                            WHERE user_uuid = $1
+                              AND partner_uuid = $2
+                            ORDER BY timestamp DESC, id DESC
+                            LIMIT 1
+                        )
+                        `,
+                        [
+                            partnerId,
+                            userId
+                        ]
+                    );
+
+                return (
+                    first.rowCount > 0 ||
+                    second.rowCount > 0
+                );
+            }
         );
 
-    if (!call) {
+    } catch (error) {
+        console.error(
+            "❌ Could not reset callback relationship:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/* RECORD CALLBACK DECLINE */
+async function recordCallbackDecline(
+    userId,
+    partnerId
+) {
+    if (!userId || !partnerId) {
         return null;
     }
 
-    call.declineCount =
-        (call.declineCount || 0) + 1;
+    try {
+        const result =
+            await database.query(
+                `
+                UPDATE call_history
+                SET
+                    decline_count =
+                        decline_count + 1,
+                    callback_status =
+                        'declined'
+                WHERE id = (
+                    SELECT id
+                    FROM call_history
+                    WHERE user_uuid = $1
+                      AND partner_uuid = $2
+                    ORDER BY timestamp DESC, id DESC
+                    LIMIT 1
+                )
+                RETURNING decline_count
+                `,
+                [
+                    userId,
+                    partnerId
+                ]
+            );
 
-    call.callbackStatus =
-        "declined";
+        if (result.rows.length === 0) {
+            return null;
+        }
 
-    saveHistory(history);
+        return {
+            declineCount:
+                result.rows[0].decline_count,
 
-    return {
+            maxDeclines: 3
+        };
 
-        declineCount:
-            call.declineCount,
+    } catch (error) {
+        console.error(
+            "❌ Could not record callback decline:",
+            error
+        );
 
-        maxDeclines:
-            3
-
-    };
-
+        return null;
+    }
 }
 
 
 module.exports = {
-
     addCall,
-
     getUserHistory,
-
     getAllHistory,
-
     findCall,
-
     updateCallbackStatus,
-
     resetCallbackRelationship,
-
     recordCallbackDecline
-
 };

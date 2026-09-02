@@ -193,17 +193,20 @@ async function registerSocketHandlers(
             data.isNewVisit === true
         ) {
 
-            await identityService.recordVisit(
-                socket.userId,
-                socket.isPremium,
-                socket
-            );
+            const visitedUser =
+                await identityService.recordVisit(
+                    socket.userId,
+                    socket.isPremium,
+                    socket
+                );
 
             await trafficService.recordVisit(
                 socket.userId,
-                socket.isPremium
-                    ? "premium"
-                    : "guest",
+                visitedUser
+                    ? visitedUser.type
+                    : (socket.isPremium
+                        ? "premium"
+                        : "guest"),
                 socket.isPremium
             );
 
@@ -349,7 +352,7 @@ if (
     matchedUser2.userId
 ) {
 
-    historyService.resetCallbackRelationship(
+    await historyService.resetCallbackRelationship(
         matchedUser1.userId,
         matchedUser2.userId
     );
@@ -502,7 +505,7 @@ SUCCESSFUL CALL CONNECTION
 
 	socket.on(
     "callConnected",
-    () => {
+    async () => {
 
         console.log(
             "📞 CALL CONNECTED EVENT:",
@@ -567,13 +570,13 @@ SUCCESSFUL CALL CONNECTION
         partnerSocket.callConnectionRecorded =
             true;
 
-        historyService.addCall(
+        await historyService.addCall(
             socket.userId,
             partnerSocket.userId,
             socket.isPremium
         );
 
-        historyService.addCall(
+        await historyService.addCall(
             partnerSocket.userId,
             socket.userId,
             partnerSocket.isPremium
@@ -710,7 +713,7 @@ CALL HISTORY
 
 socket.on(
     "getCallHistory",
-    () => {
+    async () => {
 
         if (!socket.userId) {
 
@@ -724,7 +727,7 @@ socket.on(
         }
 
         const history =
-            historyService.getUserHistory(
+            await historyService.getUserHistory(
                 socket.userId,
                 socket.isPremium
             );
@@ -745,7 +748,7 @@ CALL BACK
 
 socket.on(
     "callbackRequest",
-    (partnerId) => {
+    async (partnerId) => {
 
         if (!socket.userId || !partnerId) {
             return;
@@ -791,7 +794,7 @@ socket.on(
         }
 
         const previousCall =
-            historyService.findCall(
+            await historyService.findCall(
                 socket.userId,
                 partnerId
             );
@@ -837,7 +840,7 @@ socket.on(
         const targetId =
             targetSocket.userId;
 
-        historyService.updateCallbackStatus(
+        await historyService.updateCallbackStatus(
             callerId,
             targetId,
             "calling"
@@ -946,7 +949,7 @@ CALL BACK RESPONSE
 
 socket.on(
     "callbackResponse",
-    (response) => {
+    async (response) => {
 
         const incoming =
             socket.callbackIncoming;
@@ -980,7 +983,7 @@ socket.on(
         if (response === "decline") {
 
             const result =
-                historyService.recordCallbackDecline(
+                await historyService.recordCallbackDecline(
                     incoming.callerId,
                     socket.userId
                 );
@@ -1017,7 +1020,7 @@ socket.on(
             return;
         }
 
-        historyService.updateCallbackStatus(
+        await historyService.updateCallbackStatus(
             incoming.callerId,
             socket.userId,
             "accepted"
@@ -1025,7 +1028,7 @@ socket.on(
 
         // Successful callback acceptance resets
         // the decline count for both users.
-        historyService.resetCallbackRelationship(
+        await historyService.resetCallbackRelationship(
             incoming.callerId,
             socket.userId
         );
