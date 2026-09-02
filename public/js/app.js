@@ -186,6 +186,11 @@ let isPremium =
     localStorage.getItem(
         "talknaijaPremium"
     ) === "true";
+if (socket && socket.connected) {
+    const visitTracked = sessionStorage.getItem("talknaijaVisitTracked") === "true";
+    socket.emit("registerUser", { userId, isPremium, isNewVisit: !visitTracked });
+    if (!visitTracked) sessionStorage.setItem("talknaijaVisitTracked", "true");
+}
 
 
 /*
