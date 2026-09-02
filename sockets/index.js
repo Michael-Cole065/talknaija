@@ -193,18 +193,18 @@ async function registerSocketHandlers(
             data.isNewVisit === true
         ) {
 
+            await identityService.recordVisit(
+                socket.userId,
+                socket.isPremium,
+                socket
+            );
+
             await trafficService.recordVisit(
                 socket.userId,
                 socket.isPremium
                     ? "premium"
                     : "guest",
                 socket.isPremium
-            );
-
-            await identityService.recordVisit(
-                socket.userId,
-                socket.isPremium,
-                socket
             );
 
         }
