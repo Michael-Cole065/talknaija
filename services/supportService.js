@@ -1,92 +1,80 @@
-const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
 
-const dataDir =
-    path.join(__dirname, "..", "data");
-
-const supportFile =
-    path.join(dataDir, "supportTickets.json");
+const database =
+    require("./db/postgres");
 
 
-function ensureStorage() {
+function formatReply(row) {
 
-    if (!fs.existsSync(dataDir)) {
+    return {
 
-        fs.mkdirSync(
-            dataDir,
-            {
-                recursive: true
+        id:
+            row.id,
+
+        message:
+            row.message,
+
+        sender:
+            row.sender,
+
+        createdAt:
+            new Date(
+                row.created_at
+            ).toISOString()
+
+    };
+
+}
+
+
+function formatTicket(
+    row,
+    replies = []
+) {
+
+    return {
+
+        id:
+            row.id,
+
+        email:
+            row.email,
+
+        subject:
+            row.subject,
+
+        message:
+            row.message,
+
+        status:
+            row.status,
+
+        createdAt:
+            new Date(
+                row.created_at
+            ).toISOString(),
+
+        ...(row.last_replied_at
+            ? {
+                lastRepliedAt:
+                    new Date(
+                        row.last_replied_at
+                    ).toISOString()
             }
-        );
+            : {}),
 
-    }
+        replies
 
-    if (!fs.existsSync(supportFile)) {
-
-        fs.writeFileSync(
-            supportFile,
-            "[]",
-            "utf8"
-        );
-
-    }
+    };
 
 }
 
 
-function getTickets() {
-
-    ensureStorage();
-
-    try {
-
-        return JSON.parse(
-            fs.readFileSync(
-                supportFile,
-                "utf8"
-            )
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Support storage error:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-function saveTickets(tickets) {
-
-    ensureStorage();
-
-    fs.writeFileSync(
-        supportFile,
-        JSON.stringify(
-            tickets,
-            null,
-            2
-        ),
-        "utf8"
-    );
-
-}
-
-
-function createSupportTicket(
+async function createSupportTicket(
     email,
     subject,
     message
 ) {
-
-    const tickets =
-        getTickets();
 
     const ticket = {
 
@@ -110,33 +98,184 @@ function createSupportTicket(
             "open",
 
         createdAt:
-            new Date().toISOString(),
+            new Date().toISOString()
+
+    };
+
+
+    await database.query(
+        `
+        INSERT INTO support_tickets (
+            id,
+            email,
+            subject,
+            message,
+            status,
+            created_at
+        )
+        VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6
+        )
+        `,
+        [
+            ticket.id,
+            ticket.email,
+            ticket.subject,
+            ticket.message,
+            ticket.status,
+            ticket.createdAt
+        ]
+    );
+
+
+    return {
+
+        ...ticket,
 
         replies: []
 
     };
 
-    tickets.unshift(
-        ticket
-    );
+}
 
-    saveTickets(
-        tickets
-    );
 
-    return ticket;
+async function getAllSupportTickets() {
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                id,
+                email,
+                subject,
+                message,
+                status,
+                created_at,
+                last_replied_at
+            FROM support_tickets
+            ORDER BY created_at DESC
+            `
+        );
+
+
+    const tickets = [];
+
+    for (
+        const row of result.rows
+    ) {
+
+        const replies =
+            await database.query(
+                `
+                SELECT
+                    id,
+                    ticket_id,
+                    message,
+                    sender,
+                    created_at
+                FROM support_replies
+                WHERE ticket_id = $1
+                ORDER BY created_at ASC
+                `,
+                [
+                    row.id
+                ]
+            );
+
+
+        tickets.push(
+            formatTicket(
+                row,
+                replies.rows.map(
+                    formatReply
+                )
+            )
+        );
+
+    }
+
+
+    return tickets;
 
 }
 
 
-function getAllSupportTickets() {
+async function getSupportTicket(
+    ticketId
+) {
 
-    return getTickets();
+    if (!ticketId) {
+        return null;
+    }
+
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                id,
+                email,
+                subject,
+                message,
+                status,
+                created_at,
+                last_replied_at
+            FROM support_tickets
+            WHERE id = $1
+            LIMIT 1
+            `,
+            [
+                ticketId
+            ]
+        );
+
+
+    if (
+        result.rows.length === 0
+    ) {
+        return null;
+    }
+
+
+    const row =
+        result.rows[0];
+
+
+    const replies =
+        await database.query(
+            `
+            SELECT
+                id,
+                ticket_id,
+                message,
+                sender,
+                created_at
+            FROM support_replies
+            WHERE ticket_id = $1
+            ORDER BY created_at ASC
+            `,
+            [
+                ticketId
+            ]
+        );
+
+
+    return formatTicket(
+        row,
+        replies.rows.map(
+            formatReply
+        )
+    );
 
 }
 
 
-function addReply(
+async function addReply(
     ticketId,
     message
 ) {
@@ -148,30 +287,36 @@ function addReply(
         return null;
     }
 
+
     const cleanMessage =
         message.trim();
+
 
     if (!cleanMessage) {
         return null;
     }
 
-    const tickets =
-        getTickets();
 
-    const ticket =
-        tickets.find(
-            (item) =>
-                item.id === ticketId
+    const ticketCheck =
+        await database.query(
+            `
+            SELECT id
+            FROM support_tickets
+            WHERE id = $1
+            LIMIT 1
+            `,
+            [
+                ticketId
+            ]
         );
 
-    if (!ticket) {
+
+    if (
+        ticketCheck.rows.length === 0
+    ) {
         return null;
     }
 
-    ticket.replies =
-        Array.isArray(ticket.replies)
-            ? ticket.replies
-            : [];
 
     const reply = {
 
@@ -193,49 +338,68 @@ function addReply(
 
     };
 
-    ticket.replies.push(
-        reply
+
+    await database.transaction(
+        async (client) => {
+
+            await client.query(
+                `
+                INSERT INTO support_replies (
+                    id,
+                    ticket_id,
+                    message,
+                    sender,
+                    created_at
+                )
+                VALUES (
+                    $1,
+                    $2,
+                    $3,
+                    $4,
+                    $5
+                )
+                `,
+                [
+                    reply.id,
+                    ticketId,
+                    reply.message,
+                    reply.sender,
+                    reply.createdAt
+                ]
+            );
+
+
+            await client.query(
+                `
+                UPDATE support_tickets
+                SET
+                    status = 'replied',
+                    last_replied_at = $2
+                WHERE id = $1
+                `,
+                [
+                    ticketId,
+                    reply.createdAt
+                ]
+            );
+
+        }
     );
 
-    ticket.status =
-        "replied";
-
-    ticket.lastRepliedAt =
-        reply.createdAt;
-
-    saveTickets(
-        tickets
-    );
 
     return reply;
 
 }
 
 
-function getSupportTicket(
-    ticketId
-) {
-
-    if (!ticketId) {
-        return null;
-    }
-
-    const tickets =
-        getTickets();
-
-    return (
-        tickets.find(
-            (ticket) =>
-                ticket.id === ticketId
-        ) || null
-    );
-
-}
-
-
 module.exports = {
+
     createSupportTicket,
+
     getAllSupportTickets,
+
     getSupportTicket,
+
     addReply
+
 };

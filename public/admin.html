@@ -1142,6 +1142,15 @@ function openMiniBanner(
     url
 ) {
 
+    if (persistentBannerKeys.has(key)) {
+        acknowledgePersistentBanner(
+            id,
+            key,
+            url
+        );
+        return;
+    }
+
     const element =
         document.getElementById(id);
 
@@ -1162,6 +1171,131 @@ function openMiniBanner(
 
 }
 
+/*
+==================================================
+PERSISTENT ADMIN BANNER COUNTS
+Reports / Mail / Action Taken / Red / Traffic / Guests
+==================================================
+*/
+
+const persistentBannerKeys = new Set([
+    "reports",
+    "mail",
+    "actionTaken",
+    "red",
+    "traffic",
+    "guests"
+]);
+
+async function loadPersistentBannerCounts() {
+
+    try {
+
+        const response =
+            await fetch("/api/admin/banner-counts");
+
+        if (!response.ok) {
+            throw new Error(
+                "Could not load banner counts."
+            );
+        }
+
+        const counts =
+            await response.json();
+
+        const bannerMap = {
+            reports: "miniReports",
+            mail: "miniMail",
+            actionTaken: "miniActionTaken",
+            red: "miniRed",
+            traffic: "miniTraffic",
+            guests: "miniGuests"
+        };
+
+        for (const key of persistentBannerKeys) {
+
+            const id =
+                bannerMap[key];
+
+            const element =
+                document.getElementById(id);
+
+            if (!element) {
+                continue;
+            }
+
+            const count =
+                Number(counts[key]) || 0;
+
+            element.dataset.currentCount =
+                count;
+
+            element.textContent =
+                count;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "❌ Could not load persistent banner counts:",
+            error
+        );
+
+    }
+
+}
+
+
+async function acknowledgePersistentBanner(
+    id,
+    key,
+    url
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/admin/banner-state/" +
+                encodeURIComponent(key),
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({})
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Could not acknowledge banner."
+            );
+        }
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            element.dataset.currentCount = 0;
+            element.textContent = 0;
+        }
+
+        window.location.href =
+            url;
+
+    } catch (error) {
+
+        console.error(
+            "❌ Could not acknowledge banner:",
+            error
+        );
+
+    }
+
+}
 
 /*
 ==================================================
@@ -1204,25 +1338,15 @@ async function loadStats() {
 
         const red =
             document.getElementById("miniRed");
-        
+
         const guests =
-	    document.getElementById("miniGuests");
+            document.getElementById("miniGuests");
 
-	const members =
-	    document.getElementById("miniMembers");
+        const members =
+            document.getElementById("miniMembers");
 
-	const premium =
-	    document.getElementById("miniPremium");
-
-        if (reports) {
-
-    updateMiniBannerCount(
-        "miniReports",
-        stats.totalReports || 0,
-        "reports"
-    );
-
-}
+        const premium =
+            document.getElementById("miniPremium");
 
         if (mail) {
 
@@ -1233,57 +1357,25 @@ async function loadStats() {
 
         }
 
+        if (members) {
 
-	if (actionTaken) {
+            updateMiniBannerCount(
+                "miniMembers",
+                stats.members || 0,
+                "members"
+            );
 
-	    updateMiniBannerCount(
-	        "miniActionTaken",
-	        stats.actionTakenReports || 0,
-	        "actionTaken"
-	    );
+        }
 
-	}
+        if (premium) {
 
-	if (red) {
+            updateMiniBannerCount(
+                "miniPremium",
+                stats.premiumUsers || 0,
+                "premium"
+            );
 
-	    updateMiniBannerCount(
-	        "miniRed",
-	        stats.redAccounts || 0,
-	        "red"
-	    );
-
-	}
-
-
-        if (guests) {
-
-    updateMiniBannerCount(
-        "miniGuests",
-        stats.guests || 0,
-        "guests"
-    );
-
-}
-
-if (members) {
-
-    updateMiniBannerCount(
-        "miniMembers",
-        stats.members || 0,
-        "members"
-    );
-
-}
-
-if (premium) {
-
-    updateMiniBannerCount(
-        "miniPremium",
-        stats.premiumUsers || 0,
-        "premium"
-    );
-
-}
+        }
 
     } catch (error) {
 
@@ -1911,20 +2003,6 @@ async function loadTickets() {
         const data =
             await response.json();
 	
-	        const miniMail =
-            document.getElementById("miniMail");
-
-	if (miniMail) {
-
-	    updateMiniBannerCount(
-	        "miniMail",
-	        data.tickets
-	        ? data.tickets.length
-	        : 0,
-	        "mail"
-	    );
-
-	}
 
         container.innerHTML = "";
 
@@ -2472,20 +2550,6 @@ async function loadTraffic() {
                 `
             ).join("");
 
-const miniTraffic =
-    document.getElementById("miniTraffic");
-
-	if (miniTraffic) {
-
-	    updateMiniBannerCount(
-	        "miniTraffic",
-	        data.totalVisits || 0,
-	        "traffic"
-	    );
-
-	}
-
-
     } catch (error) {
 
         console.error(
@@ -2681,24 +2745,6 @@ async function loadUsers() {
                 `
             ).join("");
 
-	const miniGuests =
-    document.getElementById("miniGuests");
-
-const miniMembers =
-    document.getElementById("miniMembers");
-
-const miniPremium =
-    document.getElementById("miniPremium");
-
-	if (miniGuests) {
-
-    updateMiniBannerCount(
-        "miniGuests",
-        guests.count || 0,
-        "guests"
-    );
-
-}
 
 if (miniMembers) {
 
@@ -3217,6 +3263,7 @@ INITIAL LOAD
 */
 
 loadStats();
+loadPersistentBannerCounts();
 loadRedAccounts();
 loadReports();
 loadTickets();

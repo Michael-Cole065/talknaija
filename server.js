@@ -35,6 +35,10 @@ const donationService =
 
 const adminActionService =
     require("./services/adminActionService");
+const adminBannerService =
+    require("./services/adminBannerService");
+const database =
+    require("./services/db/postgres");
 const {
     sendSupportReply
 } = require("./services/emailService");
@@ -551,6 +555,337 @@ app.get(
 // ========================================
 // ADMIN DASHBOARD API
 // ========================================
+
+/*
+==================================================
+ADMIN BANNER PERSISTENT STATE
+==================================================
+*/
+
+app.get(
+    "/api/admin/banner-state",
+    adminAuth,
+    async (req, res) => {
+
+        try {
+
+            const keys = [
+                "reports",
+                "mail",
+                "actionTaken",
+                "red",
+                "traffic",
+                "guests",
+                "members",
+                "premium"
+            ];
+
+            const state = {};
+
+            for (const key of keys) {
+
+                state[key] =
+                    await adminBannerService.getAcknowledgedAt(
+                        key
+                    );
+
+            }
+
+            res.json(state);
+
+        } catch (error) {
+
+            console.error(
+                "❌ Could not load admin banner state:",
+                error
+            );
+
+            res.status(500).json({
+                error:
+                    "Could not load admin banner state."
+            });
+
+        }
+
+    }
+);
+
+app.post(
+    "/api/admin/banner-state/:key",
+    adminAuth,
+    async (req, res) => {
+
+        try {
+
+            const allowedKeys = [
+                "reports",
+                "mail",
+                "actionTaken",
+                "red",
+                "traffic",
+                "guests",
+                "members",
+                "premium"
+            ];
+
+            const key = req.params.key;
+
+            if (!allowedKeys.includes(key)) {
+
+                return res.status(400).json({
+                    error:
+                        "Invalid banner key."
+                });
+
+            }
+
+            const acknowledgedAt =
+                req.body &&
+                req.body.acknowledgedAt
+                    ? req.body.acknowledgedAt
+                    : new Date();
+
+            const success =
+                await adminBannerService.acknowledgeBanner(
+                    key,
+                    acknowledgedAt
+                );
+
+            if (!success) {
+
+                return res.status(400).json({
+                    error:
+                        "Invalid acknowledgement timestamp."
+                });
+
+            }
+
+            res.json({
+                success: true,
+                key,
+                acknowledgedAt:
+                    await adminBannerService.getAcknowledgedAt(
+                        key
+                    )
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ Could not acknowledge admin banner:",
+                error
+            );
+
+            res.status(500).json({
+                error:
+                    "Could not acknowledge admin banner."
+            });
+
+        }
+
+    }
+);
+
+
+
+/*
+==================================================
+ADMIN BANNER UNSEEN COUNTS
+Persistent counts since each banner was last opened.
+==================================================
+*/
+
+app.get(
+    "/api/admin/banner-counts",
+    adminAuth,
+    async (req, res) => {
+
+        try {
+
+            const keys = [
+                "reports",
+                "mail",
+                "actionTaken",
+                "red",
+                "traffic",
+                "guests"
+            ];
+
+            const counts = {};
+
+            for (const key of keys) {
+
+                const acknowledgedAt =
+                    await adminBannerService.getAcknowledgedAt(
+                        key
+                    );
+
+                if (!acknowledgedAt) {
+
+                    counts[key] = 0;
+                    continue;
+
+                }
+
+                const reportsResult =
+                    key === "reports"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM reports
+                            WHERE created_at > $1
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const mailTicketsResult =
+                    key === "mail"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM support_tickets
+                            WHERE created_at > $1
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const mailRepliesResult =
+                    key === "mail"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM support_replies
+                            WHERE created_at > $1
+                              AND sender <> 'admin'
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const actionsResult =
+                    key === "actionTaken"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM admin_actions
+                            WHERE created_at > $1
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const reportActionsResult =
+                    key === "actionTaken"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM reports
+                            WHERE status = 'action_taken'
+                              AND updated_at > $1
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const bansResult =
+                    key === "red"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM ban_history
+                            WHERE created_at > $1
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const trafficResult =
+                    key === "traffic"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM traffic
+                            WHERE timestamp > $1
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                const guestsResult =
+                    key === "guests"
+                        ? await database.query(
+                            `
+                            SELECT COUNT(*)::int AS count
+                            FROM users
+                            WHERE created_at > $1
+                              AND type = 'guest'
+                            `,
+                            [acknowledgedAt]
+                        )
+                        : null;
+
+                if (key === "reports") {
+                    counts[key] =
+                        reportsResult.rows[0].count;
+                }
+
+                if (key === "mail") {
+                    counts[key] =
+                        Number(
+                            mailTicketsResult.rows[0].count
+                        ) +
+                        Number(
+                            mailRepliesResult.rows[0].count
+                        );
+                }
+
+                if (key === "actionTaken") {
+                    counts[key] =
+                        Number(
+                            actionsResult.rows[0].count
+                        ) +
+                        Number(
+                            reportActionsResult.rows[0].count
+                        );
+                }
+
+                if (key === "red") {
+                    counts[key] =
+                        bansResult.rows[0].count;
+                }
+
+                if (key === "traffic") {
+                    counts[key] =
+                        trafficResult.rows[0].count;
+                }
+
+                if (key === "guests") {
+                    counts[key] =
+                        guestsResult.rows[0].count;
+                }
+
+            }
+
+            res.json(counts);
+
+        } catch (error) {
+
+            console.error(
+                "❌ Could not load admin banner counts:",
+                error
+            );
+
+            res.status(500).json({
+                error:
+                    "Could not load admin banner counts."
+            });
+
+        }
+
+    }
+);
 
 app.get(
     "/api/admin/stats",
@@ -1510,6 +1845,8 @@ app.use(express.static(
 
 async function startServer() {
 
+    await adminBannerService.initializeAdminBannerState();
+
     await registerSocketHandlers(
         io,
         activePairs,
@@ -1650,61 +1987,3 @@ app.post(
 );
 
 // ========================================
-// PAYSTACK PAYMENT VERIFICATION
-// ========================================
-
-app.get(
-    "/api/payment/verify/:reference",
-    async (req, res) => {
-
-        try {
-
-            const reference =
-                req.params.reference;
-
-            if (!reference) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    message:
-                        "Payment reference is required."
-
-                });
-
-            }
-
-            const result =
-                await verifyTransaction(
-                    reference
-                );
-
-            return res.json({
-
-                success: true,
-
-                payment: result
-
-            });
-
-        } catch (error) {
-
-            console.error(
-                "❌ PAYSTACK VERIFICATION ERROR:",
-                error
-            );
-
-            return res.status(500).json({
-
-                success: false,
-
-                message:
-                    "Unable to verify payment."
-
-            });
-
-        }
-
-    }
-);

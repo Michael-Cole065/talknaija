@@ -230,6 +230,15 @@ CREATE INDEX IF NOT EXISTS idx_traffic_type
     ON traffic(type);
 
 -- ------------------------------------------------------------
+-- ADMIN BANNER STATE
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS admin_banner_state (
+    key TEXT PRIMARY KEY,
+    acknowledged_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ------------------------------------------------------------
 -- MIGRATION METADATA
 -- Useful for tracking future migrations.
 -- ------------------------------------------------------------

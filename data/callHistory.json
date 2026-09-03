@@ -241,6 +241,12 @@
   ],
   "fe59f03a-dc66-49c5-8b4a-c32c320c322f": [
     {
+      "partnerId": "ae3dd160-8b51-4517-a42d-546bebf9d044",
+      "timestamp": "2026-09-02T20:55:31.787Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    },
+    {
       "partnerId": "1d609980-51f9-4ac4-87dd-77b1529c3e91",
       "timestamp": "2026-08-31T23:57:30.213Z",
       "callbackStatus": "available",
@@ -1431,6 +1437,14 @@
     {
       "partnerId": "e4d1338c-b7df-4438-a489-a8009cf29e31",
       "timestamp": "2026-08-21T22:38:56.542Z",
+      "callbackStatus": "available",
+      "declineCount": 0
+    }
+  ],
+  "ae3dd160-8b51-4517-a42d-546bebf9d044": [
+    {
+      "partnerId": "fe59f03a-dc66-49c5-8b4a-c32c320c322f",
+      "timestamp": "2026-09-02T20:55:31.765Z",
       "callbackStatus": "available",
       "declineCount": 0
     }

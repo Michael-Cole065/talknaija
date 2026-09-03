@@ -84,6 +84,257 @@ const chatToggle =
 const chatUnreadBadge =
     document.getElementById("chatUnreadBadge");
 
+const chatImageBtn =
+    document.getElementById("chatImageBtn");
+
+const chatImageInput =
+    document.getElementById("chatImageInput");
+
+let chatImageOverlay = null;
+
+function ensureChatImageOverlay() {
+    if (chatImageOverlay) return chatImageOverlay;
+
+    chatImageOverlay = document.createElement("div");
+    chatImageOverlay.className = "chat-image-overlay hidden";
+    chatImageOverlay.innerHTML =
+        '<img alt="Shared picture">';
+
+    chatImageOverlay.addEventListener("click", () => {
+        chatImageOverlay.classList.add("hidden");
+    });
+
+    document.body.appendChild(chatImageOverlay);
+
+    return chatImageOverlay;
+}
+
+function showChatImageFull(imageSrc) {
+    const overlay = ensureChatImageOverlay();
+    const image = overlay.querySelector("img");
+
+    if (!image) return;
+
+    image.src = imageSrc;
+    overlay.classList.remove("hidden");
+}
+
+function addChatImage(imageSrc, type, senderId = null) {
+    if (!chatMessages) return;
+
+    if (
+        typeof imageSrc !== "string" ||
+        !imageSrc.startsWith("data:image/")
+    ) {
+        return;
+    }
+
+    const messageElement =
+        document.createElement("div");
+
+    messageElement.className =
+        "chat-message " + type;
+
+    const label =
+        document.createElement("div");
+
+    label.className = "chat-sender";
+
+    label.textContent =
+        type === "mine"
+            ? "Me:"
+            : "Id" + senderId + ":";
+
+    const image =
+        document.createElement("img");
+
+    image.className = "chat-image-thumb";
+    image.src = imageSrc;
+    image.alt = "Shared picture";
+    image.loading = "lazy";
+
+    image.addEventListener("click", () => {
+        showChatImageFull(imageSrc);
+    });
+
+    messageElement.appendChild(label);
+    messageElement.appendChild(image);
+
+    chatMessages.appendChild(messageElement);
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+}
+
+function prepareChatImage(file) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith("image/")) {
+            reject(new Error("Please select an image."));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const source = new Image();
+
+            source.onload = () => {
+                const maxDimension = 1280;
+
+                let width = source.naturalWidth;
+                let height = source.naturalHeight;
+
+                if (width > maxDimension || height > maxDimension) {
+                    const scale =
+                        Math.min(
+                            maxDimension / width,
+                            maxDimension / height
+                        );
+
+                    width = Math.round(width * scale);
+                    height = Math.round(height * scale);
+                }
+
+                const canvas =
+                    document.createElement("canvas");
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const context =
+                    canvas.getContext("2d");
+
+                if (!context) {
+                    reject(new Error("Could not process image."));
+                    return;
+                }
+
+                context.drawImage(
+                    source,
+                    0,
+                    0,
+                    width,
+                    height
+                );
+
+                const compressed =
+                    canvas.toDataURL(
+                        "image/jpeg",
+                        0.78
+                    );
+
+                if (compressed.length > 700000) {
+                    const smaller =
+                        document.createElement("canvas");
+
+                    const secondScale = 0.7;
+
+                    smaller.width =
+                        Math.max(
+                            1,
+                            Math.round(width * secondScale)
+                        );
+
+                    smaller.height =
+                        Math.max(
+                            1,
+                            Math.round(height * secondScale)
+                        );
+
+                    const secondContext =
+                        smaller.getContext("2d");
+
+                    if (!secondContext) {
+                        reject(new Error("Could not compress image."));
+                        return;
+                    }
+
+                    secondContext.drawImage(
+                        canvas,
+                        0,
+                        0,
+                        smaller.width,
+                        smaller.height
+                    );
+
+                    resolve(
+                        smaller.toDataURL(
+                            "image/jpeg",
+                            0.70
+                        )
+                    );
+
+                    return;
+                }
+
+                resolve(compressed);
+            };
+
+            source.onerror = () => {
+                reject(new Error("Could not read image."));
+            };
+
+            source.src = reader.result;
+        };
+
+        reader.onerror = () => {
+            reject(new Error("Could not load image."));
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+async function sendChatImage(file) {
+    try {
+        const imageData =
+            await prepareChatImage(file);
+
+        if (!imageData) return;
+
+        if (imageData.length > 900000) {
+            alert("That picture is too large. Please choose a smaller image.");
+            return;
+        }
+
+        socket.emit("chatImage", imageData);
+
+        addChatImage(
+            imageData,
+            "mine"
+        );
+    } catch (error) {
+        console.error(
+            "❌ Could not send chat picture:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Could not send picture."
+        );
+    }
+}
+
+if (chatImageBtn && chatImageInput) {
+    chatImageBtn.addEventListener("click", () => {
+        chatImageInput.click();
+    });
+
+    chatImageInput.addEventListener("change", () => {
+        const file =
+            chatImageInput.files &&
+            chatImageInput.files[0];
+
+        if (!file) return;
+
+        sendChatImage(file);
+
+        chatImageInput.value = "";
+    });
+}
+
+
 let unreadMessages = 0;
 
 if (chatToggle && chatBox) {
@@ -551,6 +802,45 @@ if (chatInput) {
 RECEIVE CHAT MESSAGE
 ==================================================
 */
+
+
+socket.on(
+    "chatImage",
+    (data) => {
+
+        if (
+            !data ||
+            typeof data.image !== "string"
+        ) {
+            return;
+        }
+
+        addChatImage(
+            data.image,
+            "theirs",
+            data.senderId
+        );
+
+        if (
+            chatBox &&
+            chatBox.classList.contains(
+                "hidden"
+            )
+        ) {
+
+            unreadMessages += 1;
+
+            if (chatUnreadBadge) {
+                chatUnreadBadge.textContent =
+                    unreadMessages;
+
+                chatUnreadBadge.classList.remove(
+                    "hidden"
+                );
+            }
+        }
+    }
+);
 
 
 socket.on(

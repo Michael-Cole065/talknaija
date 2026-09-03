@@ -599,6 +599,67 @@ SUCCESSFUL CALL CONNECTION
         */
 
         socket.on(
+            "chatImage",
+            (image) => {
+
+                const partner =
+                    activePairs.get(
+                        socket.id
+                    );
+
+                if (!partner) {
+                    return;
+                }
+
+                if (
+                    typeof image !== "string" ||
+                    !image.startsWith("data:image/")
+                ) {
+                    return;
+                }
+
+                /*
+                 * Keep images small enough for the
+                 * Socket.IO connection while still
+                 * allowing normal chat pictures.
+                 */
+                if (Buffer.byteLength(image, "utf8") > 900000) {
+                    return;
+                }
+
+                const allowedImageTypes = [
+                    "data:image/jpeg;base64,",
+                    "data:image/png;base64,",
+                    "data:image/webp;base64,"
+                ];
+
+                const isAllowedType =
+                    allowedImageTypes.some(
+                        (prefix) =>
+                            image.startsWith(prefix)
+                    );
+
+                if (!isAllowedType) {
+                    return;
+                }
+
+                io.to(
+                    partner
+                ).emit(
+                    "chatImage",
+                    {
+                        image,
+                        senderId:
+                            socket.userId
+                                ? socket.userId.slice(0, 4)
+                                : "Guest"
+                    }
+                );
+            }
+        );
+
+
+        socket.on(
             "chatMessage",
             (message) => {
 

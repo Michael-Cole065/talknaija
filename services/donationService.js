@@ -1,75 +1,52 @@
-const fs = require("fs");
-const path = require("path");
+const database =
+    require("./db/postgres");
 
-const donationFile =
-    path.join(__dirname, "../data/donations.json");
 
-function ensureFile() {
-
-    const directory =
-        path.dirname(donationFile);
-
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, {
-            recursive: true
-        });
-    }
-
-    if (
-        !fs.existsSync(donationFile) ||
-        fs.statSync(donationFile).size === 0
-    ) {
-        fs.writeFileSync(
-            donationFile,
-            "[]"
-        );
-    }
-}
-
-function getDonations() {
-
-    ensureFile();
-
-    try {
-
-        const data =
-            fs.readFileSync(
-                donationFile,
-                "utf8"
-            ).trim();
-
-        return data
-            ? JSON.parse(data)
-            : [];
-
-    } catch (error) {
-
-        console.error(
-            "❌ Could not read donations:",
-            error
-        );
-
-        return [];
-    }
-}
-
-function saveDonations(
-    donations
+function formatDonation(
+    row
 ) {
 
-    ensureFile();
+    return {
 
-    fs.writeFileSync(
-        donationFile,
-        JSON.stringify(
-            donations,
-            null,
-            2
-        )
-    );
+        id:
+            row.id,
+
+        reference:
+            row.reference,
+
+        email:
+            row.email,
+
+        amount:
+            Number(row.amount || 0),
+
+        currency:
+            row.currency,
+
+        status:
+            row.status,
+
+        paidAt:
+            row.paid_at
+                ? new Date(
+                    row.paid_at
+                ).toISOString()
+                : null,
+
+        channel:
+            row.channel,
+
+        createdAt:
+            new Date(
+                row.created_at
+            ).toISOString()
+
+    };
+
 }
 
-function recordDonation(
+
+async function recordDonation(
     payment
 ) {
 
@@ -80,19 +57,40 @@ function recordDonation(
         return null;
     }
 
-    const donations =
-        getDonations();
 
     const existing =
-        donations.find(
-            (item) =>
-                item.reference ===
+        await database.query(
+            `
+            SELECT
+                id,
+                reference,
+                email,
+                amount,
+                currency,
+                status,
+                paid_at,
+                channel,
+                created_at
+            FROM donations
+            WHERE reference = $1
+            LIMIT 1
+            `,
+            [
                 payment.reference
+            ]
         );
 
-    if (existing) {
-        return existing;
+
+    if (
+        existing.rows.length > 0
+    ) {
+
+        return formatDonation(
+            existing.rows[0]
+        );
+
     }
+
 
     const donation = {
 
@@ -106,11 +104,10 @@ function recordDonation(
             payment.customer?.email ||
             null,
 
-
-	amount:
-    payment.currency === "NGN"
-        ? (Number(payment.amount) || 0) / 100
-        : Number(payment.amount) || 0,
+        amount:
+            payment.currency === "NGN"
+                ? (Number(payment.amount) || 0) / 100
+                : Number(payment.amount) || 0,
 
         currency:
             payment.currency ||
@@ -133,58 +130,145 @@ function recordDonation(
 
     };
 
-    donations.unshift(
-        donation
+
+    await database.query(
+        `
+        INSERT INTO donations (
+            id,
+            reference,
+            email,
+            amount,
+            currency,
+            status,
+            paid_at,
+            channel,
+            created_at
+        )
+        VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6,
+            $7,
+            $8,
+            $9
+        )
+        `,
+        [
+            donation.id,
+            donation.reference,
+            donation.email,
+            donation.amount,
+            donation.currency,
+            donation.status,
+            donation.paidAt,
+            donation.channel,
+            donation.createdAt
+        ]
     );
 
-    saveDonations(
-        donations
-    );
 
     return donation;
+
 }
 
-function getAllDonations() {
-    return getDonations();
+
+async function getAllDonations() {
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                id,
+                reference,
+                email,
+                amount,
+                currency,
+                status,
+                paid_at,
+                channel,
+                created_at
+            FROM donations
+            ORDER BY created_at DESC
+            `
+        );
+
+
+    return result.rows.map(
+        formatDonation
+    );
+
 }
 
-function getDonationStats() {
 
-    const donations =
-        getDonations();
+async function getDonationStats() {
+
+    const result =
+        await database.query(
+            `
+            SELECT
+                COUNT(*)::int AS total_donations,
+                COALESCE(
+                    SUM(amount),
+                    0
+                ) AS total_amount
+            FROM donations
+            WHERE status = 'success'
+            `
+        );
+
 
     const successful =
-        donations.filter(
-            (item) =>
-                item.status === "success"
+        await database.query(
+            `
+            SELECT
+                id,
+                reference,
+                email,
+                amount,
+                currency,
+                status,
+                paid_at,
+                channel,
+                created_at
+            FROM donations
+            WHERE status = 'success'
+            ORDER BY created_at DESC
+            `
         );
 
-    const totalAmount =
-        successful.reduce(
-            (sum, item) =>
-                sum +
-                Number(item.amount || 0),
-            0
-        );
 
     return {
 
         totalDonations:
-            successful.length,
+            result.rows[0].total_donations,
 
-        totalAmount,
+        totalAmount:
+            Number(
+                result.rows[0].total_amount || 0
+            ),
 
         currency:
             "NGN",
 
         donations:
-            successful
+            successful.rows.map(
+                formatDonation
+            )
 
     };
+
 }
 
+
 module.exports = {
+
     recordDonation,
+
     getAllDonations,
+
     getDonationStats
+
 };

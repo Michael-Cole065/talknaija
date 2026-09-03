@@ -1,8 +1,6 @@
-const database =
-    require("./db/postgres");
-
-const identityService =
-    require("./identityService");
+const database = require("./db/postgres");
+const adminActionService = require("./adminActionService");
+const identityService = require("./identityService");
 
 
 /*
@@ -230,11 +228,20 @@ async function addReport(report) {
         user.banned !== true
     ) {
 
-        await identityService.setBanned(
+        const banned = await identityService.setBanned(
             reported,
             true,
             "Automatic ban after reaching 5 reports"
         );
+
+        if (banned) {
+            await adminActionService.recordAction({
+                type: "BAN",
+                userId: reported,
+                details:
+                    "Account automatically banned after reaching 5 reports."
+            });
+        }
 
         console.log(
             "🔴 AUTOMATIC USER BAN:",
