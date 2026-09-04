@@ -4695,22 +4695,53 @@ document
 function checkTalkNaijaAds() {
 
     /*
-     * Do not treat an empty/zero-height ad slot as
-     * an ad blocker. Google may simply have no ad
-     * available to fill the slot.
+     * The AdSense script itself can be blocked by
+     * browser/content blockers.
+     *
+     * index.html records that failure through
+     * window.talkNaijaAdsBlocked.
      */
 
-    const adsScriptLoaded =
-        typeof window.adsbygoogle !==
-        "undefined";
+    if (
+        window.talkNaijaAdsBlocked ===
+        true
+    ) {
 
-    if (!adsScriptLoaded) {
+        showAdBlockDialog();
+
+        return;
+
+    }
+
+    /*
+     * Do not treat an empty or zero-height slot,
+     * or data-ad-status="unfilled", as a blocker.
+     *
+     * AdSense may legitimately have no ad available.
+     */
+
+    const errorSlot =
+        Array.from(
+            document.querySelectorAll(
+                "ins.adsbygoogle"
+            )
+        ).some(
+            (slot) =>
+                slot.getAttribute(
+                    "data-ad-status"
+                ) === "error"
+        );
+
+    if (
+        errorSlot
+    ) {
 
         showAdBlockDialog();
 
     }
 
 }
+
 
 
 function startTalkNaijaAdCheck() {
