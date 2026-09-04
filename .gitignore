@@ -6,3 +6,4 @@ server.backup.js
 
 # PostgreSQL CA certificate
 ca.pem
+.env*
