@@ -1408,6 +1408,226 @@ socket.on(
 
 /*
 ==================================================
+AD BLOCKER DIALOG
+==================================================
+*/
+
+function showAdBlockDialog() {
+
+    const existing =
+        document.getElementById(
+            "adBlockDialog"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "adBlockDialog";
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+        z-index:10001;
+        background:rgba(0,0,0,0.65);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+        overflow:hidden;
+        touch-action:none;
+    `;
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.style.cssText = `
+        background:#111;
+        color:#fff;
+        width:100%;
+        max-width:360px;
+        box-sizing:border-box;
+        padding:25px;
+        border-radius:15px;
+        text-align:center;
+        box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    `;
+
+
+    const heading =
+        document.createElement(
+            "h2"
+        );
+
+    heading.textContent =
+        "💙 Help Keep TalkNaija Running";
+
+    heading.style.cssText = `
+        margin:0 0 12px;
+        font-size:21px;
+    `;
+
+
+    const text =
+        document.createElement(
+            "p"
+        );
+
+    text.textContent =
+        "Ads help keep TalkNaija free. Your browser may be blocking ads on this site. Please open your browser Settings and turn off its ad-blocking or content-blocking option for TalkNaija, then return here.";
+
+    text.style.cssText = `
+        margin:0 0 20px;
+        line-height:1.5;
+        color:#ddd;
+    `;
+
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.textContent =
+        "I've Allowed Ads";
+
+    button.type =
+        "button";
+
+    button.style.cssText = `
+        background:#2563eb;
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        padding:12px 20px;
+        width:115px;
+        min-width:115px;
+        box-sizing:border-box;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+    `;
+
+
+    box.appendChild(
+        heading
+    );
+
+    box.appendChild(
+        text
+    );
+
+    box.appendChild(
+        button
+    );
+
+    overlay.appendChild(
+        box
+    );
+
+
+    const savedScrollY =
+        window.scrollY ||
+        window.pageYOffset ||
+        0;
+
+    document.body.dataset.adBlockDialogScrollY =
+        String(savedScrollY);
+
+    document.documentElement.style.overflow =
+        "hidden";
+
+    document.body.style.overflow =
+        "hidden";
+
+    document.body.style.position =
+        "fixed";
+
+    document.body.style.top =
+        `-${savedScrollY}px`;
+
+    document.body.style.left =
+        "0";
+
+    document.body.style.right =
+        "0";
+
+    document.body.style.width =
+        "100%";
+
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    button.onclick =
+        () => {
+
+            overlay.remove();
+
+            document.documentElement.style.overflow =
+                "";
+
+            document.body.style.overflow =
+                "";
+
+            document.body.style.position =
+                "";
+
+            document.body.style.top =
+                "";
+
+            document.body.style.left =
+                "";
+
+            document.body.style.right =
+                "";
+
+            document.body.style.width =
+                "";
+
+            const restoreY =
+                Number(
+                    document.body.dataset.adBlockDialogScrollY ||
+                    0
+                );
+
+            delete document.body.dataset.adBlockDialogScrollY;
+
+            window.scrollTo(
+                0,
+                restoreY
+            );
+
+            /*
+             * Give the browser time to apply any
+             * ad-blocking setting change, then check
+             * AdSense again.
+             */
+
+            setTimeout(
+                checkTalkNaijaAds,
+                2000
+            );
+
+        };
+
+}
+
+/*
+==================================================
 CALLBACK MESSAGE DIALOG
 ==================================================
 */
@@ -4472,9 +4692,48 @@ document
 
     });
 
+function checkTalkNaijaAds() {
+
+    /*
+     * Do not treat an empty/zero-height ad slot as
+     * an ad blocker. Google may simply have no ad
+     * available to fill the slot.
+     */
+
+    const adsScriptLoaded =
+        typeof window.adsbygoogle !==
+        "undefined";
+
+    if (!adsScriptLoaded) {
+
+        showAdBlockDialog();
+
+    }
+
+}
+
+
+function startTalkNaijaAdCheck() {
+
+    /*
+     * Give Google AdSense time to load/render
+     * before treating an unavailable ad as
+     * a possible browser/content blocker.
+     */
+
+    setTimeout(
+        checkTalkNaijaAds,
+        8000
+    );
+
+}
+
 document.addEventListener(
     "DOMContentLoaded",
     () => {
+
+        startTalkNaijaAdCheck();
+
 
         const coffeePayBtn =
             document.getElementById(
