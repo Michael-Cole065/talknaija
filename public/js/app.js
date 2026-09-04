@@ -1511,8 +1511,9 @@ function showAdBlockDialog() {
         border:none;
         border-radius:10px;
         padding:12px 20px;
-        width:115px;
-        min-width:115px;
+        width:170px;
+        min-width:170px;
+        white-space:nowrap;
         box-sizing:border-box;
         font-size:15px;
         font-weight:600;
