@@ -11,21 +11,7 @@ let connectionFailureSeconds = 0;
 let handlingConnectionFailure = false;
 
 function debugLog(message) {
-
-    console.log(message);
-
-    const box =
-        document.getElementById("debugBox");
-
-    if (box) {
-
-        box.innerHTML += message + "<br>";
-
-        box.scrollTop =
-            box.scrollHeight;
-
-    }
-
+    // Temporary WebRTC debug logging disabled after development testing.
 }
 
 debugLog("🔥 WEBRTC.JS LOADED");
