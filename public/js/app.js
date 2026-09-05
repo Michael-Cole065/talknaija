@@ -1128,10 +1128,10 @@ else if (
 ) {
 
     buttonText =
-        "Ignored";
+        "Call Back";
 
     disabled =
-        true;
+        false;
 
 }
 
@@ -1485,12 +1485,27 @@ function showAdBlockDialog() {
         );
 
     text.textContent =
-        "Ads help keep TalkNaija free. Your browser may be blocking ads on this site. Please open your browser Settings and turn off its ad-blocking or content-blocking option for TalkNaija, then return here.";
+        "Ads help keep TalkNaija free. Your browser may have privacy or content settings that prevent ads from loading. You can allow ads or continue without ads.";
 
     text.style.cssText = `
         margin:0 0 20px;
         line-height:1.5;
         color:#ddd;
+    `;
+
+
+    const buttonRow =
+        document.createElement(
+            "div"
+        );
+
+    buttonRow.style.cssText = `
+        display:flex;
+        gap:10px;
+        justify-content:center;
+        align-items:stretch;
+        width:100%;
+        box-sizing:border-box;
     `;
 
 
@@ -1510,10 +1525,37 @@ function showAdBlockDialog() {
         color:#fff;
         border:none;
         border-radius:10px;
-        padding:12px 20px;
-        width:170px;
-        min-width:170px;
-        white-space:nowrap;
+        padding:12px 10px;
+        flex:1;
+        min-width:0;
+        white-space:normal;
+        box-sizing:border-box;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+    `;
+
+
+    const continueButton =
+        document.createElement(
+            "button"
+        );
+
+    continueButton.textContent =
+        "Continue without ads";
+
+    continueButton.type =
+        "button";
+
+    continueButton.style.cssText = `
+        background:#333;
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        padding:12px 10px;
+        flex:1;
+        min-width:0;
+        white-space:normal;
         box-sizing:border-box;
         font-size:15px;
         font-weight:600;
@@ -1529,8 +1571,16 @@ function showAdBlockDialog() {
         text
     );
 
-    box.appendChild(
+    buttonRow.appendChild(
         button
+    );
+
+    buttonRow.appendChild(
+        continueButton
+    );
+
+    box.appendChild(
+        buttonRow
     );
 
     overlay.appendChild(
@@ -1623,6 +1673,18 @@ function showAdBlockDialog() {
                 2000
             );
 
+        };
+
+
+    continueButton.onclick =
+        () => {
+
+            sessionStorage.setItem(
+                "talkNaijaContinueWithoutAds",
+                "true"
+            );
+
+            button.onclick();
         };
 
 }
@@ -4694,6 +4756,16 @@ document
     });
 
 function checkTalkNaijaAds() {
+
+    if (
+        sessionStorage.getItem(
+            "talkNaijaContinueWithoutAds"
+        ) === "true"
+    ) {
+
+        return;
+    }
+
 
     /*
      * The AdSense script itself can be blocked by
