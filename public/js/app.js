@@ -4370,32 +4370,17 @@ function showLeaveCallConfirmation(
             connectionStatus.textContent =
                 "Disconnected";
 
-	loadCallHistory();
+        loadCallHistory();
 
-if (
-    action === "premium" ||
-    action === "coffee"
-) {
+        showScreen(
+            homeScreen
+        );
 
-    performSidebarNavigation(
-        "home"
-    );
-
-    setTimeout(() => {
+        closeSideMenu();
 
         performSidebarNavigation(
             action
         );
-
-    }, 0);
-
-} else {
-
-    performSidebarNavigation(
-        action
-    );
-
-}
 
         };
 
